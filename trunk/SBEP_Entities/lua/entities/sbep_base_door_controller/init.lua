@@ -19,14 +19,16 @@ function ENT:Initialize()
 end
 
 function ENT:MakeWire()
-	if !self.AnimData or type( self.AnimData ) != "table" then return end
+	if !self.AnimData or type( self.AnimData ) != "table" or self.SBEPWire == 0 then return end
 
 		self.WireInputs = {}
 		for i = 1, #self.AnimData do
 			self.WireInputs[#self.WireInputs + 1] = "Open_"..tostring( i )
 			self.WireInputs[#self.WireInputs + 1] = "Lock_"..tostring( i )
 		end
-		self.WireInputs[#self.WireInputs + 1] = "Disable Use"
+		if self.EnableUseKey == 1 then
+			self.WireInputs[#self.WireInputs + 1] = "Disable Use"
+		end
 	
 		self.WireOutputs = {}
 		for i = 1, #self.AnimData do
@@ -39,6 +41,7 @@ function ENT:MakeWire()
 end
 
 function ENT:AddAnimDoors()
+	if !self.AnimData then return end
 	
 	self.Door = {}
 	for k,v in pairs( self.AnimData ) do
@@ -69,7 +72,7 @@ end
 
 function ENT:Use( activator, caller )
 
-	if self.DisableUse then return end
+	if self.EnableUseKey == 0 or self.DisableUse then return end
 
 		for k,v in pairs( self.Door ) do
 			if v:GetSequence() == v.CloseSequence and not v.OpenStatus then
@@ -148,9 +151,10 @@ end
 function ENT:BuildDupeInfo()
 	local info = self.BaseClass.BuildDupeInfo(self) or {}
 	info.Door = {}
-	info.AnimData = self.AnimData
-	info.Wire = self.Wire
-	info.Skin = self.Skin
+	info.AnimData 		= self.AnimData
+	info.SBEPWire 		= self.SBEPWire
+	info.Skin 			= self.Skin
+	info.EnableUseKey 	= self.EnableUseKey
 	for i = 1, #self.Door do
 		if (self.Door[i]) then
 			info.Door[i] = self.Door[i]:EntIndex()
@@ -161,15 +165,16 @@ end
 
 function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	self.AnimData = info.AnimData
-	self.Skin = info.Skin
-	self.Wire = info.Wire
+	self.AnimData 		= info.AnimData
+	self.Skin 			= info.Skin
+	self.SBEPWire 		= info.SBEPWire
+	self.EnableUseKey 	= info.EnableUseKey
 	for i = 1, #info.Door do
 		if (info.Door[i]) then
 			GetEntByID(info.Door[i]):Remove()
 		end
 	end
-	self:SetSkin( self.Skin )
+	self:SetSkin( self.SBEPSkin )
 	self:AddAnimDoors()
 	self:MakeWire()
 end
