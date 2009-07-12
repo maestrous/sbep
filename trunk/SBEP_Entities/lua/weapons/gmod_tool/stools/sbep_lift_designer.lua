@@ -48,8 +48,6 @@ end
 CreateClientConVar( "sbep_lift_designer_editing", 0, false, false ) 
 
 if CLIENT then
-
-	SBEPLiftPartCount = 0
 	
 	SBEPLiftMenuPanel = vgui.Create( "DFrame" )
 		SBEPLiftMenuPanel:SetPos( 30,30 )
@@ -97,7 +95,16 @@ if CLIENT then
 		SBEPLiftMenuFinishButton:SetSize( 315 , 35 )
 		SBEPLiftMenuFinishButton:SetText( "Finish" )
 		SBEPLiftMenuFinishButton.DoClick = function()
-											SBEP_FinishLiftDesignMenu()
+											if CL.LiftPartCount < 2 then
+												SBEPLiftMenuPanelVisible = false
+												SBEPLiftMenuPanel:SetVisible( SBEPLiftMenuPanelVisible )
+												if ValidEntity(GhostEnt) then
+													GhostEnt:Remove()
+												end
+												RunConsoleCommand("SBEP_CancelLiftDesignMenu_ser")
+											else
+												SBEP_FinishLiftDesignMenu()
+											end
 										end
 	
 	SBEPLiftMenuConstructButton = vgui.Create("DButton", SBEPLiftMenuPanel )
@@ -105,6 +112,7 @@ if CLIENT then
 		SBEPLiftMenuConstructButton:SetSize( 155 , 190 )
 		SBEPLiftMenuConstructButton:SetText( "Construct" )
 		SBEPLiftMenuConstructButton.DoClick = function()
+												CL.LiftPartCount = CL.LiftPartCount + 1
 												RunConsoleCommand("SBEP_ConstructPart_ser", 
 																				GhostEnt:GetModel() , 
 																				tostring(CL.GhostPos.x) , 
@@ -262,6 +270,7 @@ if CLIENT then
 		CL.StartAngleOffset = Angle(0,CL.StartAngleYaw,CL.StartAngleTwist)
 		CL.Inverted = 0
 		CLickPos = CL:GetNetworkedVector( "SBEP_Elev_StartPos" )
+		CL.LiftPartCount = 0
 		
 		CL.CurrentModelNumber = 1
 		CL.CurrentRowBaseNumber = 1
