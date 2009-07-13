@@ -14,14 +14,20 @@ if CLIENT then
 	language.Add( "undone_SBEP Door"	, "Undone SBEP Door"			)
 end
 
-TOOL.ClientConVar[ "model" 		] = "models/SmallBridge/Panels/sbpaneldoor.mdl"
+TOOL.ClientConVar[ "model_1" 	] = "models/SmallBridge/Panels/sbpaneldoor.mdl"
+TOOL.ClientConVar[ "model_2" 	] = "models/SmallBridge/Elevators,Small/sbselevb.mdl"
+TOOL.ClientConVar[ "model_3" 	] = "models/SmallBridge/Elevators,Small/sbselevm.mdl"
+TOOL.ClientConVar[ "model_4" 	] = "models/SmallBridge/Elevators,Small/sbselevt.mdl"
+TOOL.ClientConVar[ "activecat"  ] = 1
 TOOL.ClientConVar[ "skin"  		] = 1
 TOOL.ClientConVar[ "wire"  		] = 1
 TOOL.ClientConVar[ "enableuse"	] = 1
 
 function TOOL:LeftClick( trace )
 
-	local model = self:GetClientInfo( "model" )
+	//local activecategory 	= self:GetClientNumber( "activecat" )
+	//local modelvar			= "model_"..tostring(activecategory)
+	local model 			= self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
 	
 	local pos = trace.HitPos
 	
@@ -33,7 +39,8 @@ function TOOL:LeftClick( trace )
 		
 		DoorController.EnableUseKey = self:GetClientNumber( "enableuse" )
 		
-		DoorController:SetPos( pos + Vector(0,0,ModelSelectTable[model]) )
+		DoorController:SetPos( pos + Vector(0,0,ModelSelectTable[model][1]) )
+		
 		DoorController:Spawn()
 		DoorController:Activate()
 	
@@ -73,28 +80,6 @@ function TOOL.BuildCPanel( panel )
 		panel:SetSpacing( 10 )
 		panel:SetName( "SBEP Door" )
 
-    local ModelPropSelect = vgui.Create( "PropSelect" )
-		ModelPropSelect:SetConVar( "sbep_door_model" )
-		ModelPropSelect.Label( "Door Model:" )
-		for k,v in pairs( ModelSelectTable ) do
-			ModelPropSelect:AddModel( k , {} )
-		end
-	panel:AddItem( ModelPropSelect )
-
-	local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
-		WireCheckBox:SetText( "Create Wire Inputs" )
-		WireCheckBox:SetConVar( "sbep_door_wire" )
-		WireCheckBox:SetValue( 1 )
-		WireCheckBox:SizeToContents()
-	panel:AddItem( WireCheckBox )
-	
-	local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
-		UseCheckBox:SetText( "Enable Use Key" )
-		UseCheckBox:SetConVar( "sbep_door_enableuse" )
-		UseCheckBox:SetValue( 1 )
-		UseCheckBox:SizeToContents()
-	panel:AddItem( UseCheckBox )
-
 	local SkinMenu = vgui.Create("DButton")
 	SkinMenu:SetText( "Skin" )
 	SkinMenu:SetSize( 100, 20 )
@@ -115,5 +100,69 @@ function TOOL.BuildCPanel( panel )
 			SkinMenuOptions:Open()
 						end
 	panel:AddItem( SkinMenu )
+	
+	local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
+		WireCheckBox:SetText( "Create Wire Inputs" )
+		WireCheckBox:SetConVar( "sbep_door_wire" )
+		WireCheckBox:SetValue( 1 )
+		WireCheckBox:SizeToContents()
+	panel:AddItem( WireCheckBox )
+	
+	local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
+		UseCheckBox:SetText( "Enable Use Key" )
+		UseCheckBox:SetConVar( "sbep_door_enableuse" )
+		UseCheckBox:SetValue( 1 )
+		UseCheckBox:SizeToContents()
+	panel:AddItem( UseCheckBox )
+	
+	local CategoryTable = {
+					{ "Doors"			, "Door"	} ,
+					{ "Hatches (Base)" 	, "Hatch_B"	} ,
+					{ "Hatches (Mid)" 	, "Hatch_M"	} ,
+					{ "Hatches (Top)"	, "Hatch_T"	}
+						}
+	local ModelCollapsibleCategories = {}
+	
+	for k,v in pairs(CategoryTable) do
+		ModelCollapsibleCategories[k] = {}
+		ModelCollapsibleCategories[k][1] = vgui.Create("DCollapsibleCategory")
+			//ModelCollapsibleCategories[k][1]:SetSize( 200, 50 )
+			ModelCollapsibleCategories[k][1]:SetExpanded( false )
+			ModelCollapsibleCategories[k][1]:SetLabel( v[1] )
+		panel:AddItem( ModelCollapsibleCategories[k][1] )
+	 
+		ModelCollapsibleCategories[k][2] = vgui.Create( "DPanelList" )
+			ModelCollapsibleCategories[k][2]:SetAutoSize( true )
+			ModelCollapsibleCategories[k][2]:SetSpacing( 5 )
+			ModelCollapsibleCategories[k][2]:EnableHorizontal( false )
+			ModelCollapsibleCategories[k][2]:EnableVerticalScrollbar( false )
+		ModelCollapsibleCategories[k][1]:SetContents( ModelCollapsibleCategories[k][2] )
+
+		ModelCollapsibleCategories[k][3] = vgui.Create( "PropSelect" )
+			ModelCollapsibleCategories[k][3]:SetConVar( "sbep_door_model_"..tostring(k) )
+			ModelCollapsibleCategories[k][3].Label:SetText( "Model:" )
+			for m,n in pairs( ModelSelectTable ) do
+				if n[2] == v[2] then
+					ModelCollapsibleCategories[k][3]:AddModel( m , {} )
+				end
+			end
+		ModelCollapsibleCategories[k][2]:AddItem( ModelCollapsibleCategories[k][3] )
+	end
+	ModelCollapsibleCategories[1][1]:SetExpanded( true )
+	RunConsoleCommand( "sbep_door_activecat", 1 )
+	
+	for k,v in pairs( ModelCollapsibleCategories ) do
+		v[1].Header.OnMousePressed = function()
+									for m,n in pairs(ModelCollapsibleCategories) do
+										if n[1]:GetExpanded() then
+											n[1]:Toggle()
+										end
+									end
+									if !v[1]:GetExpanded() then
+										v[1]:Toggle()
+									end
+									RunConsoleCommand( "sbep_door_activecat", k )
+							end
+	end
 
 end

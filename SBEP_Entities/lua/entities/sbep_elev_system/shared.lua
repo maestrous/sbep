@@ -2,9 +2,8 @@ ENT.Type			      = "anim"
 ENT.Base                  = "base_gmodentity" 
 ENT.PrintName		      = "Elevator System"
 ENT.Author			      = "Hysteria"
-ENT.Category			  = "SBEP - Elevators"
+ENT.Category			  = "SBEP"
 
-ENT.AutomaticFrameAdvance = true
 ENT.Spawnable			  = false
 ENT.AdminSpawnable		  = false
 
