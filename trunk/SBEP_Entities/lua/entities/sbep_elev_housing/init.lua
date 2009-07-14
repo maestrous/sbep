@@ -15,10 +15,6 @@ function ENT:Initialize()
 			phys:Wake()  	
 		end
 
-		//self.OpenStatus      	= false
-
-		self:MakeWire()
-
 end
 
 function ENT:SpawnFunction( ply, tr )

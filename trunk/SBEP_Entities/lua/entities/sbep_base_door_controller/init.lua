@@ -48,24 +48,29 @@ function ENT:AddAnimDoors()
 	self.Door = {}
 	for k,v in pairs( self.AnimData ) do
 		self.Door[k] = ents.Create( "sbep_base_door" )
+
 			self.Door[k]:Spawn()
-			self.Door[k]:InitDoorData( v )
+			self.Door[k]:SetDoorType( v[1] )
 
 			self:SetAngles( Angle(0,0,0) )
-			self.Door[k]:SetPos(self:GetPos() 		+ v[5] )
-			self.Door[k]:SetAngles(self:GetAngles() + v[6] )
+			if v[2] then
+				self.Door[k]:SetPos( self:GetPos() + v[2] )
+			else
+				self.Door[k]:SetPos( self:GetPos() )
+			end
+			if v[3] then
+				self.Door[k]:SetAngles( self:GetAngles() + v[3] )
+			else
+				self.Door[k]:SetAngles( self:GetAngles() )
+			end
 			
 			constraint.Weld( self.Door[k], self, 0, 0, 0, true )
 			
 			self.Door[k]:SetSkin( self:GetSkin() )
-			
-			self.Door[k].OpenSounds 				= v[7]
-			self.Door[k].CloseSounds 				= v[8]
 
 			self.Door[k].Controller = self.Entity
 			self.Door[k].SysDoorNum = k
 
-			self.Door[k]:GetSequenceData()
 			self.Door[k]:Close()
 
 			self:DeleteOnRemove( self.Door[k] )
@@ -74,7 +79,7 @@ end
 
 function ENT:Use( activator, caller )
 
-	if self.EnableUseKey == 0 or self.DisableUse then return end
+	if !self.EnableUseKey or self.DisableUse then return end
 
 		for k,v in pairs( self.Door ) do
 			if v:GetSequence() == v.CloseSequence and not v.OpenStatus then
