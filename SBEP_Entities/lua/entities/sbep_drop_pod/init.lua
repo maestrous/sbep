@@ -1,19 +1,17 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 
-local DoorData = = { { "Door_Anim2" , Vector(51.15,0,0     ) } ,
+local DoorData = { { "Door_Anim2" , Vector(51.15,0,0     ) } ,
 					 { "Door_Iris"  , Vector(-37.2,0,-60.45) , Angle( 90 , 0 , 0 ) } }
 
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/SmallBridge/Station Parts/SBbayDPs.mdl" )
-	self.Entity:SetName("AmmoCrate")
+	self.Entity:SetName("Drop Pod Bay")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	--self.Entity:SetMaterial("models/props_combine/combinethumper002");
 	self.Outputs = Wire_CreateOutputs( self.Entity, { "Occupied" })
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -66,10 +64,9 @@ function ENT:SpawnFunction( ply, tr )
 	
 	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,65.1)
 	
-	local ent = ents.Create( "EPod2" )
+	local ent = ents.Create( "sbep_drop_pod" )
 	ent:SetPos( SpawnPos )
 	ent:Spawn()
-	ent:Initialize()
 	ent:Activate()
 	ent.SPL = ply
 	
