@@ -5,8 +5,6 @@ TOOL.ConfigName 	= ""
 
 local ModelSelectTable = list.Get( "SBEP_DoorControllerModels" )
 
-local DoorDataTable    = list.Get( "SBEP_DoorModelData" )
-
 if CLIENT then
 	language.Add( "Tool_sbep_door_name"	, "SBEP Door Tool" 				)
 	language.Add( "Tool_sbep_door_desc"	, "Create an SBEP door." 		)
@@ -18,15 +16,14 @@ TOOL.ClientConVar[ "model_1" 	] = "models/SmallBridge/Panels/sbpaneldoor.mdl"
 TOOL.ClientConVar[ "model_2" 	] = "models/SmallBridge/Elevators,Small/sbselevb.mdl"
 TOOL.ClientConVar[ "model_3" 	] = "models/SmallBridge/Elevators,Small/sbselevm.mdl"
 TOOL.ClientConVar[ "model_4" 	] = "models/SmallBridge/Elevators,Small/sbselevt.mdl"
+TOOL.ClientConVar[ "model_5" 	] = "models/SmallBridge/Station Parts/sbbaydps.mdl"
 TOOL.ClientConVar[ "activecat"  ] = 1
-TOOL.ClientConVar[ "skin"  		] = 1
+TOOL.ClientConVar[ "skin"  		] = 0
 TOOL.ClientConVar[ "wire"  		] = 1
 TOOL.ClientConVar[ "enableuse"	] = 1
 
 function TOOL:LeftClick( trace )
 
-	//local activecategory 	= self:GetClientNumber( "activecat" )
-	//local modelvar			= "model_"..tostring(activecategory)
 	local model 			= self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
 	
 	local pos = trace.HitPos
@@ -34,10 +31,14 @@ function TOOL:LeftClick( trace )
 	local DoorController = ents.Create( "sbep_base_door_controller" )
 		DoorController:SetModel( model )
 		
-		DoorController.Skin = self:GetClientNumber( "skin" )
-		DoorController:SetSkin( DoorController.Skin )
+		//DoorController.Skin = self:GetClientNumber( "skin" )
+		DoorController:SetSkin( self:GetClientNumber( "skin" ) )
 		
-		DoorController.EnableUseKey = self:GetClientNumber( "enableuse" )
+		if self:GetClientNumber( "enableuse" ) == 1 then
+			DoorController.EnableUseKey = true
+		else
+			DoorController.EnableUseKey = false
+		end
 		
 		DoorController:SetPos( pos + Vector(0,0,ModelSelectTable[model][1]) )
 		
@@ -45,8 +46,10 @@ function TOOL:LeftClick( trace )
 		DoorController:Activate()
 	
 		DoorController.AnimData = {}
-		for k,v in pairs( DoorDataTable[model] ) do
-			DoorController.AnimData[k] = v
+		local val = 3
+		while ModelSelectTable[model][val] do
+			DoorController.AnimData[val] = ModelSelectTable[model][val]
+			val = val + 1
 		end
 	
 		DoorController:AddAnimDoors()
@@ -119,8 +122,10 @@ function TOOL.BuildCPanel( panel )
 					{ "Doors"			, "Door"	} ,
 					{ "Hatches (Base)" 	, "Hatch_B"	} ,
 					{ "Hatches (Mid)" 	, "Hatch_M"	} ,
-					{ "Hatches (Top)"	, "Hatch_T"	}
+					{ "Hatches (Top)"	, "Hatch_T"	} ,
+					{ "Other"			, "Other"	}
 						}
+
 	local ModelCollapsibleCategories = {}
 	
 	for k,v in pairs(CategoryTable) do

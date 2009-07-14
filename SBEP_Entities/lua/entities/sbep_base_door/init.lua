@@ -4,19 +4,66 @@ include( "shared.lua" )
 
 ENT.WireDebugName = "SBEP Door"
 
-function ENT:InitDoorData( DoorData )
+local DoorTypesTable = {}
+
+DoorTypesTable[ "Door_Anim1"	]	= { "models/SmallBridge/SEnts/SBADoor1.mdl" 	,
+										3 , 2   , 1 	,
+		{ [0] = "Doors.Move14" , [1.45] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.45] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_Anim2"	]	= { "models/SmallBridge/SEnts/SBADoor2.mdl" 	,
+										3 , 1   , 2 	,
+		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_Iris"		]	= { "models/SmallBridge/SEnts/SBADoorIris2.mdl",
+										3 , 2   , 1 	,
+		{ [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [2.65] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_Wide"		]	= { "models/SmallBridge/SEnts/SBADoorWide.mdl" ,
+										3 , 1.5 , 1.5 	,
+		{ [0] = "Doors.Move14" , [0.55] = "Doors.FullOpen8" , [1.15] = "Doors.FullOpen8" , [1.75] = "Doors.FullOpen8" , [2.35] = "Doors.FullOpen8" , [2.85] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [0.55] = "Doors.FullOpen8" , [1.15] = "Doors.FullOpen8" , [1.75] = "Doors.FullOpen8" , [2.35] = "Doors.FullOpen8" , [2.85] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_Sly1"		]	= { "models/Slyfo/SLYAdoor1.mdl" ,
+										2 , 0.5 , 1.5 	,
+		{ [0] = "Doors.Move14" , [1.80] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.80] = "Doors.FullOpen9" } }
+		
+DoorTypesTable[ "Door_DBS"		]	= { "models/SmallBridge/SEnts/SBADoorDBsmall.mdl" ,
+										5 , 4   , 1.5	,
+		{ [0] = "Doors.Move14" , [1.30] = "Doors.FullOpen8" , [2.60] = "Doors.FullOpen8" , [3.90] = "Doors.FullOpen9" , [4.90] = "Doors.FullOpen8" } ,
+		{ [0] = "Doors.Move14" , [2.60] = "Doors.FullOpen8" , [3.95] = "Doors.FullOpen8" , [4.90] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_Hull"		]	= { "models/SmallBridge/SEnts/SBAhullDsEb.mdl" ,
+										3 , 1.5 , 1.5 ,
+		{ [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.85] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_ElevHatch"]	= { "models/SmallBridge/SEnts/sbahatchelevs.mdl" 	, 
+										1 , 0.6 , 0.4 	,
+		{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } }
+
+function ENT:SetDoorType( DoorType )
 	
-	if !DoorData or type( DoorData ) != "table" or #DoorData < 4 then return end
+	self.DataTable = DoorTypesTable[ DoorType ]
 	
-	self.DoorModel			= DoorData[1]
+	self.DoorModel			= self.DataTable[1]
 	self.OpenStatus      	= false
 	self.Locked     		= false
 	self.DisableUse 		= false
-	self.UseDelay		 	= DoorData[2]
-	self.OpenDelay			= DoorData[3]
-	self.CloseDelay			= DoorData[4]
+	self.UseDelay		 	= self.DataTable[2]
+	self.OpenDelay			= self.DataTable[3]
+	self.CloseDelay			= self.DataTable[4]
+	
+	self.OpenSounds 		= self.DataTable[5]
+	self.CloseSounds 		= self.DataTable[6]
 	
 	self:SetModel( self.DoorModel )
+	
+	self:GetSequenceData()
 	
 	self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetMoveType( MOVETYPE_VPHYSICS )
@@ -68,10 +115,13 @@ function ENT:Open()
 						end)
 		timer.Simple( self.UseDelay , function()
 							self.OpenStatus = true
-							WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),1)
+							if self.Controller then
+								WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),1)
+							end
 						end)
-	WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),0.5)
-
+	if self.Controller then
+		WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),0.5)
+	end
 end
 
 function ENT:Close()
@@ -83,13 +133,27 @@ function ENT:Close()
 						end)
 		timer.Simple( self.UseDelay , function()
 							self.OpenStatus = false
-							WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),0)
+							if self.Controller then
+								WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),0)
+							end
 						end)
-	WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),0.5)
-
+	if self.Controller then
+		WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),0.5)
+	end
 end
 
 function ENT:Think()
+
+	if !(self.OpenTrigger == nil) then
+		if self.OpenTrigger != self.OldOpenTrigger then
+			if self.OpenTrigger then
+				self:Open()
+			else
+				self:Close()
+			end
+		end
+		self.OldOpenTrigger = self.OpenTrigger
+	end
 
 	self.Entity:NextThink( CurTime() + 0.05 )
 	

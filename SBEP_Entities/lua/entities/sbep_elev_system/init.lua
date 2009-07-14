@@ -11,7 +11,12 @@ local ElevatorModelsTable = {}
 		ElevatorModelsTable[4] 		= "models/SmallBridge/Elevators,Small/sbselevp2r.mdl"
 		ElevatorModelsTable[5] 		= "models/SmallBridge/Elevators,Small/sbselevp3.mdl"
 		
-
+local Door_ElevHatch														= { "models/SmallBridge/SEnts/sbahatchelevs.mdl" 	, 
+																						1 , 0.6 , 0.4 	, 
+																						Vector(0,0,0) 	, 
+																						Angle(0,0,0)  	, 
+					{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } 	,
+					{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } }
 
 function ENT:Initialize()
 	
@@ -77,13 +82,27 @@ end
 
 function ENT:Think()
 
-	if self.Activated then
-		self.Increment = self.Increment + math.Clamp( ( self.TargetOffset - self.Increment) , -0.5 , 0.5 )
-
-		self.Entity:NextThink( CurTime() + 0.01 )
-
-		return true
+	if !self.Activated then return end
+	
+	self.Increment = self.Increment + math.Clamp( ( self.TargetOffset - self.Increment) , -0.5 , 0.5 )
+	if math.Round(self.Increment) == math.Round(self.OldIncrement) then
+		self.AtTargetLocation = true
+	else
+		self.AtTargetLocation = false
 	end
+	self.OldIncrement = self.Increment
+	
+	if self.TargetOffset > self.Increment then
+		self.Direction = "UP"
+	else
+		self.Direction = "DOWN"
+	end
+
+	self:CheckHatchStatus()
+	
+	self.Entity:NextThink( CurTime() + 0.01 )
+
+	return true
 end
 
 function ENT:PhysicsSimulate( phys, deltatime )
@@ -118,6 +137,31 @@ function ENT:PhysicsSimulate( phys, deltatime )
 
 end
 
+function ENT:CheckHatchStatus()
+	if !self.Activated then return end
+	if self.AtTargetLocation then return end
+
+	print( tostring( "Moving" ) )
+	
+	for k,v in ipairs( self.PartTable ) do
+		if !(k == self.PartCount) then
+			if self.Direction == "UP" then
+				if self.Increment > (self.PartTable["Hatches"][k].Offset + 20) then
+					self.PartTable["Hatches"][k].OpenTrigger = false
+				elseif self.Increment > (self.PartTable["Hatches"][k].Offset - 80) then
+					self.PartTable["Hatches"][k].OpenTrigger = true
+				end
+			else
+				if self.Increment < (self.PartTable["Hatches"][k].Offset + 80) then
+					self.PartTable["Hatches"][k].OpenTrigger = true
+				elseif self.Increment < (self.PartTable["Hatches"][k].Offset - 80) then
+					self.PartTable["Hatches"][k].OpenTrigger = false
+				end
+			end
+		end
+	end
+end
+
 function ENT:ConstructPart( args )
 
 	self.GhostEntModel 			= args[1]
@@ -127,20 +171,23 @@ function ENT:ConstructPart( args )
 		self.GhostPos.z 		= tonumber(args[4])
 	self.ModelHeightOffset	 	= tonumber(args[5])
 	self.StartAngleYaw			= tonumber(args[6])
-	self.StartAngleTwist 		= tonumber(args[7])
-	self.Inverted 				= tonumber(args[8])
+	self.StartAngleTwist 		= tonumber(args[7]) 				
+	if tonumber(args[8])  == 1 then self.Inverted 	= true else self.Inverted 	= false end
 	self.CurrentModelNumber		= tonumber(args[9])
+	if tonumber(args[9])  == 3 then self.IsDH 		= true else self.IsDH 		= false end
 	self.PartXPosAccess		 	= tonumber(args[10])
 	self.PartYNegAccess		 	= tonumber(args[11])
 	self.PartXNegAccess		 	= tonumber(args[12])
 	self.PartYPosAccess		 	= tonumber(args[13])
 	self.ModelSuffix			= args[14]
-	self.Shaft					= tonumber(args[15])
+	if tonumber(args[15]) == 1 then self.IsShaft	= true else self.IsShaft	= false end
+	
+	if self.IsShaft and self.PartCount == 0 then return end
 
 	self.GhostVecPos = Vector( self.GhostPos.x , self.GhostPos.y , self.GhostPos.z )
 	
 	self.PartCount = self.PartCount + 1
-	if self.Shaft == 0 then
+	if !self.IsShaft then
 		self.FloorCount = self.FloorCount + 1
 	end
 	
@@ -150,16 +197,22 @@ function ENT:ConstructPart( args )
 		self.PartTable[self.PartCount]:SetAngles( Angle(0,self.StartAngleYaw,self.StartAngleTwist) )
 		
 		self.PartTable[self.PartCount].Controller = self.Entity
+		self.PartTable[self.PartCount].PartType = string.Left( self.ModelSuffix , 1 )
+		self.PartTable[self.PartCount].IsDH = self.IsDH
 		self:DeleteOnRemove(self.PartTable[self.PartCount])
 		
-		if self.Shaft == 0 then
+		if !self.IsShaft then
 			self.PartTable[self.PartCount].FloorNum = self.FloorCount
-			self.PartTable[self.PartCount].Shaft	= 0
+			self.PartTable[self.PartCount].IsShaft	= false
 		else
 			self.PartTable[self.PartCount].FloorNum = nil
-			self.PartTable[self.PartCount].Shaft	= 1
+			self.PartTable[self.PartCount].IsShaft	= true
 		end
 		
+		if !self.IsShaft then
+			self.PartTable[self.PartCount]:MakeWire()
+		end
+	
 		self.PartTable[self.PartCount]:Initialize()
 		
 		self.PartTable[self.PartCount].ModelNumber = self.CurrentModelNumber
@@ -268,7 +321,7 @@ end
 
 function ENT:WeldSystem() //Welds and nocollides the system once completed.
 	
-	if self.PartCount > 0 then
+	if self.PartCount > 1 then
 
 		for i = 1, self.PartCount do
 			if ValidEntity(self.PartTable[i]) and ValidEntity(self.PartTable[i + 1]) then
@@ -292,44 +345,73 @@ end
 
 function ENT:InitSystem( ply, args ) //Sets up the system for use.
 
-		self.PartTable[self.PartCount]:SetModel( args[1] )
-		self.PartTable[self.PartCount]:Initialize()
+	self.PartTable[self.PartCount]:SetModel( args[1] )
+	self.PartTable[self.PartCount]:Initialize()
 
-		self.ElevFloorDist = {}
-		for i = 1, self.PartCount do
-			if self.PartTable[i].Shaft == 0 then
-				self.ElevFloorDist[self.PartTable[i].FloorNum] = (self.PartTable[i].PartPos - self.PartTable[1].PartPos - Vector(0,0,65.1 - 4.65)).z
-			end
+	self.ElevFloorDist = {}
+	for i = 1, self.PartCount do
+		if !self.PartTable[i].IsShaft then
+			self.ElevFloorDist[self.PartTable[i].FloorNum] = (self.PartTable[i].PartPos - self.PartTable[1].PartPos - Vector(0,0,65.1 - 4.65)).z
 		end
-		
-		//*---------------
-		local phys = self:GetPhysicsObject()
-			if ValidEntity(phys) then
-				phys:EnableMotion(true)
-				phys:Wake()
-			end
-		--------------*/
+	end
 
-		self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
-		
-		/*----------
-		for k,v in pairs(self.PartTable) do
-			if ValidEntity(v) then
-				self:DeleteOnRemove(v)
-			end
+	local phys = self:GetPhysicsObject()
+		if ValidEntity(phys) then
+			phys:EnableMotion(true)
+			phys:Wake()
 		end
-		--------*/
 
-		self:StartMotionController()
+	self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
+	
+	self.PartTable["Hatches"] = {}
+	
+	self.HatchOffsetVal = 0
+	for k,v in ipairs(self.PartTable) do
+			if !(k == self.PartCount) then
+				if not (self.PartTable[k].IsShaft and self.PartTable[k + 1].IsShaft) then
+					self.PartTable["Hatches"][k] = ents.Create( "sbep_base_door" )
+					self.PartTable["Hatches"][k]:Spawn()
+					self.PartTable["Hatches"][k]:InitDoorData( Door_ElevHatch )
+					self.PartTable["Hatches"][k]:SetAngles( v:GetAngles() )
+					if !(k == 1) then
+						self.HatchOffsetVal = self.HatchOffsetVal + 130.2
+						if v.IsDH then
+							self.HatchOffsetVal = self.HatchOffsetVal + 130.2
+						end
+					end
+					if self.PartTable[k + 1].IsShaft then
+						HatchOff = 60.45
+						if v.IsDH then
+							HatchOff = HatchOff + 130.2
+						end
+						self.PartTable["Hatches"][k]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
+						constraint.Weld( self.PartTable["Hatches"][k], v , 0, 0, 0, true )
+					else
+						HatchOff = 69.75
+						if v.IsDH then
+							HatchOff = HatchOff + 130.2
+						end
+						self.PartTable["Hatches"][k]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
+						constraint.Weld( self.PartTable["Hatches"][k], self.PartTable[k + 1] , 0, 0, 0, true )
+					end
+					self.PartTable["Hatches"][k].Offset = self.HatchOffsetVal + HatchOff
+					self.PartTable["Hatches"][k]:GetSequenceData()
+					self.PartTable["Hatches"][k]:Close()
+					self:DeleteOnRemove(self.PartTable["Hatches"][k])
+				end
+			end
+	end
 
-		self:MakeWire()
+	self:StartMotionController()
 
-		undo.Create("Elevator System") 
-			undo.SetPlayer(ply) 
-			undo.AddEntity(self.Entity) 
-		undo.Finish()
+	self:MakeWire()
 
-		self.Activated = true
+	undo.Create("Elevator System") 
+		undo.SetPlayer(ply) 
+		undo.AddEntity(self.Entity) 
+	undo.Finish()
+
+	self.Activated = true
 
 end
 
@@ -345,7 +427,7 @@ end
 
 function ENT:TriggerInput(k,v)
 
-	if k == "Floor" then
+	if k == "FloorNum" then
 		self.CurrentFloorNumber = v
 		self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
 	end
