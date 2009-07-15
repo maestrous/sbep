@@ -69,16 +69,37 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local WeaponMountModelTable = {
-			[ "Wing1L" ] = { ["model"] = "models/Spacebuild/milcock4_wing1.mdl"		, ["HPType"] = "WingLeft"	, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,0,90)		} ,
-			[ "Wing1R" ] = { ["model"] = "models/Spacebuild/milcock4_wing1.mdl"		, ["HPType"] = "WingRight"	, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,180,90)	} ,
-			[ "Wing2L" ] = { ["model"] = "models/Spacebuild/milcock4_wing2.mdl"		, ["HPType"] = "WingLeft"	, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,0,90)		} ,
-			[ "Wing2R" ] = { ["model"] = "models/Spacebuild/milcock4_wing2.mdl"		, ["HPType"] = "WingRight"	, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(180,0,270)	} ,
-			[ "Wing3"  ] = { ["model"] = "models/Spacebuild/milcock4_wing3.mdl"		, ["HPType"] = "Wing"		, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,0,90)		} ,
-			[ "Wing4"  ] = { ["model"] = "models/Spacebuild/milcock4_wing4.mdl"		, ["HPType"] = "Wing"		, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,0,90)		} ,
-			[ "Wing5L" ] = { ["model"] = "models/Spacebuild/milcock4_wing5l.mdl"	, ["HPType"] = "WingLeft"	, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,0,90)		} ,
-			[ "Wing5R" ] = { ["model"] = "models/Spacebuild/milcock4_wing5r.mdl"	, ["HPType"] = "WingRight"	, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,0,270)	} ,
-			[ "Wing6"  ] = { ["model"] = "models/Spacebuild/milcock4_wing6.mdl"		, ["HPType"] = "Wing"		, ["APPos"]	= Vector(0,0,0)		, ["APAng"]	= Angle(0,0,90)		} ,
-			[ "Wing7"  ] = { ["model"] = "models/Spacebuild/milcock4_wing7.mdl"		, ["HPType"] = "Wing"		, ["APPos"]	= Vector(-5,27,-4)	, ["APAng"]	= Angle(0,0,90)		}
+			[ "models/Spacebuild/milcock4_wing1.mdl"  ] = { "Wing"	, "Wing"		, Vector(0,0,0)		, Angle(0,0,90) , 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,24 ,0 ) , ["Angle"] = Angle(0,0,180) } } ,
+			[ "models/Spacebuild/milcock4_wing2.mdl"  ] = { "Wing"	, "Wing"		, Vector(0,0,0)		, Angle(0,0,90)	, 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,16 ,0 ) , ["Angle"] = Angle(0,0,180) } } ,
+			[ "models/Spacebuild/milcock4_wing3.mdl"  ] = { "Wing"	, "Wing"		, Vector(0,0,0)		, Angle(0,0,90)	, 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,21 ,5 ) , ["Angle"] = Angle(0,0,0  ) } ,
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,21 ,-5) , ["Angle"] = Angle(0,0,180) } ,
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,192,2 ) , ["Angle"] = Angle(0,0,0  ) } ,
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,192,-2) , ["Angle"] = Angle(0,0,180) } } ,
+			[ "models/Spacebuild/milcock4_wing4.mdl"  ] = { "Wing"	, "Wing"		, Vector(0,0,0)		, Angle(0,0,90)	, 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,64 ,5 ) , ["Angle"] = Angle(0,0,0  ) } ,
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,64 ,-5) , ["Angle"] = Angle(0,0,180) } } ,
+			[ "models/Spacebuild/milcock4_wing5l.mdl" ] = { "Wing"	, "Wing"		, Vector(0,0,0)		, Angle(0,0,90)	, 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(-11,28,5) , ["Angle"] = Angle(0,0,180) } } ,
+			[ "models/Spacebuild/milcock4_wing5r.mdl" ] = { "Wing"	, "Wing"		, Vector(0,0,0)		, Angle(0,0,-90), 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(-11,-28,5), ["Angle"] = Angle(0,0,180) } } ,
+			[ "models/Spacebuild/milcock4_wing6.mdl"  ] = { "Wing"	, "Wing"		, Vector(0,0,0)		, Angle(0,0,90)	, 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(0,96 ,0 ) , ["Angle"] = Angle(0,0,-90) } } ,
+			[ "models/Spacebuild/milcock4_wing7.mdl"  ] = { "Wing"	, "Wing"		, Vector(-5,27,-4)	, Angle(0,0,90)	, 
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(-5,-4,14) , ["Angle"] = Angle(0,0,0  ) } ,
+																	{ ["Ent"] = nil , ["Type"] = {"Small","Tiny"} , ["Pos"]	= Vector(-5,-4,-6) , ["Angle"] = Angle(0,0,180) } } ,
+
+			[ "models/Slyfo/rover1_backpanel.mdl"	  	] = { "Rover"	, "RBackPanel"	, Vector(0,0,-6)	, Angle(0,0,0) , 
+																	{ ["Ent"] = nil , ["Type"] = "Small" , ["Pos"]	= Vector(0,14,-12) } } ,
+			[ "models/Slyfo/rover1_leftpanel.mdl"	  	] = { "Rover"	, "RLeftPanel"	, Vector(0,0,0)	, Angle(0,0,0) } ,
+			[ "models/Slyfo/rover1_leftpanelmount.mdl"	] = { "Rover"	, "RLeftPanel"	, Vector(0,0,0)	, Angle(0,0,0) , 
+																	{ ["Ent"] = nil , ["Type"] = {"Tiny","Small"}  , ["Pos"] = Vector(-6,6,-2) , ["Angle"] = Angle(0,0,270) } } ,
+			[ "models/Slyfo/rover1_rightpanel.mdl"	  	] = { "Rover"	, "RRightPanel"	, Vector(0,0,0)	, Angle(0,0,0) } ,
+			[ "models/Slyfo/rover1_rightpanelmount.mdl"	] = { "Rover"	, "RRightPanel"	, Vector(0,0,0)	, Angle(0,0,0) , 
+																	{ ["Ent"] = nil , ["Type"] = {"Tiny","Small"}  , ["Pos"] = Vector(-6,-6,-2), ["Angle"] = Angle(0,0,90 ) } }
+
 						}
 
 for k,v in pairs( WeaponMountModelTable ) do
