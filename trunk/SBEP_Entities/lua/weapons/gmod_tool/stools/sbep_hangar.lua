@@ -1,22 +1,21 @@
 TOOL.Category		= "SBEP"
-TOOL.Name			= "#SBEP Weapon Mount"
+TOOL.Name			= "#SBEP Hangar"
 TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 
-local ModelSelectTable = list.Get( "SBEP_WeaponMountModels" )
+local ModelSelectTable = list.Get( "SBEP_HangarModels" )
 
 if CLIENT then
-	language.Add( "Tool_sbep_weapon_mount_name"	, "SBEP Weapon Mount Tool" 							)
-	language.Add( "Tool_sbep_weapon_mount_desc"	, "Create an SBEP weapon mount."					)
-	language.Add( "Tool_sbep_weapon_mount_0"	, "Left click to spawn a hardpointed weapon mount." )
-	language.Add( "undone_SBEP Weapon Mount"	, "Undone SBEP Weapon Mount"						)
+	language.Add( "Tool_sbep_hangar_name"	, "SBEP Hangar Tool" 				)
+	language.Add( "Tool_sbep_hangar_desc"	, "Create an SBEP Hangar."			)
+	language.Add( "Tool_sbep_hangar_0"	, "Left click to spawn a hangar." 		)
+	language.Add( "undone_SBEP Hangar"	, "Undone SBEP Hangar"					)
 end
 
 local CategoryTable = {
-			{ "Wings"			, "Wing"	, "models/Spacebuild/milcock4_wing1.mdl" } ,
-			{ "Rover Parts" 	, "Rover"	, "models/Slyfo/rover1_backpanel.mdl" 	 }
+			{ "MedBridge"		, "MedBridge"		, "models/Slyfo/hangar_singleside.mdl" 				} ,
+			{ "SmallBridge" 	, "SmallBridge"		, "models/SmallBridge/Station Parts/SBdockCs.mdl" 	}
 					}
-
 for k,v in ipairs( CategoryTable ) do
 	TOOL.ClientConVar[ "model_"..tostring(k) ] = v[3]
 end
@@ -25,35 +24,21 @@ TOOL.ClientConVar[ "activecat"  ] = 1
 function TOOL:LeftClick( trace )
 
 	local model = self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
-	local DataTable = ModelSelectTable[ model ]
+	local DataTable = table.Copy( ModelSelectTable[ model ]	)
 	local pos = trace.HitPos
 	
-	local WeaponMountEnt = ents.Create( "sbep_base_weapon_mount" )
-		WeaponMountEnt.MountName = DataTable[1]
-		WeaponMountEnt.MountData = {}
-		WeaponMountEnt.MountData["model"] = model
+	local HangarEnt = ents.Create( "sbep_base_hangar" )
+		HangarEnt.HangarName = DataTable[1]
+		HangarEnt.Bay 		 = table.Copy(DataTable[3])
+		HangarEnt:SetModel( model )
 
-		WeaponMountEnt.HP = {}
-		local val = 5
-		local val2 = 1
-		while DataTable[val] do
-			WeaponMountEnt.HP[val2] = DataTable[val]
-			val = val + 1
-			val2 = val2 + 1
-		end
+		HangarEnt:Spawn()
+		HangarEnt:Activate()
 		
-		WeaponMountEnt.HPType = DataTable[2]
-		WeaponMountEnt.APPos  = DataTable[3]
-		WeaponMountEnt.APAng  = DataTable[4]
-		
-		WeaponMountEnt.SPL = self:GetOwner()
-		
-		WeaponMountEnt:SetPos( pos + Vector(0,0,50) )
-		WeaponMountEnt:Spawn()
-		WeaponMountEnt:Activate()
+		HangarEnt:SetPos( pos - Vector(0,0,HangarEnt:OBBMins().z) )
 	
-	undo.Create("SBEP Weapon Mount")
-		undo.AddEntity( WeaponMountEnt )
+	undo.Create("SBEP Hangar")
+		undo.AddEntity( HangarEnt )
 		undo.SetPlayer( self:GetOwner() )
 	undo.Finish()
 
@@ -76,14 +61,13 @@ end
 function TOOL.BuildCPanel( panel )
 
 		panel:SetSpacing( 10 )
-		panel:SetName( "SBEP Weapon Mount" )
+		panel:SetName( "SBEP Hangar" )
 
 	local ModelCollapsibleCategories = {}
 	
 	for k,v in pairs(CategoryTable) do
 		ModelCollapsibleCategories[k] = {}
-		ModelCollapsibleCategories[k][1] = vgui.Create("DCollapsibleCategory")
-			//ModelCollapsibleCategories[k][1]:SetSize( 200, 50 )
+			ModelCollapsibleCategories[k][1] = vgui.Create("DCollapsibleCategory")
 			ModelCollapsibleCategories[k][1]:SetExpanded( false )
 			ModelCollapsibleCategories[k][1]:SetLabel( v[1] )
 		panel:AddItem( ModelCollapsibleCategories[k][1] )
@@ -96,17 +80,17 @@ function TOOL.BuildCPanel( panel )
 		ModelCollapsibleCategories[k][1]:SetContents( ModelCollapsibleCategories[k][2] )
 
 		ModelCollapsibleCategories[k][3] = vgui.Create( "PropSelect" )
-			ModelCollapsibleCategories[k][3]:SetConVar( "sbep_weapon_mount_model_"..tostring(k) )
+			ModelCollapsibleCategories[k][3]:SetConVar( "sbep_hangar_model_"..tostring(k) )
 			ModelCollapsibleCategories[k][3].Label:SetText( "Model:" )
 			for m,n in pairs( ModelSelectTable ) do
-				if n[1] == v[2] then
+				if n[2] == v[2] then
 					ModelCollapsibleCategories[k][3]:AddModel( m , {} )
 				end
 			end
 		ModelCollapsibleCategories[k][2]:AddItem( ModelCollapsibleCategories[k][3] )
 	end
 	ModelCollapsibleCategories[1][1]:SetExpanded( true )
-	RunConsoleCommand( "sbep_weapon_mount_activecat", 1 )
+	RunConsoleCommand( "sbep_hangar_activecat", 1 )
 	
 	for k,v in pairs( ModelCollapsibleCategories ) do
 		v[1].Header.OnMousePressed = function()
@@ -118,7 +102,7 @@ function TOOL.BuildCPanel( panel )
 									if !v[1]:GetExpanded() then
 										v[1]:Toggle()
 									end
-									RunConsoleCommand( "sbep_weapon_mount_activecat", k )
+									RunConsoleCommand( "sbep_hangar_activecat", k )
 							end
 	end
 

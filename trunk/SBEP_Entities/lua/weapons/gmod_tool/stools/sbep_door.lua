@@ -12,11 +12,17 @@ if CLIENT then
 	language.Add( "undone_SBEP Door"	, "Undone SBEP Door"			)
 end
 
-TOOL.ClientConVar[ "model_1" 	] = "models/SmallBridge/Panels/sbpaneldoor.mdl"
-TOOL.ClientConVar[ "model_2" 	] = "models/SmallBridge/Elevators,Small/sbselevb.mdl"
-TOOL.ClientConVar[ "model_3" 	] = "models/SmallBridge/Elevators,Small/sbselevm.mdl"
-TOOL.ClientConVar[ "model_4" 	] = "models/SmallBridge/Elevators,Small/sbselevt.mdl"
-TOOL.ClientConVar[ "model_5" 	] = "models/SmallBridge/Station Parts/sbbaydps.mdl"
+local CategoryTable = {
+					{ "Doors"			, "Door"	, "models/SmallBridge/Panels/sbpaneldoor.mdl" 		} ,
+					{ "Hatches (Base)" 	, "Hatch_B"	, "models/SmallBridge/Elevators,Small/sbselevb.mdl" } ,
+					{ "Hatches (Mid)" 	, "Hatch_M"	, "models/SmallBridge/Elevators,Small/sbselevm.mdl" } ,
+					{ "Hatches (Top)"	, "Hatch_T"	, "models/SmallBridge/Elevators,Small/sbselevt.mdl" } ,
+					{ "Other"			, "Other"	, "models/SmallBridge/Station Parts/sbbaydps.mdl" 	}
+						}
+
+for k,v in ipairs( CategoryTable ) do
+	TOOL.ClientConVar[ "model_"..tostring(k) ] = v[3]
+end
 TOOL.ClientConVar[ "activecat"  ] = 1
 TOOL.ClientConVar[ "skin"  		] = 0
 TOOL.ClientConVar[ "wire"  		] = 1
@@ -34,7 +40,7 @@ function TOOL:LeftClick( trace )
 		//DoorController.Skin = self:GetClientNumber( "skin" )
 		DoorController:SetSkin( self:GetClientNumber( "skin" ) )
 		
-		if self:GetClientNumber( "enableuse" ) == 1 then
+		if self:GetClientNumber( "enableuse" ) == 1 or !WireAddon then
 			DoorController.EnableUseKey = true
 		else
 			DoorController.EnableUseKey = false
@@ -54,8 +60,10 @@ function TOOL:LeftClick( trace )
 	
 		DoorController:AddAnimDoors()
 	
-		DoorController.SBEPWire = self:GetClientNumber( "wire" )
-		DoorController:MakeWire()
+		if WireAddon then
+			DoorController.SBEPWire = self:GetClientNumber( "wire" )
+			DoorController:MakeWire()
+		end
 	
 	undo.Create("SBEP Door")
 		undo.AddEntity( DoorController )
@@ -104,27 +112,21 @@ function TOOL.BuildCPanel( panel )
 						end
 	panel:AddItem( SkinMenu )
 	
-	local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
-		WireCheckBox:SetText( "Create Wire Inputs" )
-		WireCheckBox:SetConVar( "sbep_door_wire" )
-		WireCheckBox:SetValue( 1 )
-		WireCheckBox:SizeToContents()
-	panel:AddItem( WireCheckBox )
-	
-	local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
-		UseCheckBox:SetText( "Enable Use Key" )
-		UseCheckBox:SetConVar( "sbep_door_enableuse" )
-		UseCheckBox:SetValue( 1 )
-		UseCheckBox:SizeToContents()
-	panel:AddItem( UseCheckBox )
-	
-	local CategoryTable = {
-					{ "Doors"			, "Door"	} ,
-					{ "Hatches (Base)" 	, "Hatch_B"	} ,
-					{ "Hatches (Mid)" 	, "Hatch_M"	} ,
-					{ "Hatches (Top)"	, "Hatch_T"	} ,
-					{ "Other"			, "Other"	}
-						}
+	if WireAddon then
+		local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
+			WireCheckBox:SetText( "Create Wire Inputs" )
+			WireCheckBox:SetConVar( "sbep_door_wire" )
+			WireCheckBox:SetValue( 1 )
+			WireCheckBox:SizeToContents()
+		panel:AddItem( WireCheckBox )
+		
+		local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
+			UseCheckBox:SetText( "Enable Use Key" )
+			UseCheckBox:SetConVar( "sbep_door_enableuse" )
+			UseCheckBox:SetValue( 1 )
+			UseCheckBox:SizeToContents()
+		panel:AddItem( UseCheckBox )
+	end
 
 	local ModelCollapsibleCategories = {}
 	
