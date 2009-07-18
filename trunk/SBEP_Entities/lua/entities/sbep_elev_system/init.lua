@@ -10,20 +10,13 @@ local ElevatorModelsTable = {}
 		ElevatorModelsTable[3] 		= "models/SmallBridge/Elevators,Small/sbselevp2e.mdl"
 		ElevatorModelsTable[4] 		= "models/SmallBridge/Elevators,Small/sbselevp2r.mdl"
 		ElevatorModelsTable[5] 		= "models/SmallBridge/Elevators,Small/sbselevp3.mdl"
-		
-local Door_ElevHatch														= { "models/SmallBridge/SEnts/sbahatchelevs.mdl" 	, 
-																						1 , 0.6 , 0.4 	, 
-																						Vector(0,0,0) 	, 
-																						Angle(0,0,0)  	, 
-					{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } 	,
-					{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } }
 
 function ENT:Initialize()
 	
 	self:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" ) 
 	
 	self.Editable = false
-	self.PartTable = {}
+	self.PT = {}
 	self.PartCount = 0
 	self.FloorCount = 0
 	self.ModelAccessTable = {0,0,0,0}
@@ -109,20 +102,20 @@ function ENT:PhysicsSimulate( phys, deltatime )
 
 	if !self.Activated then return SIM_NOTHING end
 	
-	if ValidEntity(self.PartTable[1]) then
-		self.PartTable[1].CurrentPos = self.PartTable[1]:GetPos()
-		self.PartTable[1].CurrentAng = self.PartTable[1]:GetAngles()
+	if ValidEntity(self.PT[1]) then
+		self.PT[1].CurrentPos = self.PT[1]:GetPos()
+		self.PT[1].CurrentAng = self.PT[1]:GetAngles()
 	end
 	
-	if ValidEntity(self.PartTable[self.PartCount]) then
-		self.PartTable[self.PartCount].Pos = self.PartTable[self.PartCount]:GetPos()
+	if ValidEntity(self.PT[self.PartCount]) then
+		self.PT[self.PartCount].Pos = self.PT[self.PartCount]:GetPos()
 	end
 		
-	self.ShaftDirectionVector = self.PartTable[self.PartCount].Pos - self.PartTable[1].CurrentPos
+	self.ShaftDirectionVector = self.PT[self.PartCount].Pos - self.PT[1].CurrentPos
 	self.ShaftDirectionVector:Normalize()
 	
-	self.CurrentElevPos = self.PartTable[1].CurrentPos + (self.ShaftDirectionVector * self.Increment)
-	self.CurrentElevAng = self.PartTable[1].CurrentAng
+	self.CurrentElevPos = self.PT[1].CurrentPos + (self.ShaftDirectionVector * self.Increment)
+	self.CurrentElevAng = self.PT[1].CurrentAng
 	self.CurrentElevAng:RotateAroundAxis( self.ShaftDirectionVector , self.AngleOffset.y )
 
 	
@@ -141,22 +134,18 @@ function ENT:CheckHatchStatus()
 	if !self.Activated then return end
 	if self.AtTargetLocation then return end
 
-	print( tostring( "Moving" ) )
-	
-	for k,v in ipairs( self.PartTable ) do
-		if !(k == self.PartCount) then
-			if self.Direction == "UP" then
-				if self.Increment > (self.PartTable["Hatches"][k].Offset + 20) then
-					self.PartTable["Hatches"][k].OpenTrigger = false
-				elseif self.Increment > (self.PartTable["Hatches"][k].Offset - 80) then
-					self.PartTable["Hatches"][k].OpenTrigger = true
-				end
-			else
-				if self.Increment < (self.PartTable["Hatches"][k].Offset + 80) then
-					self.PartTable["Hatches"][k].OpenTrigger = true
-				elseif self.Increment < (self.PartTable["Hatches"][k].Offset - 80) then
-					self.PartTable["Hatches"][k].OpenTrigger = false
-				end
+	for k,v in ipairs( self.PT.Hatches ) do
+		if self.Direction == "UP" then
+			if self.Increment > ( v.Offset + 20 ) then
+				v.OpenTrigger = false
+			elseif self.Increment > ( v.Offset - 110 ) then
+				v.OpenTrigger = true
+			end
+		elseif self.Direction == "DOWN" then
+			if self.Increment < ( v.Offset - 80 ) then
+				v.OpenTrigger = false
+			elseif self.Increment < ( v.Offset + 50 ) then
+				v.OpenTrigger = true
 			end
 		end
 	end
@@ -191,35 +180,35 @@ function ENT:ConstructPart( args )
 		self.FloorCount = self.FloorCount + 1
 	end
 	
-	self.PartTable[self.PartCount] = ents.Create( "sbep_elev_housing" )
-		self.PartTable[self.PartCount]:SetModel( self.GhostEntModel )
-		self.PartTable[self.PartCount]:SetPos( self.GhostVecPos )
-		self.PartTable[self.PartCount]:SetAngles( Angle(0,self.StartAngleYaw,self.StartAngleTwist) )
+	self.PT[self.PartCount] = ents.Create( "sbep_elev_housing" )
+		self.PT[self.PartCount]:SetModel( self.GhostEntModel )
+		self.PT[self.PartCount]:SetPos( self.GhostVecPos )
+		self.PT[self.PartCount]:SetAngles( Angle(0,self.StartAngleYaw,self.StartAngleTwist) )
 		
-		self.PartTable[self.PartCount].Controller = self.Entity
-		self.PartTable[self.PartCount].PartType = string.Left( self.ModelSuffix , 1 )
-		self.PartTable[self.PartCount].IsDH = self.IsDH
-		self:DeleteOnRemove(self.PartTable[self.PartCount])
+		self.PT[self.PartCount].Controller = self.Entity
+		self.PT[self.PartCount].PartType = string.Left( self.ModelSuffix , 1 )
+		self.PT[self.PartCount].IsDH = self.IsDH
+		self:DeleteOnRemove(self.PT[self.PartCount])
 		
 		if !self.IsShaft then
-			self.PartTable[self.PartCount].FloorNum = self.FloorCount
-			self.PartTable[self.PartCount].IsShaft	= false
+			self.PT[self.PartCount].FloorNum = self.FloorCount
+			self.PT[self.PartCount].IsShaft	= false
 		else
-			self.PartTable[self.PartCount].FloorNum = nil
-			self.PartTable[self.PartCount].IsShaft	= true
+			self.PT[self.PartCount].FloorNum = nil
+			self.PT[self.PartCount].IsShaft	= true
 		end
 		
 		if !self.IsShaft then
-			self.PartTable[self.PartCount]:MakeWire()
+			self.PT[self.PartCount]:MakeWire()
 		end
 	
-		self.PartTable[self.PartCount]:Initialize()
+		self.PT[self.PartCount]:Initialize()
 		
-		self.PartTable[self.PartCount].ModelNumber = self.CurrentModelNumber
-		self.PartTable[self.PartCount].HeightOffset = self.ModelHeightOffset
-		self.PartTable[self.PartCount].PartPos = self.GhostVecPos
+		self.PT[self.PartCount].ModelNumber = self.CurrentModelNumber
+		self.PT[self.PartCount].HeightOffset = self.ModelHeightOffset
+		self.PT[self.PartCount].PartPos = self.GhostVecPos
 		
-		local phys = self.PartTable[self.PartCount]:GetPhysicsObject()
+		local phys = self.PT[self.PartCount]:GetPhysicsObject()
 			if ValidEntity(phys) then
 				phys:EnableMotion(false)
 			end
@@ -229,53 +218,53 @@ function ENT:ConstructPart( args )
 		self.NewGhostPos = self.NewGhostPos - Vector(0,0, 130.2)
 	end
 	
-	self.PartTable[self.PartCount].AccessTable = { self.PartXPosAccess , self.PartYNegAccess , self.PartXNegAccess , self.PartYPosAccess }
+	self.PT[self.PartCount].AccessTable = { self.PartXPosAccess , self.PartYNegAccess , self.PartXNegAccess , self.PartYPosAccess }
 	
 	//Rotating the part access table.----------------
 	if self.StartAngleYaw == 90 then
-		self.PartTable[self.PartCount].AccessTable[5] = self.PartTable[self.PartCount].AccessTable[1]
+		self.PT[self.PartCount].AccessTable[5] = self.PT[self.PartCount].AccessTable[1]
 		
-		self.PartTable[self.PartCount].AccessTable[1] = self.PartTable[self.PartCount].AccessTable[2]
-		self.PartTable[self.PartCount].AccessTable[2] = self.PartTable[self.PartCount].AccessTable[3]
-		self.PartTable[self.PartCount].AccessTable[3] = self.PartTable[self.PartCount].AccessTable[4]
-		self.PartTable[self.PartCount].AccessTable[4] = self.PartTable[self.PartCount].AccessTable[5]
+		self.PT[self.PartCount].AccessTable[1] = self.PT[self.PartCount].AccessTable[2]
+		self.PT[self.PartCount].AccessTable[2] = self.PT[self.PartCount].AccessTable[3]
+		self.PT[self.PartCount].AccessTable[3] = self.PT[self.PartCount].AccessTable[4]
+		self.PT[self.PartCount].AccessTable[4] = self.PT[self.PartCount].AccessTable[5]
 		
-		self.PartTable[self.PartCount].AccessTable[5] = nil
+		self.PT[self.PartCount].AccessTable[5] = nil
 	elseif self.StartAngleYaw == 180 then
-		self.PartTable[self.PartCount].AccessTable[5] = self.PartTable[self.PartCount].AccessTable[1]
-		self.PartTable[self.PartCount].AccessTable[6] = self.PartTable[self.PartCount].AccessTable[2]
+		self.PT[self.PartCount].AccessTable[5] = self.PT[self.PartCount].AccessTable[1]
+		self.PT[self.PartCount].AccessTable[6] = self.PT[self.PartCount].AccessTable[2]
 		
-		self.PartTable[self.PartCount].AccessTable[1] = self.PartTable[self.PartCount].AccessTable[3]
-		self.PartTable[self.PartCount].AccessTable[2] = self.PartTable[self.PartCount].AccessTable[4]
-		self.PartTable[self.PartCount].AccessTable[3] = self.PartTable[self.PartCount].AccessTable[5]
-		self.PartTable[self.PartCount].AccessTable[4] = self.PartTable[self.PartCount].AccessTable[6]
+		self.PT[self.PartCount].AccessTable[1] = self.PT[self.PartCount].AccessTable[3]
+		self.PT[self.PartCount].AccessTable[2] = self.PT[self.PartCount].AccessTable[4]
+		self.PT[self.PartCount].AccessTable[3] = self.PT[self.PartCount].AccessTable[5]
+		self.PT[self.PartCount].AccessTable[4] = self.PT[self.PartCount].AccessTable[6]
 		
-		self.PartTable[self.PartCount].AccessTable[5] = nil
-		self.PartTable[self.PartCount].AccessTable[6] = nil
+		self.PT[self.PartCount].AccessTable[5] = nil
+		self.PT[self.PartCount].AccessTable[6] = nil
 	elseif self.StartAngleYaw == 270 then
-		self.PartTable[self.PartCount].AccessTable[5] = self.PartTable[self.PartCount].AccessTable[4]
+		self.PT[self.PartCount].AccessTable[5] = self.PT[self.PartCount].AccessTable[4]
 		
-		self.PartTable[self.PartCount].AccessTable[4] = self.PartTable[self.PartCount].AccessTable[3]
-		self.PartTable[self.PartCount].AccessTable[3] = self.PartTable[self.PartCount].AccessTable[2]
-		self.PartTable[self.PartCount].AccessTable[2] = self.PartTable[self.PartCount].AccessTable[1]
-		self.PartTable[self.PartCount].AccessTable[1] = self.PartTable[self.PartCount].AccessTable[5]
+		self.PT[self.PartCount].AccessTable[4] = self.PT[self.PartCount].AccessTable[3]
+		self.PT[self.PartCount].AccessTable[3] = self.PT[self.PartCount].AccessTable[2]
+		self.PT[self.PartCount].AccessTable[2] = self.PT[self.PartCount].AccessTable[1]
+		self.PT[self.PartCount].AccessTable[1] = self.PT[self.PartCount].AccessTable[5]
 		
-		self.PartTable[self.PartCount].AccessTable[5] = nil
+		self.PT[self.PartCount].AccessTable[5] = nil
 	end
 	//----------------------
 	
 	//Adds any new open access points to the model access table.------------------
-	if self.PartTable[self.PartCount].AccessTable[1] > self.ModelAccessTable[1] then
-		self.ModelAccessTable[1] = self.PartTable[self.PartCount].AccessTable[1]
+	if self.PT[self.PartCount].AccessTable[1] > self.ModelAccessTable[1] then
+		self.ModelAccessTable[1] = self.PT[self.PartCount].AccessTable[1]
 	end
-	if self.PartTable[self.PartCount].AccessTable[2] > self.ModelAccessTable[2] then
-		self.ModelAccessTable[2] = self.PartTable[self.PartCount].AccessTable[2]
+	if self.PT[self.PartCount].AccessTable[2] > self.ModelAccessTable[2] then
+		self.ModelAccessTable[2] = self.PT[self.PartCount].AccessTable[2]
 	end
-	if self.PartTable[self.PartCount].AccessTable[3] > self.ModelAccessTable[3] then
-		self.ModelAccessTable[3] = self.PartTable[self.PartCount].AccessTable[3]
+	if self.PT[self.PartCount].AccessTable[3] > self.ModelAccessTable[3] then
+		self.ModelAccessTable[3] = self.PT[self.PartCount].AccessTable[3]
 	end
-	if self.PartTable[self.PartCount].AccessTable[4] > self.ModelAccessTable[4] then
-		self.ModelAccessTable[4] = self.PartTable[self.PartCount].AccessTable[4]
+	if self.PT[self.PartCount].AccessTable[4] > self.ModelAccessTable[4] then
+		self.ModelAccessTable[4] = self.PT[self.PartCount].AccessTable[4]
 	end
 	
 	self.ModelAccessTableSum = self.ModelAccessTable[1] + self.ModelAccessTable[2] + self.ModelAccessTable[3] + self.ModelAccessTable[4]
@@ -314,7 +303,7 @@ function ENT:ConstructPart( args )
 		end
 
 	self:SetNetworkedVector( "SBEP_GhostVecPos" , self.NewGhostPos)
-	self:SetNetworkedEntity( "SBEP_Part_"..tostring(self.PartCount) , self.PartTable[self.PartCount] )
+	self:SetNetworkedEntity( "SBEP_Part_"..tostring(self.PartCount) , self.PT[self.PartCount] )
 	self:SetNetworkedFloat( "SBEP_PartCount" , self.PartCount)
 
 end
@@ -324,19 +313,19 @@ function ENT:WeldSystem() //Welds and nocollides the system once completed.
 	if self.PartCount > 1 then
 
 		for i = 1, self.PartCount do
-			if ValidEntity(self.PartTable[i]) and ValidEntity(self.PartTable[i + 1]) then
-				constraint.Weld( self.PartTable[i] , self.PartTable[i + 1] , 0 , 0 , 0 , true )
+			if ValidEntity(self.PT[i]) and ValidEntity(self.PT[i + 1]) then
+				constraint.Weld( self.PT[i] , self.PT[i + 1] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity(self.PartTable[i]) and ValidEntity(self.PartTable[i + 2]) and (i/2 == math.floor(i/2)) then
-				constraint.Weld( self.PartTable[i] , self.PartTable[i + 2] , 0 , 0 , 0 , true )
+			if ValidEntity(self.PT[i]) and ValidEntity(self.PT[i + 2]) and (i/2 == math.floor(i/2)) then
+				constraint.Weld( self.PT[i] , self.PT[i + 2] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity(self.PartTable[i]) and ValidEntity(self) then
-				constraint.NoCollide( self.PartTable[i] , self , 0 , 0 )
+			if ValidEntity(self.PT[i]) and ValidEntity(self) then
+				constraint.NoCollide( self.PT[i] , self , 0 , 0 )
 			end
 		end
 
-		if ValidEntity(self.PartTable[1]) and ValidEntity(self.PartTable[self.PartCount]) then
-			constraint.Weld( self.PartTable[1] , self.PartTable[self.PartCount] , 0 , 0 , 0 , true )
+		if ValidEntity(self.PT[1]) and ValidEntity(self.PT[self.PartCount]) then
+			constraint.Weld( self.PT[1] , self.PT[self.PartCount] , 0 , 0 , 0 , true )
 		end
 
 	end
@@ -345,13 +334,13 @@ end
 
 function ENT:InitSystem( ply, args ) //Sets up the system for use.
 
-	self.PartTable[self.PartCount]:SetModel( args[1] )
-	self.PartTable[self.PartCount]:Initialize()
+	self.PT[self.PartCount]:SetModel( args[1] )
+	self.PT[self.PartCount]:Initialize()
 
 	self.ElevFloorDist = {}
 	for i = 1, self.PartCount do
-		if !self.PartTable[i].IsShaft then
-			self.ElevFloorDist[self.PartTable[i].FloorNum] = (self.PartTable[i].PartPos - self.PartTable[1].PartPos - Vector(0,0,65.1 - 4.65)).z
+		if !self.PT[i].IsShaft then
+			self.ElevFloorDist[self.PT[i].FloorNum] = (self.PT[i].PartPos - self.PT[1].PartPos - Vector(0,0,65.1 - 4.65)).z
 		end
 	end
 
@@ -363,44 +352,47 @@ function ENT:InitSystem( ply, args ) //Sets up the system for use.
 
 	self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
 	
-	self.PartTable["Hatches"] = {}
+	self.PT.Hatches = {}
 	
+	local HatchInc = 0
 	self.HatchOffsetVal = 0
-	for k,v in ipairs(self.PartTable) do
+	for k,v in ipairs(self.PT) do
 			if !(k == self.PartCount) then
-				if not (self.PartTable[k].IsShaft and self.PartTable[k + 1].IsShaft) then
-					self.PartTable["Hatches"][k] = ents.Create( "sbep_base_door" )
-					self.PartTable["Hatches"][k]:Spawn()
-					self.PartTable["Hatches"][k]:InitDoorData( Door_ElevHatch )
-					self.PartTable["Hatches"][k]:SetAngles( v:GetAngles() )
-					if !(k == 1) then
+				if !(k == 1) then
+					self.HatchOffsetVal = self.HatchOffsetVal + 130.2
+					if v.IsDH then
 						self.HatchOffsetVal = self.HatchOffsetVal + 130.2
-						if v.IsDH then
-							self.HatchOffsetVal = self.HatchOffsetVal + 130.2
-						end
 					end
-					if self.PartTable[k + 1].IsShaft then
+				end
+				if not (v.IsShaft and self.PT[k + 1].IsShaft) then
+					HatchInc = HatchInc + 1
+					self.PT.Hatches[HatchInc] = ents.Create( "sbep_base_door" )
+					self.PT.Hatches[HatchInc]:Spawn()
+					self.PT.Hatches[HatchInc]:SetDoorType( "Door_ElevHatch" )
+					self.PT.Hatches[HatchInc]:SetAngles( v:GetAngles() )
+					
+					if self.PT[k + 1].IsShaft then
 						HatchOff = 60.45
 						if v.IsDH then
 							HatchOff = HatchOff + 130.2
 						end
-						self.PartTable["Hatches"][k]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
-						constraint.Weld( self.PartTable["Hatches"][k], v , 0, 0, 0, true )
+						self.PT.Hatches[HatchInc]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
+						constraint.Weld( self.PT.Hatches[HatchInc], v , 0, 0, 0, true )
 					else
 						HatchOff = 69.75
 						if v.IsDH then
 							HatchOff = HatchOff + 130.2
 						end
-						self.PartTable["Hatches"][k]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
-						constraint.Weld( self.PartTable["Hatches"][k], self.PartTable[k + 1] , 0, 0, 0, true )
+						self.PT.Hatches[HatchInc]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
+						constraint.Weld( self.PT.Hatches[HatchInc], self.PT[k + 1] , 0, 0, 0, true )
 					end
-					self.PartTable["Hatches"][k].Offset = self.HatchOffsetVal + HatchOff
-					self.PartTable["Hatches"][k]:GetSequenceData()
-					self.PartTable["Hatches"][k]:Close()
-					self:DeleteOnRemove(self.PartTable["Hatches"][k])
+					self.PT.Hatches[HatchInc].Offset = self.HatchOffsetVal + HatchOff
+					self.PT.Hatches[HatchInc]:Close()
+					self:DeleteOnRemove(self.PT.Hatches[HatchInc])
 				end
 			end
 	end
+	self.HatchCount = HatchInc
 
 	self:StartMotionController()
 
