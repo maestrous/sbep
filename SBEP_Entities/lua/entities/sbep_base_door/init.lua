@@ -52,6 +52,7 @@ function ENT:SetDoorType( DoorType )
 	
 	self.DoorModel			= self.DataTable[1]
 	self.OpenStatus      	= false
+	self.OpenTrigger		= false
 	self.Locked     		= false
 	self.DisableUse 		= false
 	self.UseDelay		 	= self.DataTable[2]

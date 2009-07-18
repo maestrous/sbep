@@ -285,7 +285,7 @@ if CLIENT then
 		LiftSystemEnt.Editable = true
 		
 		CL.PartCount = LiftSystemEnt:GetNetworkedFloat( "SBEP_PartCount" )
-		CL.PartTable = {}
+		CL.PT = {}
 		
 		GhostEnt = LiftSystemEnt:GhostEntity()
 			GhostEnt:SetModel( CL.CurrentModelRow[2] )
@@ -337,9 +337,9 @@ if CLIENT then
 		CL.PartCount = LiftSystemEnt:GetNetworkedFloat( "SBEP_PartCount" )
 		
 		if CL.PartCount > 0 then
-				CL.PartTable = {}
+				CL.PT = {}
 				for i = 1, CL.PartCount do
-					CL.PartTable[i] = LiftSystemEnt:GetNetworkedEntity( "SBEP_Part_"..tostring(i) )
+					CL.PT[i] = LiftSystemEnt:GetNetworkedEntity( "SBEP_Part_"..tostring(i) )
 				end
 		end
 	
