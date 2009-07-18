@@ -203,10 +203,10 @@ local HangarModelTable = {
 																												 pexit   = Vector(0,-300,-85) } ,
 																												Left  = { ship = nil , weld = nil , pos = Vector(0, 600,-20) , 
 																												 canface = {Angle(0,0,0),Angle(0,180,0),Angle(0,0,180),Angle(0,180,180)} ,
-																												 pexit   = Vector(0, 300,-85) } } }
+																												 pexit   = Vector(0,  300,-85) } } } ,
 			[ "models/Spacebuild/pad.mdl"  						] = { "LandingPad"			, "MedBridge"   , { Pad   = { ship = nil , weld = nil , pos = Vector(0,0,175) , 
 																												 canface = {Angle(0,90,0),Angle(0,270,0),Angle(0,180,0),Angle(0,0,0)} ,
-																												 pexit   = Vector(-300,-225,2) } } } ,
+																												 pexit   = Vector(-300,-225,2) } } }
 			
 						}
 
