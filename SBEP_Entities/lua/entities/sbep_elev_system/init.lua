@@ -4,25 +4,55 @@ include( "shared.lua" )
 
 ENT.WireDebugName = "SBEP Elevator System"
 
-local ElevatorModelsTable = {}
-		ElevatorModelsTable[1] 		= "models/SmallBridge/Elevators,Small/sbselevp0.mdl"
-		ElevatorModelsTable[2] 		= "models/SmallBridge/Elevators,Small/sbselevp1.mdl"
-		ElevatorModelsTable[3] 		= "models/SmallBridge/Elevators,Small/sbselevp2e.mdl"
-		ElevatorModelsTable[4] 		= "models/SmallBridge/Elevators,Small/sbselevp2r.mdl"
-		ElevatorModelsTable[5] 		= "models/SmallBridge/Elevators,Small/sbselevp3.mdl"
+local LMT = {
+		[ "models/SmallBridge/Elevators,Small/sbselevb.mdl" 	]	= { "B"		,  65.1 	,  65.1 	, {0,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevbe.mdl" 	]	= { "BE"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevbedh.mdl" 	]	= { "BEdh"	, 195.3 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevbedw.mdl" 	]	= { "BEdw"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevbr.mdl" 	]	= { "BR"	,  65.1 	,  65.1 	, {1,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevbt.mdl" 	]	= { "BT"	,  65.1 	,  65.1 	, {1,1,1,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevbx.mdl" 	]	= { "BX"	,  65.1 	,  65.1 	, {1,1,1,1} } ,
+		
+		[ "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	]	= { "M"		,  65.1 	,  65.1 	, {0,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	]	= { "ME"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	]	= { "MEdh"	, 195.3 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	]	= { "MEdw"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	]	= { "MR"	,  65.1 	,  65.1 	, {1,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	]	= { "MT"	,  65.1 	,  65.1 	, {1,1,1,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	]	= { "MX"	,  65.1 	,  65.1 	, {1,1,1,1} } ,
+		
+		[ "models/SmallBridge/Elevators,Small/sbselevt.mdl" 	]	= { "T"		,  65.1 	,  65.1 	, {0,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevte.mdl" 	]	= { "TE"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevtedh.mdl" 	]	= { "TEdh"	, 195.3 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevtedw.mdl" 	]	= { "TEdw"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevtr.mdl" 	]	= { "TR"	,  65.1 	,  65.1 	, {1,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevtt.mdl" 	]	= { "TT"	,  65.1 	,  65.1 	, {1,1,1,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevtx.mdl" 	]	= { "TX"	,  65.1 	,  65.1 	, {1,1,1,1} } ,
+		
+		[ "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	]	= { "S"		,  65.1 	,  65.1 	, {0,0,0,0} } ,
+		[ "models/SmallBridge/Elevators,Small/sbselevs2.mdl" 	]	= { "S2"	,  65.1 	,  65.1 	, {0,0,0,0} }
+			}
+
+local PMT = {}
+		PMT[1] 		= "models/SmallBridge/Elevators,Small/sbselevp0.mdl"
+		PMT[2] 		= "models/SmallBridge/Elevators,Small/sbselevp1.mdl"
+		PMT[3] 		= "models/SmallBridge/Elevators,Small/sbselevp2e.mdl"
+		PMT[4] 		= "models/SmallBridge/Elevators,Small/sbselevp2r.mdl"
+		PMT[5] 		= "models/SmallBridge/Elevators,Small/sbselevp3.mdl"
 
 function ENT:Initialize()
 	
 	self:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" ) 
-	
-	self.Editable = false
+
 	self.PT = {}
-	self.PartCount = 0
-	self.FloorCount = 0
-	self.ModelAccessTable = {0,0,0,0}
+	self.PC = 0
+	self.FC = 0
+	self.MAT = {0,0,0,0}
 	self.Activated = false
-	self.CurrentFloorNumber = 1
-	self.Increment = -65.1
+	self.FN = 1
+	self.INC = -60.45
+	self.TO = -60.45
+	self.AYO = 90
 	self.ShadowParams = {}
 		self.ShadowParams.maxangular = 5000 //What should be the maximal angular force applied
 		self.ShadowParams.maxangulardamp = 10000 // At which force/speed should it start damping the rotation
@@ -31,14 +61,18 @@ function ENT:Initialize()
 		self.ShadowParams.dampfactor = 0.8 // The percentage it should damp the linear/angular force if it reachs it's max ammount
 		self.ShadowParams.teleportdistance = 0 // If it's further away than this it'll teleport (Set to 0 to not teleport)
 
-	self:SetNetworkedVector( "SBEP_GhostVecPos" , Vector(0,0,65.1))
-	self:SetNetworkedFloat( "SBEP_PartCount" , self.PartCount)
+	if self.Skin then
+		local skincount = self:SkinCount()
+		if skincount > 5 then
+			self:SetSkin( self.Skin * 2 )
+		else
+			self:SetSkin( self.Skin )
+		end
+	end
 	
 	self:StartMotionController()
 	
 	self:PhysicsInitialize()
-	
-	self:MakeWire()
 
 end
 
@@ -56,36 +90,112 @@ function ENT:PhysicsInitialize()
 
 end
 
-function ENT:SpawnFunction( ply, tr )
+function ENT:CreatePart( PartNum )
 
-	if ( !tr.Hit ) then return end
+	local n = tonumber(PartNum)
+
+	local NP = ents.Create( "sbep_elev_housing" )
 	
-	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,65.1)
-	local RotAng   = Angle(0 , 0 , 0)
+	self.PT[ n ] = NP
+	self.PC = #self.PT
+	self:SetNetworkedInt( "SBEP_LiftPartCount" , self.PC )
 	
-	local ent = ents.Create( "sbep_elev_system" )
-	ent:SetPos( SpawnPos )
-	ent:SetAngles( RotAng )
-	ent:Spawn()
-	ent:Activate()
+	NP.Controller = self.Entity
+	NP.HO = 0
 	
-	return ent
+	NP:Spawn()
 	
+	self:DeleteOnRemove( NP )
+	
+	return NP
+end
+
+function ENT:RefreshPart( PartNum )
+
+	local n = tonumber( PartNum )
+	local P = self.PT[ n ]
+	
+	P:SetModel( P.model )
+	P.LT  = LMT[ P.model ][1]
+	P.ZUD = LMT[ P.model ][2]
+	P.ZDD = LMT[ P.model ][3]
+	P.AT  = LMT[ P.model ][4]
+	P.LTC = string.Left( P.LT , 1)
+	
+	if self.Skin then
+		local skincount = P:SkinCount()
+		if skincount > 5 then
+			P:SetSkin( self.Skin * 2 )
+		else
+			P:SetSkin( self.Skin )
+		end
+	end
+	
+	self.PC = #self.PT
+	
+	if P.LTC == "S" then
+		P.IsShaft = true
+	else
+		P.IsShaft = false
+	end
+	
+	if string.Right( P.LT , 2) == "dh" then
+		P.IsDH = true
+	else
+		P.IsDH = false
+	end
+	
+	if P.Roll != 0 then
+		P.Inv = true
+	else
+		P.Inv = false
+	end
+
+	if n > 1 then
+		P.HO = self.PT[n - 1].HO
+		if self.PT[n - 1].Inv then
+			P.HO = P.HO + self.PT[n - 1].ZDD
+		else
+			P.HO = P.HO + self.PT[n - 1].ZUD
+		end
+		if P.Inv then
+			P.HO = P.HO + P.ZUD
+		else
+			P.HO = P.HO + P.ZDD
+		end
+	else
+		P.HO = 0
+		if P.Inv and P.IsDH then
+			P.HO = 130.2
+		end
+	end
+	
+	P:SetPos( self.StartPos + Vector(0,0, P.HO ) )
+	P:SetAngles( Angle( 0 , P.Yaw , P.Roll ) )
+
+	for k,v in ipairs( self.PT ) do		
+		if k > n then
+			self:RefreshPart( k )
+		end
+	end
+	
+	return P
+
 end
 
 function ENT:Think()
 
 	if !self.Activated then return end
 	
-	self.Increment = self.Increment + math.Clamp( ( self.TargetOffset - self.Increment) , -0.5 , 0.5 )
-	if math.Round(self.Increment) == math.Round(self.OldIncrement) then
+	self.INC = self.INC + math.Clamp( ( self.TO - self.INC) , -0.5 , 0.5 )
+	if math.Round(self.INC) == math.Round(self.OldINC) then
 		self.AtTargetLocation = true
 	else
 		self.AtTargetLocation = false
 	end
-	self.OldIncrement = self.Increment
+	self.OldINC = self.INC
 	
-	if self.TargetOffset > self.Increment then
+	if self.TO > self.INC then
 		self.Direction = "UP"
 	else
 		self.Direction = "DOWN"
@@ -101,31 +211,27 @@ end
 function ENT:PhysicsSimulate( phys, deltatime )
 
 	if !self.Activated then return SIM_NOTHING end
+
+	local Pos1 = self.PT[1]:GetPos()
+	local Pos2 = self.PT[self.PC]:GetPos()
 	
-	if ValidEntity(self.PT[1]) then
-		self.PT[1].CurrentPos = self.PT[1]:GetPos()
-		self.PT[1].CurrentAng = self.PT[1]:GetAngles()
-	end
-	
-	if ValidEntity(self.PT[self.PartCount]) then
-		self.PT[self.PartCount].Pos = self.PT[self.PartCount]:GetPos()
-	end
-		
-	self.ShaftDirectionVector = self.PT[self.PartCount].Pos - self.PT[1].CurrentPos
+	self.ShaftDirectionVector = Pos2 - Pos1
 	self.ShaftDirectionVector:Normalize()
 	
-	self.CurrentElevPos = self.PT[1].CurrentPos + (self.ShaftDirectionVector * self.Increment)
-	self.CurrentElevAng = self.PT[1].CurrentAng
-	self.CurrentElevAng:RotateAroundAxis( self.ShaftDirectionVector , self.AngleOffset.y )
+	self.CurrentElevPos = Pos1 + (self.ShaftDirectionVector * self.INC)
+	self.CurrentElevAng = self.PT[1]:GetAngles()
+	if self.PT[1].Inv then
+		self.CurrentElevAng = self.CurrentElevAng + Angle( 0 , 0 , self.PT[1].Roll )
+	end
+	self.CurrentElevAng:RotateAroundAxis( self.ShaftDirectionVector , self.AYO )
 
-	
 	phys:Wake()
 	
-	self.ShadowParams.secondstoarrive = 0.005
+	self.ShadowParams.secondstoarrive = 0.01
 	self.ShadowParams.pos = self.CurrentElevPos
 	self.ShadowParams.angle = self.CurrentElevAng
 	self.ShadowParams.deltatime = deltatime
-
+	
 	return phys:ComputeShadowControl(self.ShadowParams)
 
 end
@@ -133,284 +239,201 @@ end
 function ENT:CheckHatchStatus()
 	if !self.Activated then return end
 	if self.AtTargetLocation then return end
+	if !self.HT then return end
 
-	for k,v in ipairs( self.PT.Hatches ) do
+	for k,v in ipairs( self.HT ) do
 		if self.Direction == "UP" then
-			if self.Increment > ( v.Offset + 20 ) then
+			if self.INC > ( v.Offset + 20 ) then
 				v.OpenTrigger = false
-			elseif self.Increment > ( v.Offset - 110 ) then
+			elseif self.INC > ( v.Offset - 110 ) then
 				v.OpenTrigger = true
 			end
 		elseif self.Direction == "DOWN" then
-			if self.Increment < ( v.Offset - 80 ) then
+			if self.INC < ( v.Offset - 80 ) then
 				v.OpenTrigger = false
-			elseif self.Increment < ( v.Offset + 50 ) then
+			elseif self.INC < ( v.Offset + 50 ) then
 				v.OpenTrigger = true
 			end
 		end
 	end
 end
 
-function ENT:ConstructPart( args )
+function ENT:FinishSystem()
 
-	self.GhostEntModel 			= args[1]
-	self.GhostPos = {}
-		self.GhostPos.x 		= tonumber(args[2])
-		self.GhostPos.y 		= tonumber(args[3])
-		self.GhostPos.z 		= tonumber(args[4])
-	self.ModelHeightOffset	 	= tonumber(args[5])
-	self.StartAngleYaw			= tonumber(args[6])
-	self.StartAngleTwist 		= tonumber(args[7]) 				
-	if tonumber(args[8])  == 1 then self.Inverted 	= true else self.Inverted 	= false end
-	self.CurrentModelNumber		= tonumber(args[9])
-	if tonumber(args[9])  == 3 then self.IsDH 		= true else self.IsDH 		= false end
-	self.PartXPosAccess		 	= tonumber(args[10])
-	self.PartYNegAccess		 	= tonumber(args[11])
-	self.PartXNegAccess		 	= tonumber(args[12])
-	self.PartYPosAccess		 	= tonumber(args[13])
-	self.ModelSuffix			= args[14]
-	if tonumber(args[15]) == 1 then self.IsShaft	= true else self.IsShaft	= false end
-	
-	if self.IsShaft and self.PartCount == 0 then return end
+	for k,v in ipairs( self.PT ) do
+		self:RefreshPart( k )
+	end
 
-	self.GhostVecPos = Vector( self.GhostPos.x , self.GhostPos.y , self.GhostPos.z )
+	self.PT[ #self.PT ]:Remove()
+	self.PT[ #self.PT ] = nil
+	self.PC = #self.PT
 	
-	self.PartCount = self.PartCount + 1
-	if !self.IsShaft then
-		self.FloorCount = self.FloorCount + 1
+	if self.PT[ 1 ].Inv then
+		self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ 1 ].model , 44 ) )
+	else
+		self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ 1 ].model , 44 ) )
 	end
+	self:RefreshPart( 1 )
 	
-	self.PT[self.PartCount] = ents.Create( "sbep_elev_housing" )
-		self.PT[self.PartCount]:SetModel( self.GhostEntModel )
-		self.PT[self.PartCount]:SetPos( self.GhostVecPos )
-		self.PT[self.PartCount]:SetAngles( Angle(0,self.StartAngleYaw,self.StartAngleTwist) )
-		
-		self.PT[self.PartCount].Controller = self.Entity
-		self.PT[self.PartCount].PartType = string.Left( self.ModelSuffix , 1 )
-		self.PT[self.PartCount].IsDH = self.IsDH
-		self:DeleteOnRemove(self.PT[self.PartCount])
-		
-		if !self.IsShaft then
-			self.PT[self.PartCount].FloorNum = self.FloorCount
-			self.PT[self.PartCount].IsShaft	= false
-		else
-			self.PT[self.PartCount].FloorNum = nil
-			self.PT[self.PartCount].IsShaft	= true
-		end
-		
-		if !self.IsShaft then
-			self.PT[self.PartCount]:MakeWire()
-		end
-	
-		self.PT[self.PartCount]:Initialize()
-		
-		self.PT[self.PartCount].ModelNumber = self.CurrentModelNumber
-		self.PT[self.PartCount].HeightOffset = self.ModelHeightOffset
-		self.PT[self.PartCount].PartPos = self.GhostVecPos
-		
-		local phys = self.PT[self.PartCount]:GetPhysicsObject()
-			if ValidEntity(phys) then
-				phys:EnableMotion(false)
-			end
+	if self.PT[ self.PC ].Inv then
+		self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ self.PC ].model , 44 ) )
+	else
+		self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ self.PC ].model , 44 ) )
+	end
+	self:RefreshPart( self.PC )
 
-	self.NewGhostPos = self.GhostVecPos + Vector(0,0, self.ModelHeightOffset + 65.1)
-	if self.Inverted == "1" and self.CurrentModelNumber == "3" then
-		self.NewGhostPos = self.NewGhostPos - Vector(0,0, 130.2)
+	for k,v in ipairs( self.PT ) do
+		v:SetColor( 255 , 255 , 255 , 255 )
+		self:CalcPanelModel( k )
+		v:Initialize()
 	end
-	
-	self.PT[self.PartCount].AccessTable = { self.PartXPosAccess , self.PartYNegAccess , self.PartXNegAccess , self.PartYPosAccess }
-	
-	//Rotating the part access table.----------------
-	if self.StartAngleYaw == 90 then
-		self.PT[self.PartCount].AccessTable[5] = self.PT[self.PartCount].AccessTable[1]
-		
-		self.PT[self.PartCount].AccessTable[1] = self.PT[self.PartCount].AccessTable[2]
-		self.PT[self.PartCount].AccessTable[2] = self.PT[self.PartCount].AccessTable[3]
-		self.PT[self.PartCount].AccessTable[3] = self.PT[self.PartCount].AccessTable[4]
-		self.PT[self.PartCount].AccessTable[4] = self.PT[self.PartCount].AccessTable[5]
-		
-		self.PT[self.PartCount].AccessTable[5] = nil
-	elseif self.StartAngleYaw == 180 then
-		self.PT[self.PartCount].AccessTable[5] = self.PT[self.PartCount].AccessTable[1]
-		self.PT[self.PartCount].AccessTable[6] = self.PT[self.PartCount].AccessTable[2]
-		
-		self.PT[self.PartCount].AccessTable[1] = self.PT[self.PartCount].AccessTable[3]
-		self.PT[self.PartCount].AccessTable[2] = self.PT[self.PartCount].AccessTable[4]
-		self.PT[self.PartCount].AccessTable[3] = self.PT[self.PartCount].AccessTable[5]
-		self.PT[self.PartCount].AccessTable[4] = self.PT[self.PartCount].AccessTable[6]
-		
-		self.PT[self.PartCount].AccessTable[5] = nil
-		self.PT[self.PartCount].AccessTable[6] = nil
-	elseif self.StartAngleYaw == 270 then
-		self.PT[self.PartCount].AccessTable[5] = self.PT[self.PartCount].AccessTable[4]
-		
-		self.PT[self.PartCount].AccessTable[4] = self.PT[self.PartCount].AccessTable[3]
-		self.PT[self.PartCount].AccessTable[3] = self.PT[self.PartCount].AccessTable[2]
-		self.PT[self.PartCount].AccessTable[2] = self.PT[self.PartCount].AccessTable[1]
-		self.PT[self.PartCount].AccessTable[1] = self.PT[self.PartCount].AccessTable[5]
-		
-		self.PT[self.PartCount].AccessTable[5] = nil
-	end
-	//----------------------
-	
-	//Adds any new open access points to the model access table.------------------
-	if self.PT[self.PartCount].AccessTable[1] > self.ModelAccessTable[1] then
-		self.ModelAccessTable[1] = self.PT[self.PartCount].AccessTable[1]
-	end
-	if self.PT[self.PartCount].AccessTable[2] > self.ModelAccessTable[2] then
-		self.ModelAccessTable[2] = self.PT[self.PartCount].AccessTable[2]
-	end
-	if self.PT[self.PartCount].AccessTable[3] > self.ModelAccessTable[3] then
-		self.ModelAccessTable[3] = self.PT[self.PartCount].AccessTable[3]
-	end
-	if self.PT[self.PartCount].AccessTable[4] > self.ModelAccessTable[4] then
-		self.ModelAccessTable[4] = self.PT[self.PartCount].AccessTable[4]
-	end
-	
-	self.ModelAccessTableSum = self.ModelAccessTable[1] + self.ModelAccessTable[2] + self.ModelAccessTable[3] + self.ModelAccessTable[4]
-	
-	//Using the model access table to work out the model and rotation of the elevator panel.-----------------
-	if self.ModelAccessTableSum == 4 then
-		self:SetModel( ElevatorModelsTable[1] )
-		self.AngleOffset =  Angle( 0, -90 , 0)
-	elseif self.ModelAccessTableSum == 1 then 
-		self:SetModel( ElevatorModelsTable[5] )
-		self.AngleOffset =  Angle( 0, ((self.ModelAccessTable[4] * 90) + (self.ModelAccessTable[3] * 180) + (self.ModelAccessTable[2] * 270) ) , 0)
-	elseif self.ModelAccessTableSum == 3 then 
-		self:SetModel( ElevatorModelsTable[2] )
-		self.AngleOffset =  Angle( 0, (((self.ModelAccessTable[1] - 1) * -90) + ((self.ModelAccessTable[4] - 1) * -180) + ((self.ModelAccessTable[3] - 1) * -270)) , 0)
-	elseif self.ModelAccessTableSum == 2 then 
-		if self.ModelAccessTable[1] == self.ModelAccessTable[3] then
-			self:SetModel( ElevatorModelsTable[3] )
-			self.AngleOffset =  Angle( 0, (self.ModelAccessTable[2] * 90) , 0)
-		elseif self.ModelAccessTable[1] == self.ModelAccessTable[2] or self.ModelAccessTable[2] == self.ModelAccessTable[3] then
-			self:SetModel( ElevatorModelsTable[4] )
-			if self.ModelAccessTable[1] == 1 then
-				self.AngleOffset =  Angle( 0, (self.ModelAccessTable[2] * -90) % 360 , 0)
-			elseif self.ModelAccessTable[3] == 1 then
-				self.AngleOffset =  Angle( 0, ((self.ModelAccessTable[4] * 90) + (self.ModelAccessTable[2] * 180)) % 360 , 0)
-			end
-		end
-	end
-	self:SetAngles( self.AngleOffset )
-	//----------------------------------------------
-	
 	self:PhysicsInitialize()
-
-	local phys = self:GetPhysicsObject()
-		if ValidEntity(phys) then
-			phys:EnableMotion(false)
+	
+	if self.Skin then
+		local skincount = self:SkinCount()
+		if skincount > 5 then
+			self:SetSkin( self.Skin * 2 )
+		else
+			self:SetSkin( self.Skin )
 		end
-
-	self:SetNetworkedVector( "SBEP_GhostVecPos" , self.NewGhostPos)
-	self:SetNetworkedEntity( "SBEP_Part_"..tostring(self.PartCount) , self.PT[self.PartCount] )
-	self:SetNetworkedFloat( "SBEP_PartCount" , self.PartCount)
+	end
+	
+	self:StartMotionController()
+	
+	self:WeldSystem()
+	
+	self.FC = 0
+	self.FT = {}
+	for k,v in ipairs( self.PT ) do
+		if !v.IsShaft then
+			v:MakeWire()
+			self.FC = self.FC + 1
+			if v.Inv then
+				self.FT[self.FC] = v.HO - v.ZUD + 4.65
+			else
+				self.FT[self.FC] = v.HO - v.ZDD + 4.65
+			end
+			v.FN = self.FC
+		end
+	end
+	self.FC = #self.FT
+	
+	self:MakeWire()
+	
+	self.Activated = true
 
 end
 
 function ENT:WeldSystem() //Welds and nocollides the system once completed.
 	
-	if self.PartCount > 1 then
+	if self.PC > 1 then
 
-		for i = 1, self.PartCount do
-			if ValidEntity(self.PT[i]) and ValidEntity(self.PT[i + 1]) then
-				constraint.Weld( self.PT[i] , self.PT[i + 1] , 0 , 0 , 0 , true )
+		for k,v in ipairs( self.PT ) do
+			if ValidEntity( v ) and ValidEntity(self.PT[k + 1]) then
+				constraint.Weld( v , self.PT[k + 1] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity(self.PT[i]) and ValidEntity(self.PT[i + 2]) and (i/2 == math.floor(i/2)) then
-				constraint.Weld( self.PT[i] , self.PT[i + 2] , 0 , 0 , 0 , true )
+			if ValidEntity( v ) and ValidEntity(self.PT[k + 2]) and (k/2 == math.floor(k/2)) then
+				constraint.Weld( v , self.PT[k + 2] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity(self.PT[i]) and ValidEntity(self) then
-				constraint.NoCollide( self.PT[i] , self , 0 , 0 )
+			if ValidEntity( v ) and ValidEntity(self) then
+				constraint.NoCollide( v , self , 0 , 0 )
 			end
 		end
 
-		if ValidEntity(self.PT[1]) and ValidEntity(self.PT[self.PartCount]) then
-			constraint.Weld( self.PT[1] , self.PT[self.PartCount] , 0 , 0 , 0 , true )
+		if ValidEntity(self.PT[1]) and ValidEntity(self.PT[self.PC]) then
+			constraint.Weld( self.PT[1] , self.PT[self.PC] , 0 , 0 , 0 , true )
 		end
-
 	end
-	
 end
 
-function ENT:InitSystem( ply, args ) //Sets up the system for use.
+function ENT:CalcPanelModel( PartNum )
 
-	self.PT[self.PartCount]:SetModel( args[1] )
-	self.PT[self.PartCount]:Initialize()
-
-	self.ElevFloorDist = {}
-	for i = 1, self.PartCount do
-		if !self.PT[i].IsShaft then
-			self.ElevFloorDist[self.PT[i].FloorNum] = (self.PT[i].PartPos - self.PT[1].PartPos - Vector(0,0,65.1 - 4.65)).z
-		end
+	local P = self.PT[ PartNum ]
+	
+	if P.LTC == "R" and P.Inv then
+		P.AT = {0,1,1,0}
 	end
-
-	local phys = self:GetPhysicsObject()
-		if ValidEntity(phys) then
-			phys:EnableMotion(true)
-			phys:Wake()
-		end
-
-	self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
 	
-	self.PT.Hatches = {}
+	//Rotating the part access table.----------------
+	if P.Yaw == 90 then
+		P.AT[5] = P.AT[1]
+		
+		P.AT[1] = P.AT[2]
+		P.AT[2] = P.AT[3]
+		P.AT[3] = P.AT[4]
+		P.AT[4] = P.AT[5]
+		
+		P.AT[5] = nil
+	elseif P.Yaw == 180 then
+		P.AT[5] = P.AT[1]
+		P.AT[6] = P.AT[2]
+		
+		P.AT[1] = P.AT[3]
+		P.AT[2] = P.AT[4]
+		P.AT[3] = P.AT[5]
+		P.AT[4] = P.AT[6]
+		
+		P.AT[5] = nil
+		P.AT[6] = nil
+	elseif P.Yaw == 270 then
+		P.AT[5] = P.AT[4]
+		
+		P.AT[4] = P.AT[3]
+		P.AT[3] = P.AT[2]
+		P.AT[2] = P.AT[1]
+		P.AT[1] = P.AT[5]
+		
+		P.AT[5] = nil
+	end
+	//----------------------
 	
-	local HatchInc = 0
-	self.HatchOffsetVal = 0
-	for k,v in ipairs(self.PT) do
-			if !(k == self.PartCount) then
-				if !(k == 1) then
-					self.HatchOffsetVal = self.HatchOffsetVal + 130.2
-					if v.IsDH then
-						self.HatchOffsetVal = self.HatchOffsetVal + 130.2
-					end
-				end
-				if not (v.IsShaft and self.PT[k + 1].IsShaft) then
-					HatchInc = HatchInc + 1
-					self.PT.Hatches[HatchInc] = ents.Create( "sbep_base_door" )
-					self.PT.Hatches[HatchInc]:Spawn()
-					self.PT.Hatches[HatchInc]:SetDoorType( "Door_ElevHatch" )
-					self.PT.Hatches[HatchInc]:SetAngles( v:GetAngles() )
-					
-					if self.PT[k + 1].IsShaft then
-						HatchOff = 60.45
-						if v.IsDH then
-							HatchOff = HatchOff + 130.2
-						end
-						self.PT.Hatches[HatchInc]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
-						constraint.Weld( self.PT.Hatches[HatchInc], v , 0, 0, 0, true )
-					else
-						HatchOff = 69.75
-						if v.IsDH then
-							HatchOff = HatchOff + 130.2
-						end
-						self.PT.Hatches[HatchInc]:SetPos( v:GetPos() + Vector(0,0,HatchOff) )
-						constraint.Weld( self.PT.Hatches[HatchInc], self.PT[k + 1] , 0, 0, 0, true )
-					end
-					self.PT.Hatches[HatchInc].Offset = self.HatchOffsetVal + HatchOff
-					self.PT.Hatches[HatchInc]:Close()
-					self:DeleteOnRemove(self.PT.Hatches[HatchInc])
-				end
+	//Adds any new open access points to the model access table.------------------
+	if P.AT[1] > self.MAT[1] then
+		self.MAT[1] = P.AT[1]
+	end
+	if P.AT[2] > self.MAT[2] then
+		self.MAT[2] = P.AT[2]
+	end
+	if P.AT[3] > self.MAT[3] then
+		self.MAT[3] = P.AT[3]
+	end
+	if P.AT[4] > self.MAT[4] then
+		self.MAT[4] = P.AT[4]
+	end
+	
+	self.MATSum = self.MAT[1] + self.MAT[2] + self.MAT[3] + self.MAT[4]
+	
+	//Using the model access table to work out the model and rotation of the elevator panel.-----------------
+	if self.MATSum == 4 then
+		self:SetModel( PMT[1] )
+		self.AYO = 0
+	elseif self.MATSum == 1 then 
+		self:SetModel( PMT[5] )
+		self.AYO = ((self.MAT[4] * 90) + (self.MAT[3] * 180) + (self.MAT[2] * 270) )
+	elseif self.MATSum == 3 then 
+		self:SetModel( PMT[2] )
+		self.AYO = (((self.MAT[1] - 1) * -90) + ((self.MAT[4] - 1) * -180) + ((self.MAT[3] - 1) * -270))
+	elseif self.MATSum == 2 then 
+		if self.MAT[1] == self.MAT[3] then
+			self:SetModel( PMT[3] )
+			self.AYO = (self.MAT[2] * 90)
+		elseif self.MAT[1] == self.MAT[2] or self.MAT[2] == self.MAT[3] then
+			self:SetModel( PMT[4] )
+			if self.MAT[1] == 1 then
+				self.AYO =  (self.MAT[2] * -90) % 360
+			elseif self.MAT[3] == 1 then
+				self.AYO =  ((self.MAT[4] * 90) + (self.MAT[2] * 180)) % 360
 			end
+		end
 	end
-	self.HatchCount = HatchInc
-
-	self:StartMotionController()
-
-	self:MakeWire()
-
-	undo.Create("Elevator System") 
-		undo.SetPlayer(ply) 
-		undo.AddEntity(self.Entity) 
-	undo.Finish()
-
-	self.Activated = true
+	//----------------------------------------------
 
 end
 
 function ENT:MakeWire() //Adds the appropriate wire inputs.
 	self.SBEP_WireInputsTable = {}
 	self.SBEP_WireInputsTable[1] = "FloorNum"
-	for i = 1, self.FloorCount do
+	for i = 1, self.FC do
 		self.SBEP_WireInputsTable[i + 1] = "Floor "..tostring(i)
 	end
 	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEP_WireInputsTable)
@@ -420,21 +443,21 @@ end
 function ENT:TriggerInput(k,v)
 
 	if k == "FloorNum" then
-		self.CurrentFloorNumber = v
-		self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
+		self.FN = v
+		self.TO = self.FT[self.FN]
 	end
 	
-	for i = 1, self.FloorCount do
+	for i = 1, self.FC do
 		if k == ("Floor "..tostring(i)) and v == 1 then
-			self.CurrentFloorNumber = i
-			self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
+			self.FN = i
+			self.TO = self.FT[self.FN]
 		end
 	end
 end
 
 function ENT:SetCallFloorNum( num )
 
-	self.CurrentFloorNumber = num
-	self.TargetOffset = self.ElevFloorDist[self.CurrentFloorNumber]
+	self.FN = num
+	self.TO = self.FT[self.FN]
 
 end
