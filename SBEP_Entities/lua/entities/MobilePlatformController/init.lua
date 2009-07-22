@@ -149,9 +149,10 @@ function ENT:Think()
 	--self.Plat:SetLocalPos(Vector(self.XCo, self.YCo, self.ZCo))
 	--self.Plat:SetLocalAngles(Vector(self.Pitch, self.Yaw, self.Roll))
 	
-	if !self.AbsAng then	
+	/*
+	if !self.AbsAng then
 		local RAng = self.Entity:GetAngles()
-	
+		
 		RAng.y = math.fmod(RAng.y + self.Yaw,360)
 		RAng.r = math.fmod(RAng.r + self.Roll,360)
 		RAng.p = math.fmod(RAng.p + self.Pitch,360)
@@ -160,10 +161,13 @@ function ENT:Think()
 		self.Plat.Roll = RAng.r
 		self.Plat.Pitch = RAng.p
 	else
+	*/
 		self.Plat.Yaw = self.Yaw
 		self.Plat.Roll = self.Roll
 		self.Plat.Pitch = self.Pitch
-	end
+	--end
+	
+	self.Plat.AbsAng = self.AbsAng
 	
 	if !self.AbsVec then
 		local RPos = self.Entity:GetPos() + (self.Entity:GetUp() * self.ZCo) + (self.Entity:GetForward() * self.YCo) + (self.Entity:GetRight() * self.XCo)
