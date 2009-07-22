@@ -112,7 +112,7 @@ function TOOL.BuildCPanel( panel )
 						end
 	panel:AddItem( SkinMenu )
 	
-	if WireAddon then
+	//if WireAddon then
 		local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
 			WireCheckBox:SetText( "Create Wire Inputs" )
 			WireCheckBox:SetConVar( "sbep_door_wire" )
@@ -126,7 +126,7 @@ function TOOL.BuildCPanel( panel )
 			UseCheckBox:SetValue( 1 )
 			UseCheckBox:SizeToContents()
 		panel:AddItem( UseCheckBox )
-	end
+	//end
 
 	local ModelCollapsibleCategories = {}
 	
