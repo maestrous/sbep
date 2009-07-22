@@ -4,15 +4,20 @@ TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 
 local ButtonModelTable = {
-			[ 1 ] = { "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	, "M"		,  65.1 	, {0,1,0,0} } ,
-			[ 2 ] = { "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	, "ME"		,  65.1 	, {0,1,0,1} } ,
-			[ 3 ] = { "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	, "MEdh"	, 195.3 	, {0,1,0,1} } ,
-			[ 4 ] = { "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	, "MEdw"	,  65.1 	, {0,1,0,1} } ,
-			[ 5 ] = { "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	, "MR"		,  65.1 	, {1,1,0,0} } ,
-			[ 6 ] = { "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	, "MT"		,  65.1 	, {1,1,1,0} } ,
-			[ 7 ] = { "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	, "MX"		,  65.1 	, {1,1,1,1} } ,
-			[ 8 ] = { "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	, "S"		,  65.1 	, {0,0,0,0} }
-					}
+			[ 1 ] = { "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	, "M"		 } ,
+			[ 2 ] = { "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	, "ME"		 } ,
+			[ 3 ] = { "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	, "MEdh"	 } ,
+			[ 4 ] = { "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	, "MEdw"	 } ,
+			[ 5 ] = { "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	, "MR"		 } ,
+			[ 6 ] = { "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	, "MT"		 } ,
+			[ 7 ] = { "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	, "MX"		 } ,
+			[ 8 ] = { "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	, "S"		 }
+						}
+
+local SpecialModelTable = {
+			[ 1 ] = { "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" , "VM"		 } ,
+			[ 2 ] = { "models/SmallBridge/Station Parts/sbhuble.mdl" 		, "H"		 }
+						}
 
 if CLIENT then
 	language.Add( "Tool_sbep_lift_designer_name", "SBEP Lift System Designer" )
@@ -39,10 +44,20 @@ if CLIENT then
 		SBEPLiftMenuPanel:SetPos( 30,30 )
 		SBEPLiftMenuPanel:SetSize( 325, 548 )
 		SBEPLiftMenuPanel:SetTitle( "SBEP Lift System Designer" )
-		SBEPLiftMenuPanel:SetVisible( MenuVisible )
+		SBEPLiftMenuPanel:SetVisible( false )
 		SBEPLiftMenuPanel:SetDraggable( false )
 		SBEPLiftMenuPanel:ShowCloseButton( false )
 		SBEPLiftMenuPanel:MakePopup()
+	
+	SBEPLiftSpecialMenuPanel = vgui.Create( "DFrame" )
+		SBEPLiftSpecialMenuPanel:SetPos( 360,193 )
+		SBEPLiftSpecialMenuPanel:SetSize( 165,85 )
+		SBEPLiftSpecialMenuPanel:SetTitle( " " )
+		SBEPLiftSpecialMenuPanel:SetBackgroundBlur( true )
+		SBEPLiftSpecialMenuPanel:SetVisible( false )
+		SBEPLiftSpecialMenuPanel:SetDraggable( false )
+		SBEPLiftSpecialMenuPanel:ShowCloseButton( false )
+		SBEPLiftSpecialMenuPanel:MakePopup()
 	
 	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//					MENU CONTROLS
@@ -63,8 +78,6 @@ if CLIENT then
 		SBEPLiftMenuFinishButton:SetSize( 315 , 35 )
 		SBEPLiftMenuFinishButton:SetImage( "sbep_icons/Finish.vmt" )
 		SBEPLiftMenuFinishButton.DoClick = function()
-												SBEPLiftMenuPanelVisible = false
-												SBEPLiftMenuPanel:SetVisible( SBEPLiftMenuPanelVisible )
 												RunConsoleCommand( "SBEP_LiftFinishSystem_ser" )
 										end
 	
@@ -88,8 +101,30 @@ if CLIENT then
 		SBEPLiftMenuSpecialButton:SetSize( 155 , 35 )
 		SBEPLiftMenuSpecialButton:SetImage( "sbep_icons/Special.vmt" )
 		SBEPLiftMenuSpecialButton.DoClick = function()
-												
+												SBEPLiftSpecialVisible = !SBEPLiftSpecialVisible
+												SBEPLiftSpecialMenuPanel:SetVisible( SBEPLiftSpecialVisible )
 											end
+	
+	SBEPLiftMenuSpecial1 = vgui.Create("DImageButton", SBEPLiftSpecialMenuPanel )
+		SBEPLiftMenuSpecial1:SetImage( "sbep_icons/SBSelevVM.vmt" )
+		SBEPLiftMenuSpecial1:SetPos( 5 , 5 )
+		SBEPLiftMenuSpecial1:SetSize( 75 , 75 )
+		SBEPLiftMenuSpecial1.DoClick = function()
+												SBEPLiftSpecialVisible = false
+												SBEPLiftSpecialMenuPanel:SetVisible( SBEPLiftSpecialVisible )
+												RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , SpecialModelTable[1][1] )
+											end
+
+	SBEPLiftMenuSpecial2 = vgui.Create("DImageButton", SBEPLiftSpecialMenuPanel )
+		SBEPLiftMenuSpecial2:SetImage( "sbep_icons/SBSelevH.vmt" )
+		SBEPLiftMenuSpecial2:SetPos( 85 , 5 )
+		SBEPLiftMenuSpecial2:SetSize( 75 , 75 )
+		SBEPLiftMenuSpecial2.DoClick = function()
+												SBEPLiftSpecialVisible = false
+												SBEPLiftSpecialMenuPanel:SetVisible( SBEPLiftSpecialVisible )
+												RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , SpecialModelTable[2][1] )
+											end
+
 	
 	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//					CONSTRUCTION CONTROLS
@@ -249,6 +284,8 @@ if CLIENT then
 											end
 	
 	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//					CLIENT FUNCTIONS
+	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	function SBEP_OpenLiftDesignMenu()
 
@@ -264,6 +301,15 @@ if CLIENT then
 	end
 	
 	concommand.Add("SBEP_OpenLiftDesignMenu_cl",SBEP_OpenLiftDesignMenu)
+	
+	function SBEP_CloseLiftDesignMenu()
+
+		SBEPLiftMenuPanelVisible = false
+		SBEPLiftMenuPanel:SetVisible( SBEPLiftMenuPanelVisible )
+
+	end
+	
+	concommand.Add("SBEP_CloseLiftDesignMenu_cl",SBEP_CloseLiftDesignMenu)
 	
 	function DefaultViewAngles()
 			CL.MBVec = Vector(-1,0,0)
@@ -309,16 +355,22 @@ if CLIENT then
 
 end
 
+	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	//					SERVER FUNCTIONS
+	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 if SERVER then
 
 	function SBEP_SetLiftPartModel( ply , cmd , args )
 		n = tonumber( args[1] )
-		if n == 1 and args[2] == "models/SmallBridge/Elevators,Small/sbselevs.mdl" then return end
+		if n == 1 and ( args[2] == "models/SmallBridge/Elevators,Small/sbselevs.mdl" or 
+						args[2] == "models/SmallBridge/Station Parts/sbhuble.mdl" )	 then return end
 		if !LiftSystem_SER.PT[n] then return end
 		
 		LiftSystem_SER.PT[n].model = args[2]
 		RunConsoleCommand( "sbep_lift_designer_model" , LiftSystem_SER.PT[n].model )
 		LiftSystem_SER:RefreshPart( n )
+		RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
 	end
 	concommand.Add( "SBEP_LiftSys_SetLiftPartModel_ser" , SBEP_SetLiftPartModel )
 	
@@ -371,13 +423,10 @@ if SERVER then
 		if n == 1 then return end
 		
 		RunConsoleCommand( "sbep_lift_designer_activepart" , n )
-		
-		//LiftSystem_SER.PT[n - 1]:SetColor( 255 , 255 , 255 , 255 )
 
 		LiftSystem_SER:CreatePart( n )
 		local NP = LiftSystem_SER.PT[ n ]
-		//NP:SetColor( 255 , 255 , 255 , 180 )
-		//NP.HO = NP.HO + LiftSystem_SER.PT[n - 1].HO + LiftSystem_SER.PT[n - 1].ZD
+
 		NP.Yaw = GetConVarNumber( "sbep_lift_designer_yaw" )
 		NP.Roll = GetConVarNumber( "sbep_lift_designer_roll" )
 		NP.model = GetConVarString( "sbep_lift_designer_model" )
@@ -389,6 +438,8 @@ if SERVER then
 	
 	function SBEP_LiftFinishSystem( ply , cmd , args )
 		if LiftSystem_SER.PC == 1 then return end
+		if LiftSystem_SER.PT[ LiftSystem_SER.PC - 1 ].IsShaft or LiftSystem_SER.PT[ LiftSystem_SER.PC - 1 ].IsHub then return end
+		RunConsoleCommand( "SBEP_CloseLiftDesignMenu_cl" )
 		LiftSystem_SER:FinishSystem()
 		RunConsoleCommand( "sbep_lift_designer_editing" , 0 )
 	end

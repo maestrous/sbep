@@ -17,22 +17,35 @@ function ENT:PhysicsInitialize()
 		self:SetSolid( SOLID_VPHYSICS )
 		
 		local phys = self:GetPhysicsObject()  	
-		if ValidEntity(phys) then  		
-			phys:Wake() 
+		if ValidEntity(phys) then
 			phys:EnableMotion( false )
+			phys:Wake() 
 		end
 
 end
 
 function ENT:MakeWire()
+	
+	if self.MultiFloor then
+		self.Inputs = Wire_CreateInputs(self.Entity, self.SBEPLiftWireInputs )
+	elseif !self.IsShaft then
 		self.Inputs = Wire_CreateInputs(self.Entity, { "Call" })
+	end
 		//self.Outputs = WireLib.CreateOutputs(self.Entity,{""})
 end
 
 function ENT:TriggerInput(k,v)
 	
-	if k == "Call" and v == 1 then
-		self.Controller:SetCallFloorNum( self.FN )
+	if self.SBEPLiftWireInputs then
+		for m,n in ipairs( self.SBEPLiftWireInputs ) do
+			if k == n and v == 1 then
+				self.Controller:SetCallFloorNum( self.FN[m] )
+			end
+		end
+	else
+		if k == "Call" and v == 1 then
+			self.Controller:SetCallFloorNum( self.FN )
+		end
 	end
 
 end

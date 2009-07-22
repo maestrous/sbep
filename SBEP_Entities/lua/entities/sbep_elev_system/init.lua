@@ -30,7 +30,13 @@ local LMT = {
 		[ "models/SmallBridge/Elevators,Small/sbselevtx.mdl" 	]	= { "TX"	,  65.1 	,  65.1 	, {1,1,1,1} } ,
 		
 		[ "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	]	= { "S"		,  65.1 	,  65.1 	, {0,0,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevs2.mdl" 	]	= { "S2"	,  65.1 	,  65.1 	, {0,0,0,0} }
+		[ "models/SmallBridge/Elevators,Small/sbselevs2.mdl" 	]	= { "S2"	,  65.1 	,  65.1 	, {0,0,0,0} } ,
+
+		[ "models/SmallBridge/Station Parts/sbbridgevisorb.mdl" ]	= { "VB"	,  65.1 	,  65.1 	, {0,0,0,0} } ,
+		[ "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" ]	= { "VM"	,  65.1 	,  65.1 	, {0,0,0,0} } ,
+		[ "models/SmallBridge/Station Parts/sbbridgevisort.mdl" ]	= { "VT"	,  65.1 	,  65.1 	, {0,0,0,0} } ,
+
+		[ "models/SmallBridge/Station Parts/sbhuble.mdl" 		]	= { "H"		, 195.3 	, 195.3 	, {0,0,0,0} , { 0 , 130.2 , 260.4 } }
 			}
 
 local PMT = {}
@@ -70,9 +76,9 @@ function ENT:Initialize()
 		end
 	end
 	
-	self:StartMotionController()
-	
 	self:PhysicsInitialize()
+	
+	self:StartMotionController()
 
 end
 
@@ -137,6 +143,29 @@ function ENT:RefreshPart( PartNum )
 		P.IsShaft = true
 	else
 		P.IsShaft = false
+	end
+	
+	if P.LTC == "V" then
+		P.IsVisor = true
+	else
+		P.IsVisor = false
+	end
+	
+	if P.LTC == "H" then
+		P.IsHub = true
+	else
+		P.IsHub = false
+	end
+	
+	if LMT[ P.model ][5] then
+		P.MultiFloor = true
+		P.FO = LMT[ P.model ][5]
+		P.SBEPLiftWireInputs = {}
+		for k,v in ipairs( P.FO ) do
+			P.SBEPLiftWireInputs[k] = "Call "..tostring( k )
+		end
+	else
+		P.MultiFloor = false
 	end
 	
 	if string.Right( P.LT , 2) == "dh" then
@@ -221,7 +250,7 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	self.CurrentElevPos = Pos1 + (self.ShaftDirectionVector * self.INC)
 	self.CurrentElevAng = self.PT[1]:GetAngles()
 	if self.PT[1].Inv then
-		self.CurrentElevAng = self.CurrentElevAng + Angle( 0 , 0 , self.PT[1].Roll )
+		self.CurrentElevAng = self.CurrentElevAng + Angle( 0 , 0 , 180 )
 	end
 	self.CurrentElevAng:RotateAroundAxis( self.ShaftDirectionVector , self.AYO )
 
@@ -268,17 +297,33 @@ function ENT:FinishSystem()
 	self.PT[ #self.PT ] = nil
 	self.PC = #self.PT
 	
-	if self.PT[ 1 ].Inv then
-		self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ 1 ].model , 44 ) )
+	if self.PT[ 1 ].IsVisor then
+		if self.PT[ 1 ].Inv then
+			self.PT[ 1 ].model = ( "models/SmallBridge/Station Parts/sbbridgevisort.mdl" )
+		else
+			self.PT[ 1 ].model = ( "models/SmallBridge/Station Parts/sbbridgevisorb.mdl" )
+		end
 	else
-		self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ 1 ].model , 44 ) )
+		if self.PT[ 1 ].Inv then
+			self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ 1 ].model , 44 ) )
+		else
+			self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ 1 ].model , 44 ) )
+		end
 	end
 	self:RefreshPart( 1 )
 	
-	if self.PT[ self.PC ].Inv then
-		self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ self.PC ].model , 44 ) )
+	if self.PT[ self.PC ].IsVisor then
+		if self.PT[ self.PC ].Inv then
+			self.PT[ self.PC ].model = ( "models/SmallBridge/Station Parts/sbbridgevisorb.mdl" )
+		else
+			self.PT[ self.PC ].model = ( "models/SmallBridge/Station Parts/sbbridgevisort.mdl" )
+		end
 	else
-		self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ self.PC ].model , 44 ) )
+		if self.PT[ self.PC ].Inv then
+			self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ self.PC ].model , 44 ) )
+		else
+			self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ self.PC ].model , 44 ) )
+		end
 	end
 	self:RefreshPart( self.PC )
 
@@ -307,13 +352,22 @@ function ENT:FinishSystem()
 	for k,v in ipairs( self.PT ) do
 		if !v.IsShaft then
 			v:MakeWire()
-			self.FC = self.FC + 1
-			if v.Inv then
-				self.FT[self.FC] = v.HO - v.ZUD + 4.65
+			if v.MultiFloor then
+				v.FN = {}
+				for m,n in ipairs( v.FO ) do
+					self.FC = self.FC + 1
+					self.FT[self.FC] = v.HO - v.ZDD + n + 4.65
+					v.FN[m] = self.FC
+				end
 			else
-				self.FT[self.FC] = v.HO - v.ZDD + 4.65
+				self.FC = self.FC + 1
+				if v.Inv then
+					self.FT[self.FC] = v.HO - v.ZUD + 4.65
+				else
+					self.FT[self.FC] = v.HO - v.ZDD + 4.65
+				end
+				v.FN = self.FC
 			end
-			v.FN = self.FC
 		end
 	end
 	self.FC = #self.FT
@@ -459,5 +513,127 @@ function ENT:SetCallFloorNum( num )
 
 	self.FN = num
 	self.TO = self.FT[self.FN]
+
+end
+
+function ENT:PreEntityCopy()
+	local dupeInfo = {}
+	dupeInfo.PC = self.PC
+	dupeInfo.PT = {}
+	dupeInfo.Data = {}
+	for k,v in ipairs( self.PT ) do
+		dupeInfo.PT[k]    			= v:EntIndex()
+		dupeInfo.Data[k]			= {}
+		dupeInfo.Data[k].model 		= v.model
+		dupeInfo.Data[k].Yaw 		= v.Yaw
+		dupeInfo.Data[k].Roll 		= v.Roll
+		dupeInfo.Data[k].FN 		= v.FN
+	end
+	dupeInfo.FT 		= self.FT
+	dupeInfo.MAT 		= self.MAT
+	dupeInfo.AYO 		= self.AYO
+	dupeInfo.model 		= self:GetModel()
+	duplicator.StoreEntityModifier(self, "SBEPLiftSysDupeInfo", dupeInfo)
+end
+duplicator.RegisterEntityModifier( "SBEPLiftSysDupeInfo" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	self.PC = Ent.EntityMods.SBEPLiftSysDupeInfo.PC
+	for i = 1, self.PC do
+		self.PT[i] = CreatedEntities[Ent.EntityMods.SBEPLiftSysDupeInfo.PT[i]]
+		self.PT[i].Controller 	= self.Entity
+		self.PT[i].model 		= Ent.EntityMods.SBEPLiftSysDupeInfo.Data[i].model
+		self.PT[i].Yaw 			= Ent.EntityMods.SBEPLiftSysDupeInfo.Data[i].Yaw
+		self.PT[i].Roll 		= Ent.EntityMods.SBEPLiftSysDupeInfo.Data[i].Roll
+		self.PT[i].FN 			= Ent.EntityMods.SBEPLiftSysDupeInfo.Data[i].FN
+	end
+	self.FT			= Ent.EntityMods.SBEPLiftSysDupeInfo.FT
+	self.FC			= #self.FT
+	self.MAT 		= Ent.EntityMods.SBEPLiftSysDupeInfo.MAT
+	self.model 		= Ent.EntityMods.SBEPLiftSysDupeInfo.model
+	self.AYO 		= Ent.EntityMods.SBEPLiftSysDupeInfo.AYO
+	
+	self:PasteRefreshSystem()
+
+end
+
+function ENT:PasteRefreshSystem()
+	
+	for n,P in ipairs( self.PT ) do
+		
+		P.LT  = LMT[ P.model ][1]
+		P.ZUD = LMT[ P.model ][2]
+		P.ZDD = LMT[ P.model ][3]
+		P.AT  = LMT[ P.model ][4]
+		P.LTC = string.Left( P.LT , 1)
+		
+		if P.LTC == "S" then
+			P.IsShaft = true
+		else
+			P.IsShaft = false
+		end
+		
+		if P.LTC == "V" then
+			P.IsVisor = true
+		else
+			P.IsVisor = false
+		end
+		
+		if P.LTC == "H" then
+			P.IsHub = true
+		else
+			P.IsHub = false
+		end
+		
+		if LMT[ P.model ][5] then
+			P.MultiFloor = true
+			P.FO = LMT[ P.model ][5]
+			P.SBEPLiftWireInputs = {}
+			for k,v in ipairs( P.FO ) do
+				P.SBEPLiftWireInputs[k] = "Call "..tostring( k )
+			end
+		else
+			P.MultiFloor = false
+		end
+		
+		if string.Right( P.LT , 2) == "dh" then
+			P.IsDH = true
+		else
+			P.IsDH = false
+		end
+		
+		if P.Roll != 0 then
+			P.Inv = true
+		else
+			P.Inv = false
+		end
+
+		if n > 1 then
+			P.HO = self.PT[n - 1].HO
+			if self.PT[n - 1].Inv then
+				P.HO = P.HO + self.PT[n - 1].ZDD
+			else
+				P.HO = P.HO + self.PT[n - 1].ZUD
+			end
+			if P.Inv then
+				P.HO = P.HO + P.ZUD
+			else
+				P.HO = P.HO + P.ZDD
+			end
+		else
+			P.HO = 0
+			if P.Inv and P.IsDH then
+				P.HO = 130.2
+			end
+		end
+		
+		P:MakeWire()
+	end
+	
+	self:SetModel( self.model )
+	self:PhysicsInitialize()
+	self:StartMotionController()
+	self:MakeWire()
+	self.Activated = true
 
 end
