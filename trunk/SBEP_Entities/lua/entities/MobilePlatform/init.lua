@@ -58,7 +58,11 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	Ang.p = self.Pitch
 	self.ShadowParams.secondstoarrive = self.Duration
 	self.ShadowParams.pos = Vector(self.XCo,self.YCo,self.ZCo)
-	self.ShadowParams.angle = Ang
+	if self.AbsAng then
+		self.ShadowParams.angle = Ang
+	else
+		self.ShadowParams.angle = self.Controller:LocalToWorldAngles(Ang)
+	end
 	self.ShadowParams.deltatime = deltatime
 	self.ShadowParams.teleportdistance = self.TPD
 	self.ShadowParams.maxangular = self.Speed
