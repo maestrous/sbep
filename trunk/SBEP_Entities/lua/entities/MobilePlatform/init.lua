@@ -13,7 +13,7 @@ function ENT:Initialize()
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
-		phys:EnableGravity(true)
+		phys:EnableGravity(false)
 		phys:EnableDrag(true)
 		phys:EnableCollisions(true)
 		phys:SetMass(200)
@@ -49,7 +49,7 @@ end
 
 function ENT:PhysicsSimulate( phys, deltatime )
 
-	--if !self.Activated then return SIM_NOTHING end
+	if !self.Controller || !self.Controller:IsValid() then return SIM_NOTHING end
 	
 	phys:Wake()
 	local Ang = Angle(0,0,0)
@@ -80,7 +80,8 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	self.ShadowParams.maxspeed = self.Speed
 	self.ShadowParams.maxspeeddamp = self.Speed * 0.1
 	
-
+	local RPos = self.Entity:GetPos() + (self.Controller:GetUp() * -self.ZCo) + (self.Controller:GetForward() * -self.YCo) + (self.Controller:GetRight() * -self.XCo) + (phys:GetVelocity() * 0.8)
+	
 	return phys:ComputeShadowControl(self.ShadowParams)
 
 end

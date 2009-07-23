@@ -9,7 +9,7 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng" }
+	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Reciprocate" }
 	local inTypes = {"NORMAL","NORMAL","NORMAL","VECTOR","NORMAL","NORMAL","NORMAL","ANGLE","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL"}
 	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
 	self.Entity:SetUseType( 3 )
@@ -38,6 +38,7 @@ function ENT:Initialize()
 	
 	self.AbsVec = false
 	self.AbsAng = false
+	self.Recip = false
 	
 	self.TPD = 0
 	
@@ -45,6 +46,15 @@ function ENT:Initialize()
 	
 	self.Duration = 0.000000001
 	
+	self.ShadowParams = {}
+		self.ShadowParams.maxangular = 100000000 //What should be the maximal angular force applied
+		self.ShadowParams.maxangulardamp = 10000000 // At which force/speed should it start damping the rotation
+		self.ShadowParams.maxspeed = 100000000 // Maximal linear force applied
+		self.ShadowParams.maxspeeddamp = 10000000 // Maximal linear force/speed before  damping
+		self.ShadowParams.dampfactor = 0.8 // The percentage it should damp the linear/angular force if it reachs it's max ammount
+		self.ShadowParams.teleportdistance = 0 // If it's further away than this it'll teleport (Set to 0 to not teleport)
+
+	self:StartMotionController()
 end
 
 function ENT:TriggerInput(iname, value)
@@ -100,9 +110,45 @@ function ENT:TriggerInput(iname, value)
 		else
 			self.AbsAng = false
 		end
+		
+	elseif (iname == "Reciprocate") then
+		if (value > 0) then
+			self.Recip = true
+		else
+			self.Recip = false
+		end	
 				
 	end
 	
+end
+
+function ENT:PhysicsSimulate( phys, deltatime )
+
+	if self.Recip then
+		--local Phys = self.Entity:GetPhysicsObject()
+		--Phys:AddAngleVelocity((Phys:GetAngleVelocity() * -1) + self.Plat:LocalToWorldAngles(Ang * -1))
+		local RPos = self.Plat:GetPos() + (self.Entity:GetUp() * self.ZCo * -1) + (self.Entity:GetForward() * self.YCo * -1) + (self.Entity:GetRight() * self.XCo * -1) + (phys:GetVelocity() * 0.8)
+		--Phys:SetVelocity(RPos - self.Entity:GetPos())
+		phys:Wake()
+				
+		self.ShadowParams.secondstoarrive = self.Duration
+		self.ShadowParams.pos = RPos
+		--if self.AbsAng then
+		self.ShadowParams.angle = self.Entity:GetAngles()
+		--else
+		--	self.ShadowParams.angle = self.Controller:LocalToWorldAngles(Ang)
+		--end
+		self.ShadowParams.deltatime = deltatime
+		self.ShadowParams.teleportdistance = self.TPD
+		self.ShadowParams.maxangular = self.Speed
+		self.ShadowParams.maxangulardamp = self.Speed * 0.1
+		self.ShadowParams.maxspeed = self.Speed
+		self.ShadowParams.maxspeeddamp = self.Speed * 0.1
+			
+
+		return phys:ComputeShadowControl(self.ShadowParams)
+	
+	end
 end
 
 function ENT:SpawnFunction( ply, tr )
