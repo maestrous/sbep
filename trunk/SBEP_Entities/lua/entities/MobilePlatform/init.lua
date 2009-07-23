@@ -56,6 +56,16 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	Ang.y = self.Yaw
 	Ang.r = self.Roll
 	Ang.p = self.Pitch
+	
+	if self.TPD == 1 then
+		self.Entity:SetPos(Vector(self.XCo,self.YCo,self.ZCo))
+		if self.AbsAng then
+			self.Entity:SetAngles(Ang)
+		else
+			self.Entity:SetAngles(self.Controller:LocalToWorldAngles(Ang))
+		end
+	end
+	
 	self.ShadowParams.secondstoarrive = self.Duration
 	self.ShadowParams.pos = Vector(self.XCo,self.YCo,self.ZCo)
 	if self.AbsAng then
