@@ -161,7 +161,7 @@ function ENT:Think()
 	return true
 end
 
-function CheckDoorAnim()
+function ENT:CheckDoorAnim()
 
 	if self:GetSequence() == self.OpenSequence  then return true  end
 	if self:GetSequence() == self.CloseSequence then return false end	

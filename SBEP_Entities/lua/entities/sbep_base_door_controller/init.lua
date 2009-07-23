@@ -16,30 +16,30 @@ function ENT:Initialize()
 			phys:Wake()  	
 		end
 		
-		self.WireOpen = {}
+		//self.WireOpen = {}
 
 end
 
 function ENT:MakeWire()
-	if !self.AnimData or type( self.AnimData ) != "table" or self.SBEPWire == 0 then return end
+	if !self.AnimData or !self.SBEPWire then return end
 
-		self.WireInputs = {}
+		self.SBEPWireInputs = {}
 		for i = 1, #self.AnimData do
-			self.WireInputs[#self.WireInputs + 1] = "Open_"..tostring( i )
-			self.WireInputs[#self.WireInputs + 1] = "Lock_"..tostring( i )
+			table.insert(self.SBEPWireInputs , "Open_"..tostring( i ) )
+			table.insert(self.SBEPWireInputs , "Lock_"..tostring( i ) )
 		end
-		if self.EnableUseKey == 1 then
-			self.WireInputs[#self.WireInputs + 1] = "Disable Use"
+		if self.EnableUseKey then
+			table.insert(self.SBEPWireInputs , "Disable Use" )
 		end
 	
-		self.WireOutputs = {}
+		self.SBEPWireOutputs = {}
 		for i = 1, #self.AnimData do
-			self.WireOutputs[#self.WireOutputs + 1] = "Open_"..tostring( i )
-			self.WireOutputs[#self.WireOutputs + 1] = "Locked_"..tostring( i )
+			table.insert(self.SBEPWireOutputs , "Open_"..tostring( i ) )
+			table.insert(self.SBEPWireOutputs , "Locked_"..tostring( i ) )
 		end
 
-	self.Inputs = Wire_CreateInputs(self.Entity, self.WireInputs )
-	self.Outputs = WireLib.CreateOutputs(self.Entity, self.WireOutputs)
+	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEPWireInputs )
+	self.Outputs = WireLib.CreateOutputs(self.Entity, self.SBEPWireOutputs)
 end
 
 function ENT:AddAnimDoors()
@@ -114,7 +114,7 @@ function ENT:TriggerInput(k,v)
 	for i = 1, #self.AnimData do
 	
 		if k == "Open_"..tostring(i) then
-			self.WireOpen[i] = v
+			//self.WireOpen[i] = v
 			if v > 0 then
 				if not self.Door[i].Locked and not self.Door[i]:CheckDoorAnim() then
 					self.Door[i]:Open()
@@ -136,9 +136,9 @@ function ENT:TriggerInput(k,v)
 			else		
 				self.Door[i].Locked = false
 				WireLib.TriggerOutput(self.Entity,"Locked_"..tostring(i),0)
-				if self.WireOpen[i] > 0 then
-					self.Door[i]:Open()
-				end
+				//if self.WireOpen[i] > 0 then
+				//	self.Door[i]:Open()
+				//end
 			end
 		end
 		
