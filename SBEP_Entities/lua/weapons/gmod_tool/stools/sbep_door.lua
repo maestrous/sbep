@@ -30,39 +30,40 @@ TOOL.ClientConVar[ "enableuse"	] = 1
 
 function TOOL:LeftClick( trace )
 
-	local model 			= self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
+	local model = self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
 	
 	local pos = trace.HitPos
 	
 	local DoorController = ents.Create( "sbep_base_door_controller" )
 		DoorController:SetModel( model )
-		
-		//DoorController.Skin = self:GetClientNumber( "skin" )
+
 		DoorController:SetSkin( self:GetClientNumber( "skin" ) )
 		
-		if self:GetClientNumber( "enableuse" ) == 1 or !WireAddon then
+		if self:GetClientNumber( "enableuse" ) == 1 then
 			DoorController.EnableUseKey = true
 		else
 			DoorController.EnableUseKey = false
 		end
 		
-		DoorController:SetPos( pos + Vector(0,0,ModelSelectTable[model][1]) )
-		
 		DoorController:Spawn()
 		DoorController:Activate()
+		
+		DoorController:SetPos( pos - Vector(0,0, DoorController:OBBMins().z ) )
 	
 		DoorController.AnimData = {}
 		local val = 3
 		while ModelSelectTable[model][val] do
-			DoorController.AnimData[val] = ModelSelectTable[model][val]
+			table.insert( DoorController.AnimData , ModelSelectTable[model][val] )
 			val = val + 1
 		end
-	
+		
 		DoorController:AddAnimDoors()
 	
-		if WireAddon then
-			DoorController.SBEPWire = self:GetClientNumber( "wire" )
+		if tonumber(self:GetClientNumber( "wire" )) == 1 then
+			DoorController.SBEPEnableWire = true
 			DoorController:MakeWire()
+		else
+			DoorController.SBEPEnableWire = false
 		end
 	
 	undo.Create("SBEP Door")
@@ -112,7 +113,6 @@ function TOOL.BuildCPanel( panel )
 						end
 	panel:AddItem( SkinMenu )
 	
-	//if WireAddon then
 		local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
 			WireCheckBox:SetText( "Create Wire Inputs" )
 			WireCheckBox:SetConVar( "sbep_door_wire" )
@@ -126,7 +126,6 @@ function TOOL.BuildCPanel( panel )
 			UseCheckBox:SetValue( 1 )
 			UseCheckBox:SizeToContents()
 		panel:AddItem( UseCheckBox )
-	//end
 
 	local ModelCollapsibleCategories = {}
 	

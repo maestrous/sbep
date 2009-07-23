@@ -73,8 +73,11 @@ function ENT:SetDoorType( DoorType )
 		local phys = self:GetPhysicsObject()  	
 		if (phys:IsValid()) then  		
 			phys:Wake()  
-			phys:EnableGravity(false)			
+			phys:EnableGravity(false)
+			phys:EnableMotion( false )
 		end
+		
+	self:Close()
 	
 end
 
@@ -146,24 +149,28 @@ end
 function ENT:Think()
 
 	if !(self.OpenTrigger == nil) then
-		if self.OpenTrigger != self.OldOpenTrigger then
-			if self.OpenTrigger then
+		if self.OpenTrigger and !self:CheckDoorAnim() then
+			if !self.OpenStatus then
 				self:Open()
-			else
+			end
+		elseif !self.OpenTrigger and self:CheckDoorAnim() then
+			if self.OpenStatus then
 				self:Close()
 			end
 		end
-		self.OldOpenTrigger = self.OpenTrigger
 	end
 
-	self.Entity:NextThink( CurTime() + 0.05 )
+	self.Entity:NextThink( CurTime() + 0.1 )
 	
 	return true
 end
 
 function ENT:CheckDoorAnim()
 
-	if self:GetSequence() == self.OpenSequence  then return true  end
-	if self:GetSequence() == self.CloseSequence then return false end	
+	if self:GetSequence() == self.OpenSequence  then 
+		return true 
+	elseif self:GetSequence() == self.CloseSequence then 
+		return false 
+	end	
 
 end
