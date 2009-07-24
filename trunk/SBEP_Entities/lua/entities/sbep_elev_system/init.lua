@@ -39,16 +39,56 @@ local LMT = {
 		[ "models/SmallBridge/Station Parts/sbhuble.mdl" 		]	= { "H"		, 195.3 	, 195.3 	, {0,0,0,0} , { 0 , 130.2 , 260.4 } }
 			}
 
-local PMT = {}
-		PMT[1] 		= "models/SmallBridge/Elevators,Small/sbselevp0.mdl"
-		PMT[2] 		= "models/SmallBridge/Elevators,Small/sbselevp1.mdl"
-		PMT[3] 		= "models/SmallBridge/Elevators,Small/sbselevp2e.mdl"
-		PMT[4] 		= "models/SmallBridge/Elevators,Small/sbselevp2r.mdl"
-		PMT[5] 		= "models/SmallBridge/Elevators,Small/sbselevp3.mdl"
+local LMTL = {
+		[ "models/SmallBridge/Elevators,Large/sblelevb.mdl" 	]	= { "B"		,  65.1 	,  65.1 	, {0,0,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevbe.mdl" 	]	= { "BE"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevbedh.mdl" 	]	= { "BEdh"	, 195.3 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevbr.mdl" 	]	= { "BR"	,  65.1 	,  65.1 	, {1,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevbt.mdl" 	]	= { "BT"	,  65.1 	,  65.1 	, {1,1,1,0} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevbx.mdl" 	]	= { "BX"	,  65.1 	,  65.1 	, {1,1,1,1} } ,
+		
+		[ "models/SmallBridge/Elevators,Large/sblelevm.mdl" 	]	= { "M"		,  65.1 	,  65.1 	, {0,0,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevme.mdl" 	]	= { "ME"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevmedh.mdl" 	]	= { "MEdh"	, 195.3 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevmr.mdl" 	]	= { "MR"	,  65.1 	,  65.1 	, {1,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevmt.mdl" 	]	= { "MT"	,  65.1 	,  65.1 	, {1,1,1,0} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevmx.mdl" 	]	= { "MX"	,  65.1 	,  65.1 	, {1,1,1,1} } ,
+		
+		[ "models/SmallBridge/Elevators,Large/sblelevt.mdl" 	]	= { "T"		,  65.1 	,  65.1 	, {0,0,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevte.mdl" 	]	= { "TE"	,  65.1 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevtedh.mdl" 	]	= { "TEdh"	, 195.3 	,  65.1 	, {0,1,0,1} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevtr.mdl" 	]	= { "TR"	,  65.1 	,  65.1 	, {1,1,0,0} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevtt.mdl" 	]	= { "TT"	,  65.1 	,  65.1 	, {1,1,1,0} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevtx.mdl" 	]	= { "TX"	,  65.1 	,  65.1 	, {1,1,1,1} } ,
+		
+		[ "models/SmallBridge/Elevators,Large/sblelevs.mdl" 	]	= { "S"		,  65.1 	,  65.1 	, {0,0,0,0} } ,
+		[ "models/SmallBridge/Elevators,Large/sblelevs2.mdl" 	]	= { "S2"	,  65.1 	,  65.1 	, {0,0,0,0} }
+
+			}
+
+local PMT = {
+		"models/SmallBridge/Elevators,Small/sbselevp0.mdl"	,
+		"models/SmallBridge/Elevators,Small/sbselevp1.mdl"	,
+		"models/SmallBridge/Elevators,Small/sbselevp2e.mdl"	,
+		"models/SmallBridge/Elevators,Small/sbselevp2r.mdl"	,
+		"models/SmallBridge/Elevators,Small/sbselevp3.mdl"
+			}
+
+local PMTL = {
+		"models/SmallBridge/Elevators,Large/sblelevp0.mdl"	,
+		"models/SmallBridge/Elevators,Large/sblelevp1.mdl"	,
+		"models/SmallBridge/Elevators,Large/sblelevp2e.mdl"	,
+		"models/SmallBridge/Elevators,Large/sblelevp2r.mdl"	,
+		"models/SmallBridge/Elevators,Large/sblelevp3.mdl"
+			}
 
 function ENT:Initialize()
 	
-	self:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" ) 
+	if self.Large then
+		self:SetModel( "models/SmallBridge/Elevators,Large/sblelevp3.mdl" ) 
+	else
+		self:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" ) 
+	end
 
 	self.PT = {}
 	self.PC = 0
@@ -56,6 +96,8 @@ function ENT:Initialize()
 	self.MAT = {0,0,0,0}
 	self.Activated = false
 	self.FN = 1
+	self.CP = 1
+	self.CF = 1
 	self.INC = -60.45
 	self.TO = -60.45
 	self.AYO = 90
@@ -121,11 +163,19 @@ function ENT:RefreshPart( PartNum )
 	local n = tonumber( PartNum )
 	local P = self.PT[ n ]
 	
+	local DT = {}
+	if self.Large then
+		P.model = "models/SmallBridge/Elevators,Large/sblelev"..string.sub( P.model , 43 )
+		DT = LMTL[ P.model ]
+	else
+		DT = LMT[ P.model ]
+	end
+	
 	P:SetModel( P.model )
-	P.LT  = LMT[ P.model ][1]
-	P.ZUD = LMT[ P.model ][2]
-	P.ZDD = LMT[ P.model ][3]
-	P.AT  = LMT[ P.model ][4]
+	P.LT  = DT[1]
+	P.ZUD = DT[2]
+	P.ZDD = DT[3]
+	P.AT  = DT[4]
 	P.LTC = string.Left( P.LT , 1)
 	
 	if self.Skin then
@@ -157,9 +207,9 @@ function ENT:RefreshPart( PartNum )
 		P.IsHub = false
 	end
 	
-	if LMT[ P.model ][5] then
+	if DT[5] then
 		P.MultiFloor = true
-		P.FO = LMT[ P.model ][5]
+		P.FO = DT[5]
 		P.SBEPLiftWireInputs = {}
 		for k,v in ipairs( P.FO ) do
 			P.SBEPLiftWireInputs[k] = "Call "..tostring( k )
@@ -180,6 +230,12 @@ function ENT:RefreshPart( PartNum )
 		P.Inv = false
 	end
 
+	if self.Usable then
+		P.Usable = true
+	else
+		P.Usable = false
+	end
+		
 	if n > 1 then
 		P.HO = self.PT[n - 1].HO
 		if self.PT[n - 1].Inv then
@@ -216,13 +272,29 @@ function ENT:Think()
 
 	if !self.Activated then return end
 	
-	self.INC = self.INC + math.Clamp( ( self.TO - self.INC) , -0.5 , 0.5 )
-	if math.Round(self.INC) == math.Round(self.OldINC) then
+	self.INC = self.INC + math.Clamp( ( self.TO - self.INC) , -0.6 , 0.6 )
+	if 	( math.Round(self.INC) == math.Round(self.OldINC) ) then
 		self.AtTargetLocation = true
 	else
 		self.AtTargetLocation = false
 	end
 	self.OldINC = self.INC
+	
+	local endloop = false
+	for k,v in ipairs( self.FT ) do
+		if endloop or ( k == #self.FT ) then break end
+		if math.abs(self.INC) < math.abs( ( v + self.FT[k + 1] ) / 2 ) then
+			self.CF = k
+			endloop = true
+		else
+			self.CF = k + 1
+		end
+	end
+	
+	if self.CF != self.OldCF then
+		WireLib.TriggerOutput( self , "Floor" , self.CF )
+	end
+	self.OldCF = self.CF
 	
 	if self.TO > self.INC then
 		self.Direction = "UP"
@@ -230,7 +302,9 @@ function ENT:Think()
 		self.Direction = "DOWN"
 	end
 
-	self:CheckHatchStatus()
+	if self.UseHatches then
+		self:CheckHatchStatus()
+	end
 	
 	self.Entity:NextThink( CurTime() + 0.01 )
 
@@ -266,21 +340,22 @@ function ENT:PhysicsSimulate( phys, deltatime )
 end
 
 function ENT:CheckHatchStatus()
-	if !self.Activated then return end
-	if self.AtTargetLocation then return end
-	if !self.HT then return end
+	if 	!self.UseHatches 		or
+		!self.Activated 		or
+		self.AtTargetLocation 	or
+		!self.HT then return end
 
 	for k,v in ipairs( self.HT ) do
 		if self.Direction == "UP" then
-			if self.INC > ( v.Offset + 20 ) then
+			if self.INC > ( v.HO + 20 ) then
 				v.OpenTrigger = false
-			elseif self.INC > ( v.Offset - 110 ) then
+			elseif self.INC > ( v.HO - 110 ) then
 				v.OpenTrigger = true
 			end
 		elseif self.Direction == "DOWN" then
-			if self.INC < ( v.Offset - 80 ) then
+			if self.INC < ( v.HO - 80 ) then
 				v.OpenTrigger = false
-			elseif self.INC < ( v.Offset + 50 ) then
+			elseif self.INC < ( v.HO + 50 ) then
 				v.OpenTrigger = true
 			end
 		end
@@ -304,10 +379,18 @@ function ENT:FinishSystem()
 			self.PT[ 1 ].model = ( "models/SmallBridge/Station Parts/sbbridgevisorb.mdl" )
 		end
 	else
-		if self.PT[ 1 ].Inv then
-			self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ 1 ].model , 44 ) )
+		if self.Large then
+			if self.PT[ 1 ].Inv then
+				self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Large/sblelevt"..string.sub( self.PT[ 1 ].model , 44 ) )
+			else
+				self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Large/sblelevb"..string.sub( self.PT[ 1 ].model , 44 ) )
+			end
 		else
-			self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ 1 ].model , 44 ) )
+			if self.PT[ 1 ].Inv then
+				self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ 1 ].model , 44 ) )
+			else
+				self.PT[ 1 ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ 1 ].model , 44 ) )
+			end
 		end
 	end
 	self:RefreshPart( 1 )
@@ -319,10 +402,18 @@ function ENT:FinishSystem()
 			self.PT[ self.PC ].model = ( "models/SmallBridge/Station Parts/sbbridgevisort.mdl" )
 		end
 	else
-		if self.PT[ self.PC ].Inv then
-			self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ self.PC ].model , 44 ) )
+		if self.Large then
+			if self.PT[ self.PC ].Inv then
+				self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Large/sblelevb"..string.sub( self.PT[ self.PC ].model , 44 ) )
+			else
+				self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Large/sblelevt"..string.sub( self.PT[ self.PC ].model , 44 ) )
+			end
 		else
-			self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ self.PC ].model , 44 ) )
+			if self.PT[ self.PC ].Inv then
+				self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevb"..string.sub( self.PT[ self.PC ].model , 44 ) )
+			else
+				self.PT[ self.PC ].model = ( "models/SmallBridge/Elevators,Small/sbselevt"..string.sub( self.PT[ self.PC ].model , 44 ) )
+			end
 		end
 	end
 	self:RefreshPart( self.PC )
@@ -371,6 +462,54 @@ function ENT:FinishSystem()
 		end
 	end
 	self.FC = #self.FT
+	
+	if self.UseHatches then
+		self.HT = {}
+		local HI = 0
+		for k,v in ipairs(self.PT) do
+			if !(k == #self.PT) then
+				if not (v.IsShaft and self.PT[k + 1].IsShaft) then
+					HI = HI + 1
+					self.HT[HI] = ents.Create( "sbep_base_door" )
+					local NH = self.HT[HI]
+					NH:Spawn()
+					if self.Large then
+						NH:SetDoorType( "Door_ElevHatch_L" )
+					else
+						NH:SetDoorType( "Door_ElevHatch" )
+					end
+					NH:SetAngles( v:GetAngles() )
+					
+					local weldpart = 0
+					if self.PT[k + 1].IsShaft then
+						if v.Inv then
+							NH.PO = v.ZDD - 4.65
+						else
+							NH.PO = v.ZUD - 4.65
+						end
+					else
+						if v.Inv then
+							NH.PO = v.ZDD + 4.65
+						else
+							NH.PO = v.ZUD + 4.65
+						end
+						weldpart = 1
+					end
+					NH.HO = v.HO + NH.PO
+					NH:SetPos( self.StartPos + Vector(0,0,NH.HO) )
+					constraint.Weld( NH, self.PT[k + weldpart] , 0, 0, 0, true )
+					
+					if self.Skin then
+						NH:SetSkin( self.Skin )
+					end
+
+					NH.OpenTrigger = false
+					self:DeleteOnRemove(NH)
+				end
+			end
+		end
+		self.HC = #self.HT
+	end
 	
 	self:MakeWire()
 	
@@ -457,22 +596,29 @@ function ENT:CalcPanelModel( PartNum )
 	
 	self.MATSum = self.MAT[1] + self.MAT[2] + self.MAT[3] + self.MAT[4]
 	
+	local DMT = {}
+	if self.Large then
+		DMT = PMTL
+	else
+		DMT = PMT
+	end
+	
 	//Using the model access table to work out the model and rotation of the elevator panel.-----------------
 	if self.MATSum == 4 then
-		self:SetModel( PMT[1] )
+		self:SetModel( DMT[1] )
 		self.AYO = 0
 	elseif self.MATSum == 1 then 
-		self:SetModel( PMT[5] )
+		self:SetModel( DMT[5] )
 		self.AYO = ((self.MAT[4] * 90) + (self.MAT[3] * 180) + (self.MAT[2] * 270) )
 	elseif self.MATSum == 3 then 
-		self:SetModel( PMT[2] )
+		self:SetModel( DMT[2] )
 		self.AYO = (((self.MAT[1] - 1) * -90) + ((self.MAT[4] - 1) * -180) + ((self.MAT[3] - 1) * -270))
 	elseif self.MATSum == 2 then 
 		if self.MAT[1] == self.MAT[3] then
-			self:SetModel( PMT[3] )
+			self:SetModel( DMT[3] )
 			self.AYO = (self.MAT[2] * 90)
 		elseif self.MAT[1] == self.MAT[2] or self.MAT[2] == self.MAT[3] then
-			self:SetModel( PMT[4] )
+			self:SetModel( DMT[4] )
 			if self.MAT[1] == 1 then
 				self.AYO =  (self.MAT[2] * -90) % 360
 			elseif self.MAT[3] == 1 then
@@ -491,7 +637,8 @@ function ENT:MakeWire() //Adds the appropriate wire inputs.
 		self.SBEP_WireInputsTable[i + 1] = "Floor "..tostring(i)
 	end
 	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEP_WireInputsTable)
-	//self.Outputs = WireLib.CreateOutputs(self.Entity,{""})
+	
+	self.Outputs = WireLib.CreateOutputs(self.Entity,{"Floor"})
 end
 
 function ENT:TriggerInput(k,v)
@@ -532,6 +679,7 @@ function ENT:PreEntityCopy()
 	dupeInfo.FT 		= self.FT
 	dupeInfo.MAT 		= self.MAT
 	dupeInfo.AYO 		= self.AYO
+	dupeInfo.Usable 	= self.Usable
 	dupeInfo.model 		= self:GetModel()
 	duplicator.StoreEntityModifier(self, "SBEPLiftSysDupeInfo", dupeInfo)
 end
@@ -552,6 +700,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	self.MAT 		= Ent.EntityMods.SBEPLiftSysDupeInfo.MAT
 	self.model 		= Ent.EntityMods.SBEPLiftSysDupeInfo.model
 	self.AYO 		= Ent.EntityMods.SBEPLiftSysDupeInfo.AYO
+	self.Usable		= Ent.EntityMods.SBEPLiftSysDupeInfo.Usable
 	
 	self:PasteRefreshSystem()
 
@@ -600,6 +749,12 @@ function ENT:PasteRefreshSystem()
 			P.IsDH = true
 		else
 			P.IsDH = false
+		end
+		
+		if self.Usable then
+			P.Usable = true
+		else
+			P.Usable = false
 		end
 		
 		if P.Roll != 0 then

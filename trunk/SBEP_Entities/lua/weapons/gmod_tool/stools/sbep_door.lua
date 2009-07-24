@@ -10,6 +10,11 @@ if CLIENT then
 	language.Add( "Tool_sbep_door_desc"	, "Create an SBEP door." 		)
 	language.Add( "Tool_sbep_door_0"	, "Left click to spawn a door." )
 	language.Add( "undone_SBEP Door"	, "Undone SBEP Door"			)
+	
+	function SBEPDoorToolError( ply, cmd, args )
+		GAMEMODE:AddNotify( args[1] , tonumber(args[2]) , args[3] )
+	end
+	concommand.Add( "SBEPDoorToolError_cl" , SBEPDoorToolError )
 end
 
 local CategoryTable = {
@@ -30,6 +35,11 @@ TOOL.ClientConVar[ "enableuse"	] = 1
 
 function TOOL:LeftClick( trace )
 
+	if tonumber(self:GetClientNumber( "wire" )) == 0 and self:GetClientNumber( "enableuse" ) == 0 then
+		RunConsoleCommand( "SBEPDoorToolError_cl" , "Cannot be both unusable and unwireable." , 1 , 4)
+		return
+	end
+
 	local model = self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
 	
 	local pos = trace.HitPos
@@ -37,7 +47,8 @@ function TOOL:LeftClick( trace )
 	local DoorController = ents.Create( "sbep_base_door_controller" )
 		DoorController:SetModel( model )
 
-		DoorController:SetSkin( self:GetClientNumber( "skin" ) )
+		DoorController.Skin = tonumber( self:GetClientNumber( "skin" ) )
+		DoorController:SetSkin( DoorController.Skin )
 		
 		if self:GetClientNumber( "enableuse" ) == 1 then
 			DoorController.EnableUseKey = true
