@@ -32,7 +32,10 @@ local ConVars = {
 		{ "yaw"				, 						0							} ,
 		{ "roll"			, 						0							} ,
 		{ "activepart"		,						1							} ,
-		{ "skin"			,						0							}
+		{ "skin"			,						0							} ,
+		{ "enableuse"		,						0							} ,
+		{ "doors"			,						0							} ,
+		{ "size"			,						1							}
 			}
 for k,v in pairs(ConVars) do
 	TOOL.ClientConVar[ v[1] ] = v[2]
@@ -124,6 +127,18 @@ if CLIENT then
 												SBEPLiftSpecialMenuPanel:SetVisible( SBEPLiftSpecialVisible )
 												RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , SpecialModelTable[2][1] )
 											end
+	
+	function SBEPDisableButtons( ply , cmd , args )
+		local size = tonumber( GetConVarNumber( "sbep_lift_designer_size" ) )
+		if size == 2 then
+			SBEPLiftMenuPartButton[4]:SetDisabled( true )
+			SBEPLiftMenuSpecialButton:SetDisabled( true )
+		else
+			SBEPLiftMenuPartButton[4]:SetDisabled( false )
+			SBEPLiftMenuSpecialButton:SetDisabled( false )
+		end
+	end
+	concommand.Add( "SBEPDisableButtons_cl" , SBEPDisableButtons )
 
 	
 	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -484,26 +499,44 @@ function TOOL:LeftClick( trace )
 			LiftSystem_SER:SetAngles( Angle(0,-90,0) )
 			LiftSystem_SER:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" )
 			LiftSystem_SER.Skin = tonumber( skin )
-			LiftSystem_SER:Spawn()
-			LiftSystem_SER.StartPos = startpos + Vector(0,0,65.1)
+			
+		if tonumber(self:GetClientNumber( "enableuse" )) == 1 then
+			LiftSystem_SER.Usable = true
+		else
+			LiftSystem_SER.Usable = false
+		end
+		
+		if tonumber(self:GetClientNumber( "size" )) == 2 then
+			LiftSystem_SER.Large = true
+		else
+			LiftSystem_SER.Large = false
+		end
+		
+		LiftSystem_SER:Spawn()
+		LiftSystem_SER.StartPos = startpos + Vector(0,0,65.1)
 
 		self:GetOwner():SetNetworkedEntity( "SBEP_LiftSystem" , LiftSystem_SER )
 		self:GetOwner():SetNetworkedVector( "SBEP_LiftStartPos" , startpos + Vector(0,0,65.1) )
-
+		
+		local hatchconvar = tonumber(self:GetClientNumber( "doors" ))
+		if hatchconvar == 2 then
+			LiftSystem_SER.UseHatches = true
+		elseif hatchconvar == 3 then
+			LiftSystem_SER.UseDoors = true
+		end		
+		
 		undo.Create( "SBEP Lift System" )
 			undo.AddEntity( LiftSystem_SER )
 			undo.SetPlayer( self:GetOwner() )
 		undo.Finish()
 		
 		LiftSystem_SER:CreatePart( 1 )
-
-		LiftSystem_SER.PT[1].Yaw   = 0
-		LiftSystem_SER.PT[1].Roll  = 0		
-		LiftSystem_SER.PT[1].model = "models/SmallBridge/Elevators,Small/sbselevm.mdl"
-		
-		//LiftSystem_SER.PT[1]:SetColor( 255 , 255 , 255 , 180 )
-		
+			LiftSystem_SER.PT[1].Yaw   = 0
+			LiftSystem_SER.PT[1].Roll  = 0		
+			LiftSystem_SER.PT[1].model = "models/SmallBridge/Elevators,Small/sbselevm.mdl"		
 		LiftSystem_SER:RefreshPart( 1 )
+		
+		RunConsoleCommand( "SBEPDisableButtons_cl" )
 		
 		RunConsoleCommand( "sbep_lift_designer_model" , "models/SmallBridge/Elevators,Small/sbselevm.mdl" )
 	
@@ -535,6 +568,9 @@ function TOOL.BuildCPanel(panel)
 	panel:SetSpacing( 10 )
 	panel:SetName( "SBEP Lift System Designer" )
 	
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
 	local SkinMenu = vgui.Create("DButton")
 	SkinMenu:SetText( "Skin" )
 	SkinMenu:SetSize( 100, 20 )
@@ -556,6 +592,62 @@ function TOOL.BuildCPanel(panel)
 						end
 	panel:AddItem( SkinMenu )
 	
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	local DoorMenu = vgui.Create("DButton")
+	DoorMenu:SetText( "Doors" )
+	DoorMenu:SetSize( 100, 20 )
+
+	local DoorTable = {
+			"None"  			,
+			"Shaft Hatches"   	,
+			"Floor Doors"  		
+				}
+
+	DoorMenu.DoClick = function ( btn )
+			local DoorMenuOptions = DermaMenu()
+			for i = 1, #DoorTable do
+				DoorMenuOptions:AddOption( DoorTable[i] , function() RunConsoleCommand( "sbep_lift_designer_doors", i ) end )
+			end
+			DoorMenuOptions:Open()
+						end
+	panel:AddItem( DoorMenu )
+	
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	local SizeMenu = vgui.Create("DButton")
+	SizeMenu:SetText( "Size" )
+	SizeMenu:SetSize( 100, 20 )
+
+	local SizeTable = {
+				"Small"  	,
+				"Large"   		
+				}
+
+	SizeMenu.DoClick = function ( btn )
+			local SizeMenuOptions = DermaMenu()
+			for i = 1, #SizeTable do
+				SizeMenuOptions:AddOption( SizeTable[i] , function() RunConsoleCommand( "sbep_lift_designer_size", i ) end )
+			end
+			SizeMenuOptions:Open()
+						end
+	panel:AddItem( SizeMenu )
+	
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
+		UseCheckBox:SetText( "Enable Use Key on Housings" )
+		UseCheckBox:SetConVar( "sbep_lift_designer_enableuse" )
+		UseCheckBox:SetValue( 0 )
+		UseCheckBox:SizeToContents()
+	panel:AddItem( UseCheckBox )
+	
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
 	local ResetLabel= vgui.Create("DLabel")
 		ResetLabel:SetText("This tool is still a prototype. If the tool bugs,\nyou may need to reset it with this button.")
 		ResetLabel:SizeToContents()
@@ -568,5 +660,9 @@ function TOOL.BuildCPanel(panel)
 							RunConsoleCommand( "sbep_lift_designer_editing" , 0 )
 						end
 	panel:AddItem( ResetButton )
+	
+	
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 end

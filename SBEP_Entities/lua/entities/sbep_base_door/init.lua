@@ -16,6 +16,16 @@ DoorTypesTable[ "Door_Anim2"	]	= { "models/SmallBridge/SEnts/SBADoor2.mdl" 	,
 		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
 		{ [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
 
+DoorTypesTable[ "Door_Anim3"	]	= { "models/SmallBridge/SEnts/SBADoor3.mdl" 	,
+										2 , 1   , 1 	,
+		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_Anim2"	]	= { "models/SmallBridge/SEnts/SBADoor2.mdl" 	,
+										3 , 1   , 2 	,
+		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
+
 DoorTypesTable[ "Door_Iris"		]	= { "models/SmallBridge/SEnts/SBADoorIris2.mdl",
 										3 , 2   , 1 	,
 		{ [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [2.65] = "Doors.FullOpen9" } ,
@@ -45,6 +55,11 @@ DoorTypesTable[ "Door_ElevHatch"]	= { "models/SmallBridge/SEnts/sbahatchelevs.md
 										1 , 0.6 , 0.4 	,
 		{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } ,
 		{ [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_ElevHatch_L"]	= { "models/SmallBridge/SEnts/sbahatchelevl.mdl" 	, 
+										2 , 0.6 , 1 	,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
 
 function ENT:SetDoorType( DoorType )
 	
@@ -159,8 +174,14 @@ function ENT:Think()
 			end
 		end
 	end
+	
+	if self.Controller then
+		if self:GetSkin() != self.Controller.Skin then
+			self:SetSkin( self.Controller.Skin )
+		end
+	end
 
-	self.Entity:NextThink( CurTime() + 0.1 )
+	self.Entity:NextThink( CurTime() + 0.05 )
 	
 	return true
 end
@@ -173,4 +194,12 @@ function ENT:CheckDoorAnim()
 		return false 
 	end	
 
+end
+
+function ENT:OnRemove()
+	
+	if self.Controller and ValidEntity( self.Controller ) then
+		table.remove( self.Controller.Door , self.SysDoorNum )
+		self.Controller:MakeWire( true )
+	end
 end

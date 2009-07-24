@@ -21,7 +21,7 @@ function ENT:Initialize()
 	
 end
 
-function ENT:MakeWire()
+function ENT:MakeWire( adjust )
 	if !self.Door or !self.SBEPEnableWire then return end
 
 	self.SBEPWireInputs = {}
@@ -39,8 +39,13 @@ function ENT:MakeWire()
 		table.insert(self.SBEPWireInputs , "Disable Use" )
 	end
 
-	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEPWireInputs )
-	self.Outputs = WireLib.CreateOutputs(self.Entity, self.SBEPWireOutputs)
+	if adjust then
+		Wire_AdjustInputs(self.Entity, self.SBEPWireInputs )
+		Wire_AdjustOutputs(self.Entity, self.SBEPWireOutputs)
+	else
+		self.Inputs = Wire_CreateInputs(self.Entity, self.SBEPWireInputs )
+		self.Outputs = Wire_CreateOutputs(self.Entity, self.SBEPWireOutputs)
+	end
 end
 
 function ENT:AddAnimDoors()
@@ -72,6 +77,8 @@ function ENT:AddAnimDoors()
 			self.Door[k].SysDoorNum = k
 
 			self.Door[k].OpenTrigger = false
+			
+			self.Door[k]:GetPhysicsObject():EnableMotion( true )
 
 			self:DeleteOnRemove( self.Door[k] )
 	end
@@ -86,6 +93,23 @@ function ENT:Use( activator, caller )
 			v.OpenTrigger = !v.OpenTrigger
 		end
 	end
+end
+
+function ENT:Think()
+
+	
+	local skin = self:GetSkin()
+	local skincount = self:SkinCount()
+	if skincount > 5 then
+		self.Skin = math.floor( skin / 2 )
+	else
+		self.Skin = skin
+	end
+
+	self.Entity:NextThink( CurTime() + 1 )
+	
+	return true
+
 end
 
 function ENT:TriggerInput(k,v)

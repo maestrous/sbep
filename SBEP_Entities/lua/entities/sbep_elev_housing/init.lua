@@ -49,3 +49,11 @@ function ENT:TriggerInput(k,v)
 	end
 
 end
+
+function ENT:Use()
+
+	if !self.MultiFloor and self.Usable then
+		self.Controller:SetCallFloorNum( self.FN )
+	end
+
+end
