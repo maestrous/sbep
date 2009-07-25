@@ -21,6 +21,11 @@ DoorTypesTable[ "Door_Anim3"	]	= { "models/SmallBridge/SEnts/SBADoor3.mdl" 	,
 		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } ,
 		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } }
 
+DoorTypesTable[ "Door_Anim3dh"	]	= { "models/SmallBridge/SEnts/SBADoor3dh.mdl" 	,
+										2 , 1   , 1 	,
+		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } }
+
 DoorTypesTable[ "Door_Anim2"	]	= { "models/SmallBridge/SEnts/SBADoor2.mdl" 	,
 										3 , 1   , 2 	,
 		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
