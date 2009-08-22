@@ -16,15 +16,17 @@ end
 function TOOL:LeftClick( trace ) 
 	if trace.Entity:IsValid() then
 		if string.find( string.lower( trace.Entity:GetModel() ), "smallbridge" ) then
+			local SkinInt = 0
 			if trace.Entity:SkinCount() == 10 then
 				SkinInt = 1
 			else
 				SkinInt = 0
 			end
 			
-			SkinNumber  = self:GetClientNumber( "skin" )
-			GlassNumber = self:GetClientNumber( "glass" )
+			local SkinNumber  = self:GetClientNumber( "skin" )
+			local GlassNumber = self:GetClientNumber( "glass" )
 			
+			local Skin = 1
 			if SkinInt == 1 then
 				Skin = 2 * SkinNumber + GlassNumber
 			elseif SkinInt == 0 then
@@ -34,11 +36,9 @@ function TOOL:LeftClick( trace )
 			trace.Entity:SetSkin(Skin)
 			
 			return true
-		
 		end	
 	end
 end 
-
 
 function TOOL:RightClick( trace ) 
 
