@@ -36,10 +36,15 @@ DoorTypesTable[ "Door_Iris"		]	= { "models/SmallBridge/SEnts/SBADoorIris2.mdl",
 		{ [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [2.65] = "Doors.FullOpen9" } ,
 		{ [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
 
-DoorTypesTable[ "Door_Wide"		]	= { "models/SmallBridge/SEnts/SBADoorWide.mdl" ,
+DoorTypesTable[ "Door_DW"		]	= { "models/SmallBridge/SEnts/SBADoorWide.mdl" ,
 										3 , 1.5 , 1.5 	,
-		{ [0] = "Doors.Move14" , [0.55] = "Doors.FullOpen8" , [1.15] = "Doors.FullOpen8" , [1.75] = "Doors.FullOpen8" , [2.35] = "Doors.FullOpen8" , [2.85] = "Doors.FullOpen9" } ,
-		{ [0] = "Doors.Move14" , [0.55] = "Doors.FullOpen8" , [1.15] = "Doors.FullOpen8" , [1.75] = "Doors.FullOpen8" , [2.35] = "Doors.FullOpen8" , [2.85] = "Doors.FullOpen9" } }
+		{ [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.95] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.95] = "Doors.FullOpen9" } }
+
+DoorTypesTable[ "Door_DWDH"		]	= { "models/SmallBridge/SEnts/SBADoorWideDH.mdl" ,
+										3 , 1.5 , 1.5 	,
+		{ [0] = "Doors.Move14" , [0.80] = "Doors.FullOpen8" , [1.60] = "Doors.FullOpen8" , [2.40] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.35] = "Doors.FullOpen8" , [2.15] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } }
 
 DoorTypesTable[ "Door_Sly1"		]	= { "models/Slyfo/SLYAdoor1.mdl" ,
 										2 , 0.5 , 1.5 	,
