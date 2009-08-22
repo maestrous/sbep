@@ -93,7 +93,7 @@ function ENT:Initialize()
 	self.PT = {}
 	self.PC = 0
 	self.FC = 0
-	self.MAT = {0,0,0,0}
+	self.MAT = table.Copy({0,0,0,0})
 	self.Activated = false
 	self.FN = 1
 	self.CP = 1
@@ -175,7 +175,7 @@ function ENT:RefreshPart( PartNum )
 	P.LT  = DT[1]
 	P.ZUD = DT[2]
 	P.ZDD = DT[3]
-	P.AT  = DT[4]
+	P.AT  = table.Copy( DT[4] )
 	P.LTC = string.Left( P.LT , 1)
 	
 	if self.Skin then
@@ -230,7 +230,7 @@ function ENT:RefreshPart( PartNum )
 		P.Inv = false
 	end
 
-	if self.Usable then
+	if self.Usable and !P.IsShaft then
 		P.Usable = true
 	else
 		P.Usable = false
@@ -273,12 +273,11 @@ function ENT:Think()
 	if !self.Activated then return end
 	
 	self.INC = self.INC + math.Clamp( ( self.TO - self.INC) , -0.6 , 0.6 )
-	if 	( math.Round(self.INC) == math.Round(self.OldINC) ) then
+	if 	( math.Round(self.INC) == math.Round( self.TO ) ) then
 		self.AtTargetLocation = true
 	else
 		self.AtTargetLocation = false
 	end
-	self.OldINC = self.INC
 	
 	local endloop = false
 	for k,v in ipairs( self.FT ) do
@@ -304,6 +303,13 @@ function ENT:Think()
 
 	if self.UseHatches then
 		self:CheckHatchStatus()
+	end
+	
+	if self.UseDoors then
+		if self.AtTargetLocation != self.OldATL then
+			self:CheckDoorStatus()
+		end
+		self.OldATL = self.AtTargetLocation
 	end
 	
 	self.Entity:NextThink( CurTime() + 0.01 )
@@ -357,6 +363,24 @@ function ENT:CheckHatchStatus()
 				v.OpenTrigger = false
 			elseif self.INC < ( v.HO + 50 ) then
 				v.OpenTrigger = true
+			end
+		end
+	end
+end
+
+function ENT:CheckDoorStatus()
+	if  !self.UseDoors		or
+		!self.Activated		or
+		!self.FDT	then return end
+		
+	if self.AtTargetLocation then
+		for k,v in ipairs( self.FDT[ self.FN ] ) do
+			v.OpenTrigger = true
+		end
+	else
+		for k,v in ipairs( self.FDT ) do
+			for m,n in ipairs( v ) do
+				n.OpenTrigger = false
 			end
 		end
 	end
@@ -464,56 +488,116 @@ function ENT:FinishSystem()
 	self.FC = #self.FT
 	
 	if self.UseHatches then
-		self.HT = {}
-		local HI = 0
-		for k,v in ipairs(self.PT) do
-			if !(k == #self.PT) then
-				if not (v.IsShaft and self.PT[k + 1].IsShaft) then
-					HI = HI + 1
-					self.HT[HI] = ents.Create( "sbep_base_door" )
-					local NH = self.HT[HI]
-					NH:Spawn()
-					if self.Large then
-						NH:SetDoorType( "Door_ElevHatch_L" )
-					else
-						NH:SetDoorType( "Door_ElevHatch" )
-					end
-					NH:SetAngles( v:GetAngles() )
-					
-					local weldpart = 0
-					if self.PT[k + 1].IsShaft then
-						if v.Inv then
-							NH.PO = v.ZDD - 4.65
-						else
-							NH.PO = v.ZUD - 4.65
-						end
-					else
-						if v.Inv then
-							NH.PO = v.ZDD + 4.65
-						else
-							NH.PO = v.ZUD + 4.65
-						end
-						weldpart = 1
-					end
-					NH.HO = v.HO + NH.PO
-					NH:SetPos( self.StartPos + Vector(0,0,NH.HO) )
-					constraint.Weld( NH, self.PT[k + weldpart] , 0, 0, 0, true )
-					
-					if self.Skin then
-						NH:SetSkin( self.Skin )
-					end
-
-					NH.OpenTrigger = false
-					self:DeleteOnRemove(NH)
-				end
-			end
-		end
-		self.HC = #self.HT
+		self:CreateHatches()
+	elseif self.UseDoors then
+		self:CreateDoors()
 	end
 	
 	self:MakeWire()
 	
 	self.Activated = true
+
+end
+
+function ENT:CreateHatches()
+	
+	self.HT = {}
+	local HI = 0
+	for k,v in ipairs(self.PT) do
+		if !(k == #self.PT) then
+			if not (v.IsShaft and self.PT[k + 1].IsShaft) then
+				HI = HI + 1
+				self.HT[HI] = ents.Create( "sbep_base_door" )
+				local NH = self.HT[HI]
+				NH:Spawn()
+				if self.Large then
+					NH:SetDoorType( "Door_ElevHatch_L" )
+				else
+					NH:SetDoorType( "Door_ElevHatch" )
+				end
+				NH:SetAngles( v:GetAngles() )
+				
+				local weldpart = 0
+				if self.PT[k + 1].IsShaft then
+					if v.Inv then
+						NH.PO = v.ZDD - 4.65
+					else
+						NH.PO = v.ZUD - 4.65
+					end
+				else
+					if v.Inv then
+						NH.PO = v.ZDD + 4.65
+					else
+						NH.PO = v.ZUD + 4.65
+					end
+					weldpart = 1
+				end
+				NH.HO = v.HO + NH.PO
+				NH:SetPos( self.StartPos + Vector(0,0,NH.HO) )
+				constraint.Weld( NH, self.PT[k + weldpart] , 0, 0, 0, true )
+				
+				if self.Skin then
+					NH:SetSkin( self.Skin )
+				end
+
+				NH.OpenTrigger = false
+				self:DeleteOnRemove(NH)
+			end
+		end
+	end
+	self.HC = #self.HT
+end
+
+function ENT:CreateDoors()
+
+	self.FDT = {}
+	local FDI = 0
+	for k,v in ipairs( self.PT ) do
+		if !v.IsShaft then
+			FDI = FDI + 1
+			self.FDT[ FDI ] = {}
+			local inc = 0
+			for m,n in ipairs( v.AT ) do
+				if n == 1 then
+					inc = inc + 1
+					self.FDT[ FDI ][ inc ] = ents.Create( "sbep_base_door" )
+					local vec = Vector(-60.45,0,0)
+					
+					if self.Large then
+						if v.IsDH then
+							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_DWDH" )
+						else
+							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_DW" )
+						end
+						vec = Vector(-176.7,0,0)
+					else
+						if v.IsDH then
+							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_Anim3dh" )
+						else
+							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_Anim3" )
+						end
+					end
+					
+					vec:Rotate( Angle(0, (-90) * m ,0) )
+					self.FDT[ FDI ][ inc ]:SetPos( v:GetPos() + vec )
+					self.FDT[ FDI ][ inc ]:SetAngles( Angle( 0 , 90 * m , 0 ) )
+					self.FDT[ FDI ][ inc ]:Spawn()
+					self.FDT[ FDI ][ inc ]:Activate()
+					
+					constraint.Weld( self.FDT[ FDI ][ inc ] , v , 0 , 0 , 0 , true )
+					self.FDT[ FDI ][ inc ]:GetPhysicsObject():EnableMotion( true )
+					
+					if self.Skin then
+						self.FDT[ FDI ][ inc ]:SetSkin( self.Skin )
+					end
+					
+					self:DeleteOnRemove( self.FDT[ FDI ][ inc ] )
+				end
+			end
+		end
+	end
+	self.FDC = #self.FDT
+	self.DoorTrig = true
 
 end
 
@@ -544,39 +628,25 @@ function ENT:CalcPanelModel( PartNum )
 	local P = self.PT[ PartNum ]
 	
 	if P.LTC == "R" and P.Inv then
-		P.AT = {0,1,1,0}
+		P.AT = table.Copy( {0,1,1,0} )
 	end
 	
+	function RotateAT()
+		table.insert( P.AT , P.AT[1] )
+		table.remove( P.AT , 1 )
+	end
 	//Rotating the part access table.----------------
-	if P.Yaw == 90 then
-		P.AT[5] = P.AT[1]
-		
-		P.AT[1] = P.AT[2]
-		P.AT[2] = P.AT[3]
-		P.AT[3] = P.AT[4]
-		P.AT[4] = P.AT[5]
-		
-		P.AT[5] = nil
-	elseif P.Yaw == 180 then
-		P.AT[5] = P.AT[1]
-		P.AT[6] = P.AT[2]
-		
-		P.AT[1] = P.AT[3]
-		P.AT[2] = P.AT[4]
-		P.AT[3] = P.AT[5]
-		P.AT[4] = P.AT[6]
-		
-		P.AT[5] = nil
-		P.AT[6] = nil
-	elseif P.Yaw == 270 then
-		P.AT[5] = P.AT[4]
-		
-		P.AT[4] = P.AT[3]
-		P.AT[3] = P.AT[2]
-		P.AT[2] = P.AT[1]
-		P.AT[1] = P.AT[5]
-		
-		P.AT[5] = nil
+	if P.LTC != "X" then
+		if P.Yaw == 90 then
+			RotateAT()
+		elseif P.Yaw == 180 then
+			RotateAT()
+			RotateAT()
+		elseif P.Yaw == 270 then
+			RotateAT()
+			RotateAT()
+			RotateAT()
+		end
 	end
 	//----------------------
 	
