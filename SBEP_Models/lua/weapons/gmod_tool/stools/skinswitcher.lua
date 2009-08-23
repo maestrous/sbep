@@ -1,7 +1,7 @@
 TOOL.Category   = "Render"
 TOOL.Name       = "#Skin Switcher"
 TOOL.Command    = nil
-TOOL.ConfigName = nil
+TOOL.ConfigName = ""
 
 TOOL.ClientConVar[ "skin" ] 		= 0
 
