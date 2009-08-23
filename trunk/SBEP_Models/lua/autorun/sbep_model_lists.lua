@@ -27,6 +27,9 @@ local DoorControllerTable = {
 			[ "models/SmallBridge/Panels/sbpaneldbsmall.mdl"		] = { 65.1  , "Door" 	, { "Door_DBS"   } } ,
 			[ "models/Slyfo/SLYpaneldoor1.mdl"						] = { 0		, "Door" 	, { "Door_Sly1"  } } ,
 
+			[ "models/Cerus/Modbridge/Misc/Doors/door11a.mdl"			] = { 0		, "Modbridge", { "Door_ModBridge_11a"  } } ,
+			[ "models/Cerus/Modbridge/Misc/Doors/door12a.mdl"			] = { 0		, "Modbridge", { "Door_ModBridge_12a"  } } ,
+			
 			[ "models/SmallBridge/Elevators,Small/sbselevb.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
 																							  { "Door_Anim3"	 , Vector( 60.45,0,0) } } ,
 			[ "models/SmallBridge/Elevators,Small/sbselevbe.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
