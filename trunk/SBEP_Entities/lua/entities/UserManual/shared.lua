@@ -1,0 +1,16 @@
+ENT.Type = "anim"
+ENT.Base = "base_gmodentity"
+ENT.PrintName = "User Manual"
+ENT.Author = "Asphid_Jackal"
+ENT.Contact = "nullonentry"
+ENT.Purpose = "Instructions"
+ENT.Instructions = "Read.  Learn.  Know." 
+ENT.Category = "SBEP - Other"
+ENT.Spawnable = true
+ENT.AdminSpawnable = true 
+ENT.SPL				= nil
+ENT.HPType			= "Book"
+ENT.APPos			= Vector(20,0,10)
+--[[ENT.APAng			= Angle(0,0,0)]]
+ENT.FTime			= 0
+ENT.HasHardpoints	= false

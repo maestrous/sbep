@@ -1,5 +1,5 @@
 TOOL.Category		= "SBEP"
-TOOL.Name			= "#SBEP Door"
+TOOL.Name			= "#Door"
 TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 

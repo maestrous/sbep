@@ -1,5 +1,5 @@
 TOOL.Category		= "SBEP"
-TOOL.Name			= "#SBEP Weapon Mount"
+TOOL.Name			= "#Weapon Mount"
 TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 
