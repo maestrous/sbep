@@ -111,7 +111,9 @@ function ENT:OpenDoorSounds()
 	self:EmitSound( self.OpenSounds[0] )
 	for k,v in pairs( self.OpenSounds ) do
 		timer.Simple( k , function()
-							self:EmitSound( v )
+							if self.Entity and ValidEntity(self.Entity) then
+								self:EmitSound( v )
+							end
 						end )
 	end
 
@@ -122,7 +124,9 @@ function ENT:CloseDoorSounds()
 	self:EmitSound( self.CloseSounds[0] )
 	for k,v in pairs( self.CloseSounds ) do
 		timer.Simple( k , function()
-							self:EmitSound( v )
+							if self.Entity and ValidEntity(self.Entity) then
+								self:EmitSound( v )
+							end
 						end )
 	end
 

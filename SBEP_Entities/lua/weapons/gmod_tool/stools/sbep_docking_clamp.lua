@@ -1,5 +1,5 @@
 TOOL.Category		= "SBEP"
-TOOL.Name			= "#SBEP Docking Clamp"
+TOOL.Name			= "#Docking Clamp"
 TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 
