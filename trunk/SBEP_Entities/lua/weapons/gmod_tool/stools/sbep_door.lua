@@ -19,6 +19,7 @@ end
 
 local CategoryTable = {
 					{ "Doors"			, "Door"	, "models/SmallBridge/Panels/sbpaneldoor.mdl" 		} ,
+					{ "ModBridge Doors"	, "Modbridge", "models/Cerus/Modbridge/Misc/Doors/door11a.mdl" 	} ,
 					{ "Hatches (Base)" 	, "Hatch_B"	, "models/SmallBridge/Elevators,Small/sbselevb.mdl" } ,
 					{ "Hatches (Mid)" 	, "Hatch_M"	, "models/SmallBridge/Elevators,Small/sbselevm.mdl" } ,
 					{ "Hatches (Top)"	, "Hatch_T"	, "models/SmallBridge/Elevators,Small/sbselevt.mdl" } ,
