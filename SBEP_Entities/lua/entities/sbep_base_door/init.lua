@@ -70,6 +70,16 @@ DoorTypesTable[ "Door_ElevHatch_L"]	= { "models/SmallBridge/SEnts/sbahatchelevl.
 										2 , 0.6 , 1 	,
 		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
 		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		
+DoorTypesTable[ "Door_ModBridge_11a"]	= { "models/Cerus/Modbridge/Misc/Doors/door11a_anim.mdl" 	, 
+										3.8 , 1.5 , 2 	,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		
+DoorTypesTable[ "Door_ModBridge_12a"]	= { "models/Cerus/Modbridge/Misc/Doors/door12a_anim.mdl" 	, 
+										4.8 , 1.5 , 1.5 	,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
 
 function ENT:SetDoorType( DoorType )
 	
