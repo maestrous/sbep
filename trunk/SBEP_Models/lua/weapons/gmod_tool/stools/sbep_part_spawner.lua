@@ -143,13 +143,15 @@ function TOOL.BuildCPanel( panel )
 		GlassCheckBox:SizeToContents()
 	SmallBridgeTab:AddItem( GlassCheckBox )
 	
-	local HabCheckBox = vgui.Create( "DCheckBoxLabel" )
-		HabCheckBox:SetText( "Habitable Module" )
-		HabCheckBox:SetConVar( "sbep_part_spawner_hab_mod" )
-		HabCheckBox:SetValue( 0 )
-		HabCheckBox:SizeToContents()
-	SmallBridgeTab:AddItem( HabCheckBox )
-
+	if CAF.GetAddon("Spacebuild").GetStatus() then
+		local HabCheckBox = vgui.Create( "DCheckBoxLabel" )
+			HabCheckBox:SetText( "Habitable Module" )
+			HabCheckBox:SetConVar( "sbep_part_spawner_hab_mod" )
+			HabCheckBox:SetValue( 0 )
+			HabCheckBox:SizeToContents()
+		SmallBridgeTab:AddItem( HabCheckBox )
+	end
+	
 	local ModelCollapsibleCategories = {}
 	
 	for k,v in pairs(CategoryTable) do
