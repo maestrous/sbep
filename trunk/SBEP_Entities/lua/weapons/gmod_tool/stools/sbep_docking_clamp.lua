@@ -31,7 +31,8 @@ end
 
 local CategoryTable = {
 			{ "SmallBridge"			, "SmallBridge"	, "models/SmallBridge/Ship Parts/sblanduramp.mdl" } ,
-			{ "MedBridge"		 	, "MedBridge"	, "models/Slyfo/airlock_docksys.mdl" 			  }
+			{ "MedBridge"		 	, "MedBridge"	, "models/Slyfo/airlock_docksys.mdl" 			  } ,
+			{ "ElevatorSmall"		, "ElevatorSmall", "models/SmallBridge/Elevators,Small/sbselevt.mdl"}
 					}
 
 for k,v in ipairs( CategoryTable ) do
@@ -58,9 +59,16 @@ function TOOL:LeftClick( trace )
 		
 		DockEnt.SPL = self:GetOwner()
 		
-		DockEnt.AF 		= DataTable["AF"]
-		DockEnt.AYaw 	= DataTable["AYaw"]
-		DockEnt.ALType  = DataTable["ALType"]
+		DockEnt.AF 		= DataTable["AF"] or 0
+		DockEnt.AR 		= DataTable["AR"] or 0
+		DockEnt.AU 		= DataTable["AU"] or 0
+		DockEnt.APitch 	= DataTable["APitch"] or 0
+		DockEnt.ARoll 	= DataTable["ARoll"] or 0
+		DockEnt.AYaw 	= DataTable["AYaw"] or 0
+		DockEnt.RPitch 	= DataTable["RPitch"] or 0
+		DockEnt.RRoll 	= DataTable["RRoll"] or 0
+		DockEnt.RYaw 	= DataTable["RYaw"] or 0
+		DockEnt.ALType  = DataTable["ALType"] or ""
 
 		DockEnt:SetModel( model )
 		DockEnt:SetName( DataTable["ALType"] )
@@ -98,7 +106,7 @@ end
 function TOOL.BuildCPanel( panel )
 
 		panel:SetSpacing( 10 )
-		panel:SetName( "SBEP Weapon Mount" )
+		panel:SetName( "SBEP Docking Clamp" )
 
 	local ModelCollapsibleCategories = {}
 	
