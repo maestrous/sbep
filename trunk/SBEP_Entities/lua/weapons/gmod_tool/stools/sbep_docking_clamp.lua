@@ -55,7 +55,7 @@ function TOOL:LeftClick( trace )
 			self:GetOwner():SetNetworkedVector( "SBEP_DockEnt_Vec_"..tostring(k) , Vector( v.x , v.y , v.z ) )
 			self:GetOwner():SetNetworkedInt(    "SBEP_DockEnt_Int_"..tostring(k) , 			v.sp 			 )
 		end
-		RunConsoleCommand( "SBEP_AddDockCLEffectsTable_cl" , #DataTable[ "EfPoints" ] )
+		
 		
 		DockEnt.SPL = self:GetOwner()
 				
@@ -66,12 +66,12 @@ function TOOL:LeftClick( trace )
 		
 		DockEnt.CompatibleLocks = DataTable[ "Compatible" ]
 
-		timer.Simple( 0.03, function()
-								DockEnt:Spawn()
-								DockEnt:Activate()
+		DockEnt:Spawn()
+		DockEnt:Activate()
 		
-								DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
-							end)
+		RunConsoleCommand( "SBEP_AddDockCLEffectsTable_cl" , #DataTable[ "EfPoints" ] )
+
+		DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
 	
 	undo.Create("SBEP Docking Clamp")
 		undo.AddEntity( DockEnt )
