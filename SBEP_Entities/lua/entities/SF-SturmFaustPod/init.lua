@@ -94,7 +94,7 @@ function ENT:HPFire()
 		
 		
 		local RockTrail = ents.Create("env_rockettrail")
-		RockTrail:SetAngles( self.Faust:GetAngles()  )
+		RockTrail:SetAngles( self.Faust:GetAngles() )
 		RockTrail:SetPos( self.Faust:GetPos() + self.Faust:GetForward() * -7 )
 		RockTrail:SetParent(self.Faust)
 		RockTrail:Spawn()
