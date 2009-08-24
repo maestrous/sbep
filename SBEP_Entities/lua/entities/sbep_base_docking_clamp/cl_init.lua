@@ -4,12 +4,14 @@ ENT.RenderGroup = RENDERGROUP_OPAQUE
 function ENT:Initialize()
 	self.CMat = Material( "cable/blue_elec" )
 	self.SMat = Material( "sprites/light_glow02_add" )
+	self.STime = CurTime()
 end
 
 function ENT:Draw()
 	
 	self.Entity:DrawModel()
-
+	
+	if self.STime > CurTime() + 2 then return end
 	if table.getn(self.EfPoints) > 0 then
 		--print("We have points...")
 		local DMode = self.Entity:GetNWInt("DMode")
