@@ -73,8 +73,10 @@ function TOOL:LeftClick( trace )
 
 		DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
 		
-		for m,n in ipairs( DataTable.Doors ) do
-			DockEnt:AddDockDoor( n )
+		if DataTable.Doors then
+			for m,n in ipairs( DataTable.Doors ) do
+				DockEnt:AddDockDoor( n )
+			end
 		end
 	
 	undo.Create("SBEP Docking Clamp")

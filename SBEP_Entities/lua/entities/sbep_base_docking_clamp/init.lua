@@ -68,6 +68,8 @@ function ENT:AddDockDoor( DoorData )
 	constraint.Weld( door, self, 0, 0, 0, true )
 
 	door.OpenTrigger = false
+	
+	door:GetPhysicsObject():EnableMotion( true )
 
 	self:DeleteOnRemove( door )
 	
@@ -76,13 +78,15 @@ function ENT:AddDockDoor( DoorData )
 end
 
 function ENT:Think()
-	if self.DMode == 4 then
-		for m,n in ipairs( self.Doors ) do
-			n.OpenTrigger = true
-		end
-	else
-		for m,n in ipairs( self.Doors ) do
-			n.OpenTrigger = false
+	if self.Doors then
+		if self.DMode == 4 then
+			for m,n in ipairs( self.Doors ) do
+				n.OpenTrigger = true
+			end
+		else
+			for m,n in ipairs( self.Doors ) do
+				n.OpenTrigger = false
+			end
 		end
 	end
 	if self.DMode == 2 then
