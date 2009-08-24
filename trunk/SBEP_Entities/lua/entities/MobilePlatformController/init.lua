@@ -9,8 +9,8 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Reciprocate", "Vel" }
-	local inTypes = {"NORMAL","NORMAL","NORMAL","VECTOR","NORMAL","NORMAL","NORMAL","ANGLE","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL"}
+	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Disable"}
+	local inTypes = {"NORMAL","NORMAL","NORMAL","VECTOR","NORMAL","NORMAL","NORMAL","ANGLE","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL"}
 	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
 	self.Entity:SetUseType( 3 )
 
@@ -39,6 +39,8 @@ function ENT:Initialize()
 	self.AbsVec = false
 	self.AbsAng = false
 	self.Recip = false
+	
+	self.Disabled = false
 	
 	self.TPD = 0
 	
@@ -118,11 +120,17 @@ function ENT:TriggerInput(iname, value)
 			self.Recip = true
 		else
 			self.Recip = false
-		end	
+		end
 		
 	elseif (iname == "Vel") then
 		self.Vel = value
-				
+		
+	elseif (iname == "Disable") then
+		if (value > 0) then
+			self.Disabled = true
+		else
+			self.Disabled = false
+		end
 	end
 	
 end
