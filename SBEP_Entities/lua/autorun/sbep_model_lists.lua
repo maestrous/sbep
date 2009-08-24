@@ -342,17 +342,17 @@ local DockingClampModelTable = {
 			[ "models/SmallBridge/Elevators,Small/sbselevb.mdl"] = { ListCat = "ElevatorSmall"	, ALType = "ElevSU" ,
 																	Compatible = { 	{ Type = "ElevSU", AU = 65.5, RYaw = 90, ARoll = 180 }, 
 																					{ Type = "ElevSD", AU = 65.5, RYaw = 90 } },
-																	EfPoints = 	{	{ x = -175 , y =  100 , z =  190 , sp = 0 } , 
-																					{ x = -200 , y = -120 , z =  -60 , sp = 3 } , 
-																					{ x =  200 , y = -120 , z =  -60 , sp = 0 } , 
-																					{ x =  175 , y =  100 , z =  190 , sp = 1 } } } ,
+																	EfPoints = 	{	{ x = -60 , y =  60 , z =  68 , sp = 0 } , 
+																					{ x = -60 , y = -60 , z =  68 , sp = 3 } , 
+																					{ x =  60 , y = -60 , z =  68 , sp = 0 } , 
+																					{ x =  60 , y =  60 , z =  68 , sp = 1 } } } ,
 			[ "models/SmallBridge/Elevators,Small/sbselevt.mdl"] = { ListCat = "ElevatorSmall"	, ALType = "ElevSD" , 
 																	Compatible = { 	{ Type = "ElevSD", AU = -65.5, RYaw = 90, ARoll = 180 }, 
 																					{ Type = "ElevSU", AU = -65.5, RYaw = 90 } },
-																	EfPoints = 	{	{ x = -175 , y =  100 , z =  190 , sp = 0 } , 
-																					{ x = -200 , y = -120 , z =  -60 , sp = 3 } , 
-																					{ x =  200 , y = -120 , z =  -60 , sp = 0 } , 
-																					{ x =  175 , y =  100 , z =  190 , sp = 1 } } }
+																	EfPoints = 	{	{ x = -60 , y =  60 , z =  -68 , sp = 0 } , 
+																					{ x = -60 , y = -60 , z =  -68 , sp = 3 } , 
+																					{ x =  60 , y = -60 , z =  -68 , sp = 0 } , 
+																					{ x =  60 , y =  60 , z =  -68 , sp = 1 } } }
 			
 						}
 
