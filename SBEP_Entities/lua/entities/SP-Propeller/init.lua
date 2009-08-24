@@ -50,7 +50,7 @@ end
 
 function ENT:PhysicsUpdate()
 	local CSAng = self.PhysObj:GetAngleVelocity()
-	self.PhysObj:SetVelocity(self.Entity:GetVelocity() + self.Entity:GetUp() * (CSAng.z * 0.05))
+	self.PhysObj:SetVelocity(self.Entity:GetVelocity() + self.Entity:GetUp() * (CSAng.z * 0.05) )
 end
 
 function ENT:OnTakeDamage( dmginfo )
