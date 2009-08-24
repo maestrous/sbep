@@ -49,7 +49,7 @@ end
 
 function ENT:PhysicsSimulate( phys, deltatime )
 
-	if !self.Controller || !self.Controller:IsValid() then return SIM_NOTHING end
+	if !self.Controller || !self.Controller:IsValid() || self.Controller.Disabled then return SIM_NOTHING end
 	
 	phys:Wake()
 	local Ang = Angle(0,0,0)
