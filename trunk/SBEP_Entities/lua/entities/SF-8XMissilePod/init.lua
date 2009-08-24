@@ -202,12 +202,14 @@ function ENT:FFire( CCD )
 	NewShell.ZCo = self.ZCo
 	NewShell.GType = self.GType
 	
+	/*
 	local RockTrail = ents.Create("env_rockettrail")
 	RockTrail:SetAngles( NewShell:GetAngles()  )
 	RockTrail:SetPos( NewShell:GetPos() + NewShell:GetForward() * -7 )
 	RockTrail:SetParent(NewShell)
 	RockTrail:Spawn()
 	RockTrail:Activate()
+	*/
 	--RD_ConsumeResource(self, "Munitions", 1000)
 	self.Entity:EmitSound("Weapon_RPG.Single")
 	self.MCDown = CurTime() + 0.1 + math.Rand(0,0.2)

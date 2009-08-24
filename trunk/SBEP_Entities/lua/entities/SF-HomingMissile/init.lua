@@ -44,6 +44,8 @@ function ENT:Initialize()
 	
 	self.hasdamagecase = true
 	
+	util.SpriteTrail( self.Entity, 0,  Color(200,200,200,100), false, 10, 0, 1, 1, "trails/smoke.vmt" )
+	
 end
 
 function ENT:TriggerInput(iname, value)		
