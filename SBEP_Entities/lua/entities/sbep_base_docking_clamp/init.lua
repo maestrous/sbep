@@ -166,7 +166,7 @@ function ENT:Think()
 				if math.AngleDifference(math.fmod((self.LinkLock:GetAngles().y + self.AYaw + self.CYaw), 360),self.Entity:GetAngles().y) <= self.MYaw * 1 && math.AngleDifference(math.fmod((self.LinkLock:GetAngles().y + self.AYaw + self.CYaw), 360),self.Entity:GetAngles().y) >= self.MYaw * -1 then
 					--print("Yaw Match")
 					if (self.Entity:GetPos() + (self.Entity:GetForward() * self.AF) + (self.Entity:GetRight() * self.AR) + (self.Entity:GetUp() * self.AU)):Distance(self.LinkLock:GetPos() + (self.LinkLock:GetForward() * self.LinkLock.AF) + (self.LinkLock:GetRight() * self.LinkLock.AR) + (self.LinkLock:GetUp() * self.LinkLock.AU)) <= self.MDist then
-						self.LinkLock.Entity:SetAngles(self.Entity:LocalToWorldAngles(Angle(math.fmod(self.LinkLock.APitch + self.CPitch, 360),math.fmod(self.LinkLock.AYaw + self.CYaw, 360),math.fmod(self.LinkLock.ARoll + self.CRoll, 360))))
+						self.LinkLock.Entity:SetAngles(self.Entity:LocalToWorldAngles(Angle(math.fmod(self.LinkLock.APitch - self.CPitch, 360),math.fmod(self.LinkLock.AYaw - self.CYaw, 360),math.fmod(self.LinkLock.ARoll - self.CRoll, 360))))
 						self.LinkLock.Entity:SetPos( self.Entity:GetPos() + (self.Entity:GetForward() * self.AF) + (self.Entity:GetRight() * self.AR) + (self.Entity:GetUp() * self.AU ) + (self.LinkLock:GetForward() * -self.LinkLock.AF) + (self.LinkLock:GetRight() * -self.LinkLock.AR) + (self.LinkLock:GetUp() * -self.LinkLock.AU) )
 						self.AWeld = constraint.Weld(self.LinkLock.Entity, self.Entity, 0, 0, 0, true)
 						self.LinkLock.AWeld = self.AWeld
