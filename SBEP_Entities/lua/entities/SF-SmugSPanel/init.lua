@@ -116,7 +116,7 @@ function ENT:Think()
 		local X = Offset.x
 		local Y = Offset.y
 		local Z = Offset.z - self.CHeight
-		self.Entity:SetLocalPos( Vector(X,-Y,Z) )
+		self.Entity:SetLocalPos( Vector(X,Y,Z) )
 	elseif self.Mode == 4 then
 		if self.COp && self.CRotate < 360 then
 			self.CRotate = self.CRotate + 4
@@ -150,7 +150,7 @@ function ENT:Think()
 			NAng:RotateAroundAxis( NAng:Forward(), self.CRotate )
 			Y = Y + YOffset
 		end
-		self.Entity:SetLocalPos( Vector(X,-Y,Z) )
+		self.Entity:SetLocalPos( Vector(X,Y,Z) )
 		self.Entity:SetLocalAngles( self.Entity:WorldToLocalAngles(NAng) )
 	end
 	

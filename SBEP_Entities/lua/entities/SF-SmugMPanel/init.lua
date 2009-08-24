@@ -129,7 +129,7 @@ function ENT:Think()
 		else
 			Y = Y + S
 		end
-		self.Entity:SetLocalPos( Vector(X,-Y,Z) )
+		self.Entity:SetLocalPos( Vector(X,Y,Z) )
 	elseif self.Mode == 4 then
 		if self.COp && self.CRotate < 360 then
 			self.CRotate = self.CRotate + 4

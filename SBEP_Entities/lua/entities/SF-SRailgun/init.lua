@@ -85,7 +85,7 @@ function ENT:RGFire()
 			local Phys = tr.Entity:GetPhysicsObject()
 			if Phys:IsValid() then			
 				Phys:ApplyForceOffset( self.Entity:GetForward() * (self.Charge * 200000), tr.HitPos )
-				print("Thrusting...")
+				--print("Thrusting...")
 				--Phys:ApplyForceCenter( self.Entity:GetForward() * (self.Charge * 200) )
 			end
 			local gdmg = math.random(self.Charge * 10,self.Charge * 20)
@@ -115,6 +115,8 @@ function ENT:RGFire()
 	effectdata2:SetOrigin(tr.HitPos)
 	effectdata2:SetScale(self.Charge)
 	util.Effect( "SmallRailTrace", effectdata2 )
+	
+	self.Entity:EmitSound("EnergyBall.KillImpact")
 	
 	self.CDown = CurTime() + 3
 end

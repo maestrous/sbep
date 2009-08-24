@@ -101,7 +101,7 @@ function ENT:Think()
 		
 		if self.Mode == 2 && self.BTime > CurTime() then
 			if self.Panel && self.Panel:IsValid() then
-				self.Panel:GetPhysicsObject():SetVelocity(self.Entity:GetRight() * 5000)
+				self.Panel:GetPhysicsObject():SetVelocity(self.Entity:GetUp() * 5000)
 			end
 		end
 	elseif self.Mode == 3 then
