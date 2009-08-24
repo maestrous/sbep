@@ -72,6 +72,10 @@ function TOOL:LeftClick( trace )
 		RunConsoleCommand( "SBEP_AddDockCLEffectsTable_cl" , #DataTable[ "EfPoints" ] )
 
 		DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
+		
+		for m,n in ipairs( DataTable.Doors ) do
+			DockEnt:AddDockDoor( n )
+		end
 	
 	undo.Create("SBEP Docking Clamp")
 		undo.AddEntity( DockEnt )

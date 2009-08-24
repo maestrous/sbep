@@ -50,7 +50,41 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
+function ENT:AddDockDoor( DoorData )
+
+	self.Doors = self.Doors or {}
+	local doortype = DoorData[1]
+	local vecoff   = DoorData[2] or Vector(0,0,0)
+	local angoff   = DoorData[3] or Angle(0,0,0)
+
+	local door = ents.Create( "sbep_base_door" )
+	
+	door:Spawn()
+	door:SetDoorType( doortype )
+	
+	door:SetPos(    self:GetPos()    + vecoff )
+	door:SetAngles( self:GetAngles() + angoff )
+	
+	constraint.Weld( door, self, 0, 0, 0, true )
+
+	door.OpenTrigger = false
+
+	self:DeleteOnRemove( door )
+	
+	table.insert( self.Doors , door )
+
+end
+
 function ENT:Think()
+	if self.DMode == 4 then
+		for m,n in ipairs( self.Doors ) do
+			n.OpenTrigger = true
+		end
+	else
+		for m,n in ipairs( self.Doors ) do
+			n.OpenTrigger = false
+		end
+	end
 	if self.DMode == 2 then
 	
 		--local mn, mx = self.Entity:WorldSpaceAABB()
