@@ -9,8 +9,8 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Reciprocate" }
-	local inTypes = {"NORMAL","NORMAL","NORMAL","VECTOR","NORMAL","NORMAL","NORMAL","ANGLE","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL"}
+	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Reciprocate", "Vel" }
+	local inTypes = {"NORMAL","NORMAL","NORMAL","VECTOR","NORMAL","NORMAL","NORMAL","ANGLE","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL"}
 	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
 	self.Entity:SetUseType( 3 )
 
@@ -45,6 +45,8 @@ function ENT:Initialize()
 	self.Speed = 1000000000
 	
 	self.Duration = 0.000000001
+	
+	self.Vel = 0.1
 	
 	self.ShadowParams = {}
 		self.ShadowParams.maxangular = 100000000 //What should be the maximal angular force applied
@@ -117,17 +119,21 @@ function ENT:TriggerInput(iname, value)
 		else
 			self.Recip = false
 		end	
+		
+	elseif (iname == "Vel") then
+		self.Vel = value
 				
 	end
 	
 end
-
+/*
 function ENT:PhysicsSimulate( phys, deltatime )
 
 	if self.Recip then
+		local OVel = phys:GetVelocity()
 		--local Phys = self.Entity:GetPhysicsObject()
 		--Phys:AddAngleVelocity((Phys:GetAngleVelocity() * -1) + self.Plat:LocalToWorldAngles(Ang * -1))
-		local RPos = self.Plat:GetPos() + (self.Entity:GetUp() * self.ZCo * -1) + (self.Entity:GetForward() * self.YCo * -1) + (self.Entity:GetRight() * self.XCo * -1) + (phys:GetVelocity() * 0.8)
+		local RPos = self.Plat:GetPos() + (self.Entity:GetUp() * self.ZCo * -1) + (self.Entity:GetForward() * self.YCo * -1) + (self.Entity:GetRight() * self.XCo * -1)
 		--Phys:SetVelocity(RPos - self.Entity:GetPos())
 		phys:Wake()
 				
@@ -144,12 +150,31 @@ function ENT:PhysicsSimulate( phys, deltatime )
 		self.ShadowParams.maxangulardamp = self.Speed * 0.1
 		self.ShadowParams.maxspeed = self.Speed
 		self.ShadowParams.maxspeeddamp = self.Speed * 0.1
-			
-
-		return phys:ComputeShadowControl(self.ShadowParams)
-	
+		
+		phys:ComputeShadowControl(self.ShadowParams)
+		
+		local NVel = phys:GetVelocity()
+		
+		local CVel = OVel - NVel
+		
+		self.ShadowParams.pos = RPos + CVel
+		
+		phys:ComputeShadowControl(self.ShadowParams)
 	end
 end
+
+
+function ENT:PhysicsUpdate( phys )
+	if self.Recip then
+		local OVel = phys:GetVelocity()
+		local RPos = self.Plat:GetPos() + (self.Entity:GetUp() * self.ZCo * -1) + (self.Entity:GetForward() * self.YCo * -1) + (self.Entity:GetRight() * self.XCo * -1)
+		
+		NVel = ((OVel / self.Vel) - ((RPos - self.Entity:GetPos()) * self.Vel)) + ((RPos - self.Entity:GetPos()) * self.Vel)
+		phys:SetVelocity(NVel)
+	end
+end
+
+*/
 
 function ENT:SpawnFunction( ply, tr )
 
@@ -232,8 +257,17 @@ function ENT:Think()
 	self.Plat.TPD = self.TPD
 	
 	self.Plat.Speed = self.Speed
+	
+	local phys = self.Entity:GetPhysicsObject()
+	
+	if self.Recip then
+		local RPos = self.Plat:GetPos() + (self.Entity:GetUp() * self.ZCo * -1) + (self.Entity:GetForward() * self.YCo * -1) + (self.Entity:GetRight() * self.XCo * -1)
 		
-	self.Entity:NextThink( CurTime() + 0.01 ) 
+		local NVel = ((RPos - self.Entity:GetPos()) * self.Vel)
+		phys:SetVelocity(NVel)
+	end
+		
+	self.Entity:NextThink( CurTime() + 0.1 ) 
 	return true
 end
 
