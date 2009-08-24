@@ -58,16 +58,7 @@ function TOOL:LeftClick( trace )
 		RunConsoleCommand( "SBEP_AddDockCLEffectsTable_cl" , #DataTable[ "EfPoints" ] )
 		
 		DockEnt.SPL = self:GetOwner()
-		
-		DockEnt.AF 		= DataTable["AF"] or 0
-		DockEnt.AR 		= DataTable["AR"] or 0
-		DockEnt.AU 		= DataTable["AU"] or 0
-		DockEnt.APitch 	= DataTable["APitch"] or 0
-		DockEnt.ARoll 	= DataTable["ARoll"] or 0
-		DockEnt.AYaw 	= DataTable["AYaw"] or 0
-		DockEnt.RPitch 	= DataTable["RPitch"] or 0
-		DockEnt.RRoll 	= DataTable["RRoll"] or 0
-		DockEnt.RYaw 	= DataTable["RYaw"] or 0
+				
 		DockEnt.ALType  = DataTable["ALType"] or ""
 
 		DockEnt:SetModel( model )
