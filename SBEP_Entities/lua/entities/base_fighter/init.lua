@@ -448,48 +448,6 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	end
 end
 
---the information for making a fighter can just be a table
-{
-        name = "SWORD",
-        parts = {
-                {
-                        ["model"] = "path to chair model",
-                        ["type"] = "pilot",
-                        ["pos"] = Vector(x,y,z),
-                        ["ang"] = Angle(p,y,r)
-                },
-                {
-                        ["model"] = "path to chair model",
-                        ["type"] = "passenger",
-                        ["pos"] = Vector(x,y,z),
-                        ["ang"] = Angle(p,y,r)
-                },
-                {
-                        ["model"] = "path to SWORD model",
-                        ["type"] = "mount",
-                        ["pos"] = Vector(x,y,z),
-                        ["ang"] = Angle(p,y,r),
-                        ["HP"] = {
-                                {
-                                        ["type"] = "weapon size",
-                                        ["pos"] = Vector(x,y,z),
-                                        ["ang"] = Angle(p,y,r)
-                                },
-                                {
-                                        ["type"] = "weapon size",
-                                        ["pos"] = Vector(x,y,z),
-                                        ["ang"] = Angle(p,y,r)
-                                }
-                        }
-                },
-                {
-                        ["model"] = "path to decorative part",
-                        ["type"] = "prop",
-                        ["pos"] = Vector(x,y,z),
-                        ["ang"] = Angle(p,y,r)
-                }
-        }
-}
 -- somewhere in the fighter's init
 local CreatedParts = {}
 for _, part in pairs(fighter.parts) do
@@ -509,7 +467,7 @@ for _, part in pairs(fighter.parts) do
                         table.insert(CreatedParts.PassengerSeats, ent)
                 end
         elseif part.type == "mount" then
-                ent = ents.Create("base_sbep_weaponmount")
+                ent = ents.Create("sbep_base_weapon_mount")
                
                 if part.model then ent:SetModel(part.model) end
                 ent:SetPos(self:LocalToWorld(part.pos))
