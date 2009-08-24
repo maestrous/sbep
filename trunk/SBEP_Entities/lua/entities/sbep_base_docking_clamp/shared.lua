@@ -24,9 +24,11 @@ ENT.MDist			= 35
 ENT.RPitch			= 0
 ENT.RYaw			= 0
 ENT.RRoll			= 0
+
 ENT.CPitch			= 0
 ENT.CYaw			= 0
 ENT.CRoll			= 0
+ENT.CType			= 0
 ENT.ScanDist		= 700
 ENT.DMode			= 1 -- 0 = Disengaging, 1 = Inactive, 2 = Ready to dock, 3 = Attempting to dock, 4 = Docked
 ENT.ClDMode			= 1 -- Used to send the DMode client-side for effects

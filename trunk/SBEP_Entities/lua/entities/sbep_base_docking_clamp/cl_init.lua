@@ -12,7 +12,7 @@ function ENT:Draw()
 	self.Entity:DrawModel()
 	
 	if self.STime > CurTime() + 2 then return end
-	if table.getn(self.EfPoints) > 0 then
+	if self.EfPoints && table.getn(self.EfPoints) > 0 then
 		--print("We have points...")
 		local DMode = self.Entity:GetNWInt("DMode")
 	
@@ -59,6 +59,8 @@ function ENT:Draw()
 				end
 			end
 		end
+	else
+		print("No effect data")
 	end
 		
 end
