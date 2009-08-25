@@ -97,6 +97,9 @@ function ENT:SetDoorType( DoorType )
 	self.OpenSounds 		= self.DataTable[5]
 	self.CloseSounds 		= self.DataTable[6]
 	
+	self.OpenTimers = {}
+	self.CloseTimers = {}
+	
 	self:SetModel( self.DoorModel )
 	
 	self:GetSequenceData()
@@ -120,26 +123,24 @@ function ENT:OpenDoorSounds()
 
 	self:EmitSound( self.OpenSounds[0] )
 	for k,v in pairs( self.OpenSounds ) do
-		timer.Simple( k , function()
-							if self.Entity and ValidEntity(self.Entity) then
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_Open_"..tostring( k )
+		table.insert( self.OpenTimers , var )
+		timer.Create( var , k , 1 , function()
 								self:EmitSound( v )
-							end
 						end )
 	end
-
 end
 
 function ENT:CloseDoorSounds()
 
 	self:EmitSound( self.CloseSounds[0] )
 	for k,v in pairs( self.CloseSounds ) do
-		timer.Simple( k , function()
-							if self.Entity and ValidEntity(self.Entity) then
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_Close_"..tostring( k )
+		table.insert( self.CloseTimers , var )
+		timer.Create( var , k , 1 , function()
 								self:EmitSound( v )
-							end
 						end )
 	end
-
 end
 
 function ENT:GetSequenceData()
@@ -225,5 +226,17 @@ function ENT:OnRemove()
 	if self.Controller and ValidEntity( self.Controller ) then
 		table.remove( self.Controller.Door , self.SysDoorNum )
 		self.Controller:MakeWire( true )
+	end
+	
+	for k,v in ipairs( self.OpenTimers ) do
+		if timer.IsTimer( v ) then
+			timer.Remove( v )
+		end
+	end
+	
+	for k,v in ipairs( self.CloseTimers ) do
+		if timer.IsTimer( v ) then
+			timer.Remove( v )
+		end
 	end
 end
