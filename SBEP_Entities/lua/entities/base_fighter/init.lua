@@ -6,6 +6,9 @@ util.PrecacheSound( "k_lab.ambient_powergenerators" )
 util.PrecacheSound( "ambient/machines/thumper_startup1.wav" )
 
 function ENT:Initialize()
+
+	self.Entity:SetModel( "models/Spacebuild/medbridge2_doublehull_elevatorclamp.mdl" )
+	
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
@@ -20,6 +23,9 @@ function ENT:Initialize()
 	end
 	self.Entity:StartMotionController()
 	self.PhysObj = self.Entity:GetPhysicsObject()
+	
+	//self.Entity:SetNoDraw( true )
+	//self.Entity:SetNotSolid( true )
 	
 	if CAF then
 		local RDist = CAF.GetAddon("Resource Distribution")
@@ -44,6 +50,9 @@ function ENT:CreateFighterParts( PartTable )
 	                ent:SetPos(self:LocalToWorld(part.pos))
 	                ent:SetAngles(self:LocalToWorldAngles(part.ang))
 					
+					self.Pod = ent
+					ent.Cont = self.Entity
+					
 					ent:Spawn()
 					ent:Activate()
 					ent.Fighter = self.Entity
@@ -56,11 +65,18 @@ function ENT:CreateFighterParts( PartTable )
 						return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) 
 					end 
 					ent:SetTable(TB)
+					
+					ent:SetNetworkedEntity("ViewEnt",ent)
+					ent:SetNetworkedInt( "OffsetOut", 600 )
 
+					ent:GetPhysicsObject():SetMass( 5000 )
+					
+					/*--------
 					if !part.visi then 
 						ent:SetNoDraw( true )
 						ent:SetNotSolid( true )
 					end
+					-----------*/
 	 
 	                if part.type == "pilot" then self.CreatedParts.PilotSeat = ent
 	                else
@@ -76,7 +92,10 @@ function ENT:CreateFighterParts( PartTable )
 	                ent:SetPos(self:LocalToWorld(part.pos))
 	                ent:SetAngles(self:LocalToWorldAngles(part.ang))
 					ent.HP = part.HP or {}
+					ent.HPC = #ent.HP
 	 
+					self.CreatedParts.PilotSeat:SetNetworkedInt( "HPC", ent.HPC )
+						 
 					ent:Spawn()
 					ent:Activate()
 					ent.Fighter = self.Entity
@@ -102,7 +121,7 @@ function ENT:CreateFighterParts( PartTable )
 	for _,part in ipairs(self.CreatedParts) do
 		part.Parts = self.CreatedParts
 	end
-	
+
 	for part=1, #self.CreatedParts do
 		for otherpart = part+1, #self.CreatedParts do
 			constraint.Weld(self.CreatedParts[part], self.CreatedParts[otherpart])
