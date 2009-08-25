@@ -5,14 +5,12 @@ include( 'shared.lua' )
 util.PrecacheSound( "k_lab.ambient_powergenerators" )
 util.PrecacheSound( "ambient/machines/thumper_startup1.wav" )
 
-function ENT:Initialize(self)
+function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	self.Entity:SetUseType( SIMPLE_USE )
 	
-	
-
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
@@ -34,6 +32,93 @@ end
 function ENT:IsFighter()
 	return true
 end
+
+function ENT:CreateFighterParts( PartTable )
+	self.CreatedParts = {}
+	for _, part in pairs(PartTable) do
+	        local ent
+	        if part.type == "pilot" or part.type == "passenger" then -- if it's a vehicle
+	                ent = ents.Create("prop_vehicle_prisoner_pod")
+	 
+	                if part.model then ent:SetModel(part.model) end
+	                ent:SetPos(self:LocalToWorld(part.pos))
+	                ent:SetAngles(self:LocalToWorldAngles(part.ang))
+					
+					ent:Spawn()
+					ent:Activate()
+					ent.Fighter = self.Entity
+					
+					ent:SetKeyValue("vehiclescript", "scripts/vehicles/prisoner_pod.txt")
+					ent:SetKeyValue("limitview", 0)
+					
+					local TB = ent:GetTable()
+					TB.HandleAnimation = function (vec, ply)
+						return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) 
+					end 
+					ent:SetTable(TB)
+
+					if !part.visi then 
+						ent:SetNoDraw( true )
+						ent:SetNotSolid( true )
+					end
+	 
+	                if part.type == "pilot" then self.CreatedParts.PilotSeat = ent
+	                else
+						if not self.CreatedParts.PassengerSeats then
+							self.CreatedParts.PassengerSeats = {}
+						end
+						table.insert(self.CreatedParts.PassengerSeats, ent)
+	                end
+	        elseif part.type == "mount" then
+	                ent = ents.Create("sbep_base_weapon_mount")
+	               
+	                if part.model then ent:SetModel(part.model) end
+	                ent:SetPos(self:LocalToWorld(part.pos))
+	                ent:SetAngles(self:LocalToWorldAngles(part.ang))
+					ent.HP = part.HP or {}
+	 
+					ent:Spawn()
+					ent:Activate()
+					ent.Fighter = self.Entity
+					ent.PilotSeat = self.CreatedParts.PilotSeat
+	 
+	                if not self.CreatedParts.WeaponMounts then
+	                        self.CreatedParts.WeaponMounts = {}
+	                end
+	                table.insert(self.CreatedParts.WeaponMounts, ent)
+	        elseif scripted_ents.GetStored(part.type) then -- if it's a scripted entity
+	                ent = ents.Create(part.type)
+	                if part.model then ent:SetModel(part.model) end
+	                ent:SetPos(self:LocalToWorld(part.pos))
+	                ent:SetAngles(self:LocalToWorldAngles(part.ang))
+					
+					ent:Spawn()
+					ent:Activate()
+					ent.Fighter = self.Entity
+	        end
+	        if ent then table.insert(self.CreatedParts, ent) end
+	end
+	
+	for _,part in ipairs(self.CreatedParts) do
+		part.Parts = self.CreatedParts
+	end
+	
+	for part=1, #self.CreatedParts do
+		for otherpart = part+1, #self.CreatedParts do
+			constraint.Weld(self.CreatedParts[part], self.CreatedParts[otherpart])
+		end
+	end
+end
+
+hook.Add("PlayerLeaveVehicle", "SBEP_FighterExitPoint", function(pl, veh)
+        local ftr = veh.Fighter
+        if ftr then
+                local ep = ftr.ExitPoint
+                if ep then
+                        pl:SetPos(ftr:LocalToWorld(ep))
+                end
+        end
+end)
 
 local function GetJBool(self,sVal)
 	if not joystick then return false end
@@ -446,52 +531,4 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 			end
 		end
 	end
-end
-
--- somewhere in the fighter's init
-local CreatedParts = {}
-for _, part in pairs(fighter.parts) do
-        local ent
-        if part.type == "pilot" or part.type == "passenger" then -- if it's a vehicle
-                ent = ents.Create("prop_vehicle_prisoner_pod")
- 
-                if part.model then ent:SetModel(part.model) end
-                ent:SetPos(self:LocalToWorld(part.pos))
-                ent:SetAngles(self:LocalToWorldAngles(part.ang))
- 
-                if part.type == "pilot" then CreatedParts.PilotSeat = ent
-                else
-                        if not CreatedParts.PassengerSeats then
-                                CreatedParts.PassengerSeats = {}
-                        end
-                        table.insert(CreatedParts.PassengerSeats, ent)
-                end
-        elseif part.type == "mount" then
-                ent = ents.Create("sbep_base_weapon_mount")
-               
-                if part.model then ent:SetModel(part.model) end
-                ent:SetPos(self:LocalToWorld(part.pos))
-                ent:SetAngles(self:LocalToWorldAngles(part.ang))
- 
-                ent:SetHardPoints(part.HP)
- 
-                if not CreatedParts.WeaponMounts then
-                        CreatedParts.WeaponMounts = {}
-                end
-                table.insert(CreatedParts.WeaponMounts, ent)
-        elseif scripted_ents.GetStored(part.type) then -- if it's a scripted entity
-                ent = ents.Create(part.type)
-                if part.model then ent:SetModel(part.model) end
-                ent:SetPos(self:LocalToWorld(part.pos))
-                ent:SetAngles(self:LocalToWorldAngles(part.ang))
-        end
-        if ent then table.insert(CreatedParts, ent) end
-end
-for _,part in ipairs(CreatedParts) do
-        part.Parts = CreatedParts
-end
-for part=1, #CreatedParts do
-        for otherpart = part+1, #CreatedParts do
-                constraint.Weld(CreatedParts[part], CreatedParts[otherpart])
-        end
 end

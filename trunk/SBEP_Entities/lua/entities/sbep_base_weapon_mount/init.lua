@@ -4,11 +4,12 @@ include( 'shared.lua' )
 
 function ENT:Initialize()
 
-	self.Entity:SetModel( self.MountData["model"] ) 
-	self.Entity:SetName( self.MountName )
+	if self.MountData then self.Entity:SetModel( self.MountData["model"] ) end
+	if self.MountName then self.Entity:SetName( self.MountName ) end
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self.Entity:SetUseType( SIMPLE_USE )
 	self.Inputs = Wire_CreateInputs( self.Entity, { "Fire" } )
 
 	local phys = self.Entity:GetPhysicsObject()
@@ -55,7 +56,9 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator, caller )
-
+	if self.PilotSeat then
+		return activator:EnterVehicle( self.PilotSeat )
+	end
 end
 
 function ENT:Touch( ent )

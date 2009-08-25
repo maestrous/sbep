@@ -73,13 +73,13 @@ DoorTypesTable[ "Door_ElevHatch_L"]	= { "models/SmallBridge/SEnts/sbahatchelevl.
 		
 DoorTypesTable[ "Door_ModBridge_11a"]	= { "models/Cerus/Modbridge/Misc/Doors/door11a_anim.mdl" 	, 
 										3.8 , 1.5 , 2 	,
-		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
-		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		{ [0] = "Doors.FullOpen8" , [0.50] = "Doors.Move14"    , [1.50] = "Doors.FullOpen8" , [3.40] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" 	  , [1.50] = "Doors.FullOpen8" , [2.30] = "Doors.FullOpen9" , [3.00] = "Doors.Move14" , [3.60] = "Doors.FullOpen8" } }
 		
 DoorTypesTable[ "Door_ModBridge_12a"]	= { "models/Cerus/Modbridge/Misc/Doors/door12a_anim.mdl" 	, 
-										4.8 , 1.5 , 1.5 	,
-		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
-		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+										3.0 , 1.5 , 1.5 	,
+		{ [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } }
 
 function ENT:SetDoorType( DoorType )
 	
@@ -97,8 +97,7 @@ function ENT:SetDoorType( DoorType )
 	self.OpenSounds 		= self.DataTable[5]
 	self.CloseSounds 		= self.DataTable[6]
 	
-	self.OpenTimers = {}
-	self.CloseTimers = {}
+	self.Timers = {}
 	
 	self:SetModel( self.DoorModel )
 	
@@ -123,8 +122,8 @@ function ENT:OpenDoorSounds()
 
 	self:EmitSound( self.OpenSounds[0] )
 	for k,v in pairs( self.OpenSounds ) do
-		local var = "SBEP_"..tostring( self:EntIndex() ).."_Open_"..tostring( k )
-		table.insert( self.OpenTimers , var )
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_OpenSounds_"..tostring( k )
+		table.insert( self.Timers , var )
 		timer.Create( var , k , 1 , function()
 								self:EmitSound( v )
 						end )
@@ -135,8 +134,8 @@ function ENT:CloseDoorSounds()
 
 	self:EmitSound( self.CloseSounds[0] )
 	for k,v in pairs( self.CloseSounds ) do
-		local var = "SBEP_"..tostring( self:EntIndex() ).."_Close_"..tostring( k )
-		table.insert( self.CloseTimers , var )
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_CloseSounds_"..tostring( k )
+		table.insert( self.Timers , var )
 		timer.Create( var , k , 1 , function()
 								self:EmitSound( v )
 						end )
@@ -154,10 +153,14 @@ function ENT:Open()
 
 	self:ResetSequence( self.OpenSequence )
 		self:OpenDoorSounds()
-		timer.Simple( self.OpenDelay , function()
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_OpenSolid"
+		table.insert( self.Timers , var )
+		timer.Create( var , self.OpenDelay , 1 , function()
 							self:SetNotSolid( true )
 						end)
-		timer.Simple( self.UseDelay , function()
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_OpenStatus"
+		table.insert( self.Timers , var )
+		timer.Create( var , self.UseDelay , 1 , function()
 							self.OpenStatus = true
 							if self.Controller then
 								WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),1)
@@ -172,10 +175,14 @@ function ENT:Close()
 
 	self:ResetSequence( self.CloseSequence )
 		self:CloseDoorSounds()
-		timer.Simple( self.CloseDelay , function()
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_CloseSolid"
+		table.insert( self.Timers , var )
+		timer.Create( var , self.CloseDelay , 1 , function()
 							self:SetNotSolid( false )
 						end)
-		timer.Simple( self.UseDelay , function()
+		local var = "SBEP_"..tostring( self:EntIndex() ).."_CloseStatus"
+		table.insert( self.Timers , var )
+		timer.Create( var , self.UseDelay , 1 , function()
 							self.OpenStatus = false
 							if self.Controller then
 								WireLib.TriggerOutput(self.Controller,"Open_"..tostring( self.SysDoorNum ),0)
@@ -228,13 +235,7 @@ function ENT:OnRemove()
 		self.Controller:MakeWire( true )
 	end
 	
-	for k,v in ipairs( self.OpenTimers ) do
-		if timer.IsTimer( v ) then
-			timer.Remove( v )
-		end
-	end
-	
-	for k,v in ipairs( self.CloseTimers ) do
+	for k,v in ipairs( self.Timers ) do
 		if timer.IsTimer( v ) then
 			timer.Remove( v )
 		end
