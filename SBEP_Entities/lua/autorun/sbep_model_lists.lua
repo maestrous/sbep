@@ -29,6 +29,8 @@ local DCT = {}
 
 			DCT[ "models/Cerus/Modbridge/Misc/Doors/door11a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_11a"  } }
 			DCT[ "models/Cerus/Modbridge/Misc/Doors/door12a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_12a"  } }
+			DCT[ "models/Cerus/Modbridge/Misc/Doors/door13a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_13a"  } }
+			DCT[ "models/Cerus/Modbridge/Misc/Doors/door23a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_23a"  } }
 			
 			DCT[ "models/SmallBridge/Elevators,Small/sbselevb.mdl" 		] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
 																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } }

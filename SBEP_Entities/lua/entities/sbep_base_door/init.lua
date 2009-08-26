@@ -80,6 +80,16 @@ DoorTypesTable[ "Door_ModBridge_12a"]	= { "models/Cerus/Modbridge/Misc/Doors/doo
 										3.0 , 1.5 , 1.5 	,
 		{ [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } ,
 		{ [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } }
+		
+DoorTypesTable[ "Door_ModBridge_13a"]	= { "models/Cerus/Modbridge/Misc/Doors/door13a_anim.mdl" 	, 
+										4.8 , 2 , 3.5 	,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
+		{ [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		
+DoorTypesTable[ "Door_ModBridge_23a"]	= { "models/Cerus/Modbridge/Misc/Doors/door23a_anim.mdl" 	, 
+										5.2 , 4 , 1.5 	,
+		{ [0] = "Doors.Move14" , [0.90] = "Doors.Move14"    , [2.80] = "Doors.FullOpen8" , [5.00] = "Doors.FullOpen9" } , 
+		{ [0] = "Doors.Doors.Fullopen8" , [2.40] = "Doors.FullOpen8" , [3.40] = "Doors.Move14" , [4.40] = "Doors.FullOpen8" , [5.20] = "Doors.FullOpen9" } }
 
 function ENT:SetDoorType( DoorType )
 	
