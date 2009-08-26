@@ -20,7 +20,6 @@
 		"11"		"models/Spacebuild/medbridge2_missile_launcher.mdl"
 		"12"		"models/Slyfo/artycannon.mdl"
 		"13"		"models/Slyfo/mcpcannon.mdl"
-		"14"		"models/Spacebuild/plasgun.mdl"
 		"15"		"models/Slyfo/subrocket.mdl"
 		"16"		"models/Spacebuild/cannon1_gen.mdl"
 		"17"		"models/Slyfo/powercrystal.mdl"

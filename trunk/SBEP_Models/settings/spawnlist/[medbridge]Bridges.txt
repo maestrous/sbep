@@ -7,7 +7,6 @@
 	}
 	"Entries"
 	{
-
 		"1"		"models/Spacebuild/medbridge.mdl"
 		"2"		"models/Spacebuild/medbridge2.mdl"
 		"3"		"models/Slyfo/cruisercockpit.mdl"
