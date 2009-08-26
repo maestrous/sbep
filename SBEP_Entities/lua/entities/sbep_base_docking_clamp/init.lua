@@ -7,7 +7,7 @@ function ENT:Initialize()
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	self.Entity:SetUseType( SIMPLE_USE )
-	self.Inputs = Wire_CreateInputs( self.Entity, { "Dock" } )
+	self.Inputs = Wire_CreateInputs( self.Entity, { "Dock", "UndockDelay" } )
 	self.Outputs = Wire_CreateOutputs( self.Entity, { "Status" })
 	self.Entity:SetNWInt( "DMode", self.DMode )
 	local phys = self.Entity:GetPhysicsObject()
@@ -22,6 +22,7 @@ function ENT:Initialize()
 	self.Entity:SetNetworkedEntity( "LinkLock", nil )
 		
 	self.LinkLock = nil
+	self.UDD = false
 end
 
 function ENT:TriggerInput(iname, value)		
@@ -46,7 +47,15 @@ function ENT:TriggerInput(iname, value)
 					self.AWeld:Remove()
 				end
 			end
-		end		
+		end
+		
+	elseif (iname == "UndockDelay") then
+		if (value > 0) then
+			self.UDD = true
+		else
+			self.UDD = false
+		end
+		
 	end
 end
 
