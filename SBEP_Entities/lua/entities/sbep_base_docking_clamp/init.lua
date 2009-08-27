@@ -62,26 +62,15 @@ end
 function ENT:AddDockDoor( DoorData )
 
 	self.Doors = self.Doors or {}
-	local doortype = DoorData[1]
-	local vecoff   = DoorData[2] or Vector(0,0,0)
-	local angoff   = DoorData[3] or Angle(0,0,0)
+	local doortype, vecoff, angoff = unpack( DoorData )
+	vecoff, angoff = vecoff or Vector(0,0,0), angoff or Angle(0,0,0)
 
 	local door = ents.Create( "sbep_base_door" )
 	
 	door:Spawn()
 	door:SetDoorType( doortype )
-	
-	door:SetPos(    self:GetPos()    + vecoff )
-	door:SetAngles( self:GetAngles() + angoff )
-	
-	constraint.Weld( door, self, 0, 0, 0, true )
-
-	door.OpenTrigger = false
-	
-	door:GetPhysicsObject():EnableMotion( true )
-
-	self:DeleteOnRemove( door )
-	
+	door:Attach( self.Entity , vecoff , angoff )
+		
 	table.insert( self.Doors , door )
 
 end

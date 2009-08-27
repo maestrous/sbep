@@ -382,8 +382,8 @@ if SERVER then
 						args[2] == "models/SmallBridge/Station Parts/sbhuble.mdl" )	 then return end
 		if !LiftSystem_SER.PT[n] then return end
 		
-		LiftSystem_SER.PT[n].model = args[2]
-		RunConsoleCommand( "sbep_lift_designer_model" , LiftSystem_SER.PT[n].model )
+		LiftSystem_SER.PT[n].PD.model = args[2]
+		RunConsoleCommand( "sbep_lift_designer_model" , LiftSystem_SER.PT[n].PD.model )
 		LiftSystem_SER:RefreshPart( n )
 		RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
 	end
@@ -393,8 +393,8 @@ if SERVER then
 		n = tonumber( args[1] )
 		if !LiftSystem_SER.PT[n] then return end
 		
-		LiftSystem_SER.PT[n].Roll   = ( LiftSystem_SER.PT[n].Roll + tonumber(args[2]) ) % 360
-		RunConsoleCommand( "sbep_lift_designer_roll" , LiftSystem_SER.PT[n].Roll )
+		LiftSystem_SER.PT[n].PD.Roll   = ( LiftSystem_SER.PT[n].PD.Roll + tonumber(args[2]) ) % 360
+		RunConsoleCommand( "sbep_lift_designer_roll" , LiftSystem_SER.PT[n].PD.Roll )
 		LiftSystem_SER:RefreshPart( n )
 	end
 	concommand.Add( "SBEP_LiftSys_SetLiftPartRoll_ser" , SBEP_SetLiftPartRoll )	
@@ -403,8 +403,8 @@ if SERVER then
 		n = tonumber( args[1] )
 		if !LiftSystem_SER.PT[n] then return end
 		
-		LiftSystem_SER.PT[n].Yaw   = ( LiftSystem_SER.PT[n].Yaw + tonumber(args[2]) ) % 360
-		RunConsoleCommand( "sbep_lift_designer_yaw" , LiftSystem_SER.PT[n].Yaw )
+		LiftSystem_SER.PT[n].PD.Yaw   = ( LiftSystem_SER.PT[n].PD.Yaw + tonumber(args[2]) ) % 360
+		RunConsoleCommand( "sbep_lift_designer_yaw" , LiftSystem_SER.PT[n].PD.Yaw )
 		LiftSystem_SER:RefreshPart( n )
 	end
 	concommand.Add( "SBEP_LiftSys_SetLiftPartYaw_ser" , SBEP_SetLiftPartYaw )	
@@ -418,21 +418,21 @@ if SERVER then
 	function SBEP_LiftGetCamHeight( ply , cmd , args )
 		local n = tonumber(GetConVarNumber( "sbep_lift_designer_activepart" ))
 	
-		LiftSystem_SER:SetNetworkedFloat( "SBEP_LiftCamHeight" , LiftSystem_SER.PT[ n ].HO )
+		LiftSystem_SER:SetNetworkedFloat( "SBEP_LiftCamHeight" , LiftSystem_SER.PT[ n ].PD.HO )
 		for k,v in ipairs( LiftSystem_SER.PT ) do
 			v:SetColor( 255 , 255 , 255 , 255 )
 		end
-		if n == LiftSystem_SER.PC then
+		if n == LiftSystem_SER.ST.PC then
 			LiftSystem_SER.PT[ n ]:SetColor( 255 , 255 , 255 , 180 )
 		else
 			LiftSystem_SER.PT[ n ]:SetColor( 64 , 128 , 255 , 180 )
-			LiftSystem_SER.PT[ LiftSystem_SER.PC ]:SetColor( 255 , 255 , 255 , 100 )
+			LiftSystem_SER.PT[ LiftSystem_SER.ST.PC ]:SetColor( 255 , 255 , 255 , 100 )
 		end
 	end
 	concommand.Add( "SBEP_LiftGetCamHeight_ser" , SBEP_LiftGetCamHeight )	
 	
 	function SBEP_LiftConstructPart( ply , cmd , args )
-		if tonumber(GetConVarNumber( "sbep_lift_designer_activepart" )) != LiftSystem_SER.PC then return false end
+		if tonumber(GetConVarNumber( "sbep_lift_designer_activepart" )) != LiftSystem_SER.ST.PC then return false end
 		
 		n = tonumber( args[1] )
 		if n == 1 then return end
@@ -442,9 +442,9 @@ if SERVER then
 		LiftSystem_SER:CreatePart( n )
 		local NP = LiftSystem_SER.PT[ n ]
 
-		NP.Yaw = GetConVarNumber( "sbep_lift_designer_yaw" )
-		NP.Roll = GetConVarNumber( "sbep_lift_designer_roll" )
-		NP.model = GetConVarString( "sbep_lift_designer_model" )
+		NP.PD.Yaw = GetConVarNumber( "sbep_lift_designer_yaw" )
+		NP.PD.Roll = GetConVarNumber( "sbep_lift_designer_roll" )
+		NP.PD.model = GetConVarString( "sbep_lift_designer_model" )
 		LiftSystem_SER:RefreshPart( n )
 		
 		RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
@@ -452,8 +452,8 @@ if SERVER then
 	concommand.Add( "SBEP_LiftConstructPart_ser" , SBEP_LiftConstructPart )
 	
 	function SBEP_LiftFinishSystem( ply , cmd , args )
-		if LiftSystem_SER.PC == 1 then return end
-		if LiftSystem_SER.PT[ LiftSystem_SER.PC - 1 ].IsShaft or LiftSystem_SER.PT[ LiftSystem_SER.PC - 1 ].IsHub then return end
+		if LiftSystem_SER.ST.PC == 1 then return end
+		if LiftSystem_SER.PT[ LiftSystem_SER.ST.PC - 1 ].PD.IsShaft or LiftSystem_SER.PT[ LiftSystem_SER.ST.PC - 1 ].PD.IsHub then return end
 		RunConsoleCommand( "SBEP_CloseLiftDesignMenu_cl" )
 		LiftSystem_SER:FinishSystem()
 		RunConsoleCommand( "sbep_lift_designer_editing" , 0 )
@@ -471,8 +471,8 @@ if SERVER then
 			LiftSystem_SER:RefreshPart( k )
 		end
 		
-		if n > LiftSystem_SER.PC then
-			RunConsoleCommand( "sbep_lift_designer_activepart" , LiftSystem_SER.PC )
+		if n > LiftSystem_SER.ST.PC then
+			RunConsoleCommand( "sbep_lift_designer_activepart" , LiftSystem_SER.ST.PC )
 		end
 		RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
 	end
@@ -500,17 +500,8 @@ function TOOL:LeftClick( trace )
 			LiftSystem_SER:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" )
 			LiftSystem_SER.Skin = tonumber( skin )
 			
-		if tonumber(self:GetClientNumber( "enableuse" )) == 1 then
-			LiftSystem_SER.Usable = true
-		else
-			LiftSystem_SER.Usable = false
-		end
-		
-		if tonumber(self:GetClientNumber( "size" )) == 2 then
-			LiftSystem_SER.Large = true
-		else
-			LiftSystem_SER.Large = false
-		end
+		LiftSystem_SER.Usable =  tonumber(self:GetClientNumber( "enableuse" )) == 1
+		LiftSystem_SER.Large = tonumber(self:GetClientNumber( "size" )) == 2
 		
 		LiftSystem_SER:Spawn()
 		LiftSystem_SER.StartPos = startpos + Vector(0,0,65.1)
@@ -520,9 +511,9 @@ function TOOL:LeftClick( trace )
 		
 		local hatchconvar = tonumber(self:GetClientNumber( "doors" ))
 		if hatchconvar == 2 then
-			LiftSystem_SER.UseHatches = true
+			LiftSystem_SER.ST.UseHatches = true
 		elseif hatchconvar == 3 then
-			LiftSystem_SER.UseDoors = true
+			LiftSystem_SER.ST.UseDoors = true
 		end		
 		
 		undo.Create( "SBEP Lift System" )
@@ -531,9 +522,9 @@ function TOOL:LeftClick( trace )
 		undo.Finish()
 		
 		LiftSystem_SER:CreatePart( 1 )
-			LiftSystem_SER.PT[1].Yaw   = 0
-			LiftSystem_SER.PT[1].Roll  = 0		
-			LiftSystem_SER.PT[1].model = "models/SmallBridge/Elevators,Small/sbselevm.mdl"		
+			LiftSystem_SER.PT[1].PD.Yaw   = 0
+			LiftSystem_SER.PT[1].PD.Roll  = 0		
+			LiftSystem_SER.PT[1].PD.model = "models/SmallBridge/Elevators,Small/sbselevm.mdl"		
 		LiftSystem_SER:RefreshPart( 1 )
 		
 		RunConsoleCommand( "SBEPDisableButtons_cl" )
@@ -573,7 +564,7 @@ function TOOL.BuildCPanel(panel)
 	
 	local SkinMenu = vgui.Create("DButton")
 	SkinMenu:SetText( "Skin" )
-	SkinMenu:SetSize( 100, 20 )
+	SkinMenu:SetSize( 100, 40 )
 
 	local SkinTable = {
 			"Scrappers"  ,
@@ -597,7 +588,7 @@ function TOOL.BuildCPanel(panel)
 	
 	local DoorMenu = vgui.Create("DButton")
 	DoorMenu:SetText( "Doors" )
-	DoorMenu:SetSize( 100, 20 )
+	DoorMenu:SetSize( 100, 40 )
 
 	local DoorTable = {
 			"None"  			,
@@ -619,7 +610,7 @@ function TOOL.BuildCPanel(panel)
 	
 	local SizeMenu = vgui.Create("DButton")
 	SizeMenu:SetText( "Size" )
-	SizeMenu:SetSize( 100, 20 )
+	SizeMenu:SetSize( 100, 40 )
 
 	local SizeTable = {
 				"Small"  	,

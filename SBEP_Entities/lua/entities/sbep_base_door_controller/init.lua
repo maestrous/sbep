@@ -54,33 +54,10 @@ function ENT:AddAnimDoors()
 	self.Door = {}
 	for k,v in pairs( self.AnimData ) do
 		self.Door[k] = ents.Create( "sbep_base_door" )
-
 			self.Door[k]:Spawn()
 			self.Door[k]:SetDoorType( v[1] )
-
-			if v[2] then
-				self.Door[k]:SetPos( self:GetPos() + v[2] )
-			else
-				self.Door[k]:SetPos( self:GetPos() )
-			end
-			if v[3] then
-				self.Door[k]:SetAngles( self:GetAngles() + v[3] )
-			else
-				self.Door[k]:SetAngles( self:GetAngles() )
-			end
-			
-			constraint.Weld( self.Door[k], self, 0, 0, 0, true )
-			
-			self.Door[k]:SetSkin( self:GetSkin() )
-
-			self.Door[k].Controller = self.Entity
-			self.Door[k].SysDoorNum = k
-
-			self.Door[k].OpenTrigger = false
-			
-			self.Door[k]:GetPhysicsObject():EnableMotion( true )
-
-			self:DeleteOnRemove( self.Door[k] )
+			self.Door[k]:Attach( self.Entity , v[2] , v[3] )
+			self.Door[k]:SetController( self.Entity , k )
 	end
 end
 
