@@ -1,5 +1,5 @@
 ENT.Type			      = "anim"
-ENT.Base                  = "base_gmodentity" 
+ENT.Base                  = "base_gmodentity"
 ENT.PrintName		      = "Elevator System"
 ENT.Author			      = "Hysteria"
 ENT.Category			  = "SBEP"

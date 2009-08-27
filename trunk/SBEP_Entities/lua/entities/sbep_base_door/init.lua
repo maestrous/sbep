@@ -91,7 +91,20 @@ DoorTypesTable[ "Door_ModBridge_23a"]	= { "models/Cerus/Modbridge/Misc/Doors/doo
 		{ [0] = "Doors.Move14" , [0.90] = "Doors.Move14"    , [2.80] = "Doors.FullOpen8" , [5.00] = "Doors.FullOpen9" } , 
 		{ [0] = "Doors.Doors.Fullopen8" , [2.40] = "Doors.FullOpen8" , [3.40] = "Doors.Move14" , [4.40] = "Doors.FullOpen8" , [5.20] = "Doors.FullOpen9" } }
 
+function ENT:PhysicsInitialize()
 
+	self:PhysicsInit( SOLID_VPHYSICS )
+		self:SetMoveType( MOVETYPE_VPHYSICS )
+		self:SetSolid( SOLID_VPHYSICS )
+		
+		local phys = self:GetPhysicsObject()  	
+		if (phys:IsValid()) then  		
+			phys:Wake()  
+			phys:EnableGravity(false)
+			phys:EnableMotion( false )
+		end
+
+end
 
 function ENT:SetDoorType( DoorType )
 
@@ -107,16 +120,7 @@ function ENT:SetDoorType( DoorType )
 	
 	self:GetSequenceData()
 	
-	self:PhysicsInit( SOLID_VPHYSICS )
-		self:SetMoveType( MOVETYPE_VPHYSICS )
-		self:SetSolid( SOLID_VPHYSICS )
-		
-		local phys = self:GetPhysicsObject()  	
-		if (phys:IsValid()) then  		
-			phys:Wake()  
-			phys:EnableGravity(false)
-			phys:EnableMotion( false )
-		end
+	self:PhysicsInitialize()	
 		
 	self:Close()
 	
@@ -291,9 +295,9 @@ duplicator.RegisterEntityModifier( "SBEPDoorDupeInfo" , function() end)
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
 	self.DoorType = Ent.EntityMods.SBEPDoorDupeInfo.DoorType
+	self:PhysicsInitialize()
 	self:SetDoorVars( self.DoorType )
 	self:GetSequenceData()
 	self:Close()
-	
 
 end

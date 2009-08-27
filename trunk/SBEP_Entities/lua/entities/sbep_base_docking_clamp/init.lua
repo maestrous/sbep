@@ -344,3 +344,22 @@ function ENT:TypeSet( Type )
 		end
 	end
 end
+
+function ENT:PreEntityCopy()
+	local dupeInfo = {}
+	
+	if WireAddon then
+		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPDockingClampDupeInfo", dupeInfo)
+end
+duplicator.RegisterEntityModifier( "SBEPDockingClampDupeInfo" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+
+	if(Ent.EntityMods and Ent.EntityMods.SBEPDockingClampDupeInfo.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPDockingClampDupeInfo.WireData, function(id) return CreatedEntities[id] end)
+	end
+
+end

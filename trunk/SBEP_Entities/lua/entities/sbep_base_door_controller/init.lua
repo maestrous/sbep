@@ -150,3 +150,44 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	self:AddAnimDoors()
 	self:MakeWire()
 end
+
+function ENT:PreEntityCopy()
+	local dupeInfo = {}
+
+	dupeInfo.AnimData 		= self.AnimData
+	dupeInfo.SBEPEnableWire = self.SBEPEnableWire
+	dupeInfo.EnableUseKey 	= self.EnableUseKey
+	dupeInfo.Door = {}
+	for m,n in ipairs(self.Door) do
+		if ValidEntity(n) then
+			dupeInfo.Door[m] = n:EntIndex()
+		end
+	end
+	
+	if WireAddon then
+		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPDoorControllerDupeInfo", dupeInfo)
+end
+duplicator.RegisterEntityModifier( "SBEPDoorControllerDupeInfo" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+
+	self.AnimData 		= Ent.EntityMods.SBEPDoorControllerDupeInfo.AnimData
+	self.SBEPEnableWire = Ent.EntityMods.SBEPDoorControllerDupeInfo.SBEPEnableWire
+	self.EnableUseKey 	= Ent.EntityMods.SBEPDoorControllerDupeInfo.EnableUseKey
+	self.Door			= {}
+	for k,v in ipairs( Ent.EntityMods.SBEPDoorControllerDupeInfo.Door ) do
+		if v then
+			self.Door[k] = CreatedEntities[v]
+			self.Door[k]:SetController( self.Entity , k )
+		end
+	end
+	self:MakeWire()
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPDoorControllerDupeInfo.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPDoorControllerDupeInfo.WireData, function(id) return CreatedEntities[id] end)
+	end
+
+end

@@ -1,5 +1,5 @@
 ENT.Type 			= "anim"
-ENT.Base 			= "base_wire_entity"
+ENT.Base 			= "base_gmodentity"
 ENT.PrintName		= "Weapon Mount Base"
 ENT.Author			= "Paradukes + FishFace60 + Hysteria"
 ENT.Category		= "SBEP"

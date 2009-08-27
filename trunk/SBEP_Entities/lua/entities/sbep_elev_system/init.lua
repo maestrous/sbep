@@ -93,8 +93,6 @@ end
 
 function ENT:Initialize()
 	
-	print( "\n\nInitialising.\n\n" )
-	
 	if self.Large then
 		self:SetModel( "models/SmallBridge/Elevators,Large/sblelevp3.mdl" ) 
 	else
@@ -197,9 +195,9 @@ function ENT:UpdatePart( PartNum , DT )
 	if DT.MFT then
 		P.PD.IsMultiFloor = true
 		P.PD.FO = DT.MFT --Floor Offsets Table
-		P.SBEPLiftWireInputs = {}
+		P.PD.SBEPLiftWireInputs = {}
 		for k,v in ipairs( P.PD.FO ) do
-			P.SBEPLiftWireInputs[k] = "Call "..tostring( k )
+			P.PD.SBEPLiftWireInputs[k] = "Call "..tostring( k )
 		end
 	else
 		P.PD.IsMultiFloor = false
@@ -668,8 +666,8 @@ end
 function ENT:MakeWire() --Adds the appropriate wire inputs.
 	self.SBEP_WireInputsTable = {}
 	self.SBEP_WireInputsTable[1] = "FloorNum"
-	for i = 1, self.ST.FC do
-		self.SBEP_WireInputsTable[i + 1] = "Floor "..tostring(i)
+	for k,v in ipairs( self.ST.FC ) do
+		table.insert( self.SBEP_WireInputsTable , ( "Floor "..tostring(k) ) )
 	end
 	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEP_WireInputsTable)
 	
@@ -751,6 +749,10 @@ function ENT:PreEntityCopy()
 		end
 	end
 	
+	if WireAddon then
+		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
 	duplicator.StoreEntityModifier(self, "SBEPLiftSysDupeInfo", dupeInfo)
 end
 duplicator.RegisterEntityModifier( "SBEPLiftSysDupeInfo" , function() end)
@@ -758,14 +760,9 @@ duplicator.RegisterEntityModifier( "SBEPLiftSysDupeInfo" , function() end)
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
 	self.ST			= Ent.EntityMods.SBEPLiftSysDupeInfo.ST
-	self.INC		= Ent.EntityMods.SBEPLiftSysDupeInfo.INC
-	
-	PrintTable( self.ST )
 	
 	self.Large		  = self.ST.Large
 	self.Usable		  = self.ST.Usable
-	self.Skin   	  = self.ST.Skin
-	//self.ShadowParams = self.ST.ShadowParams
 	
 	self.PT			= {}
 	for i = 1, self.ST.PC do
@@ -778,7 +775,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 		self.HT = {}
 		for i = 1, self.ST.HC do
 			self.HT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLiftSysDupeInfo.HDT[i].Index]
-			self.HT[i].HD			= Ent.EntityMods.SBEPLiftSysDupeInfo.DT[i].HD
+			self.HT[i].HD			= Ent.EntityMods.SBEPLiftSysDupeInfo.HDT[i].HD
 		end
 	end
 	
@@ -793,5 +790,10 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	end
 	
 	self:PasteRefreshSystem()
+	self:SetCallFloorNum( self.ST.FN )
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPLiftSysDupeInfo.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLiftSysDupeInfo.WireData, function(id) return CreatedEntities[id] end)
+	end
 
 end

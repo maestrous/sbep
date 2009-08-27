@@ -1,6 +1,7 @@
 ENT.Type 			= "anim"
-ENT.Base 			= "base_wire_entity"
-ENT.Author			= "Paradukes"
+ENT.Base 			= "base_gmodentity"
+ENT.PrintName		= "Base Docking Clamp"
+ENT.Author			= "Paradukes, Hysteria"
 ENT.Category		= "SBEP"
 
 ENT.Spawnable		= false
