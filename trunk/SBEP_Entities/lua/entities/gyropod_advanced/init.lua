@@ -67,6 +67,8 @@ function ENT:Initialize()
 	self.OnPlanet = true
 	GyroPitchComp = 0
 	self.Debug = 0
+	self.GyroPitch = 0
+	self.GyroYaw = 0
 end
 
 

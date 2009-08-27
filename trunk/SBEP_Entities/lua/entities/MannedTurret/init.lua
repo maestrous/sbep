@@ -76,19 +76,19 @@ function ENT:SpawnFunction( ply, tr )
 	ent.HP[3]			= {}
 	ent.HP[3]["Ent"]	= nil
 	ent.HP[3]["Type"]	= { "Small", "Tiny" }
-	ent.HP[3]["Pos"]	= Vector(0,-60,10)
+	ent.HP[3]["Pos"]	= Vector(0,-50,10)
 	ent.HP[4]			= {}
 	ent.HP[4]["Ent"]	= nil
 	ent.HP[4]["Type"]	= { "Small", "Tiny" }
-	ent.HP[4]["Pos"]	= Vector(0,-60,-50)
+	ent.HP[4]["Pos"]	= Vector(0,-50,-50)
 	ent.HP[5]			= {}
 	ent.HP[5]["Ent"]	= nil
 	ent.HP[5]["Type"]	= { "Small", "Tiny" }
-	ent.HP[5]["Pos"]	= Vector(0,60,10)
+	ent.HP[5]["Pos"]	= Vector(0,50,10)
 	ent.HP[6]			= {}
 	ent.HP[6]["Ent"]	= nil
 	ent.HP[6]["Type"]	= { "Small", "Tiny" }
-	ent.HP[6]["Pos"]	= Vector(0,60,-50)
+	ent.HP[6]["Pos"]	= Vector(0,50,-50)
 	--ent2.Skewed = true
 	
 	local phys = ent2:GetPhysicsObject()
