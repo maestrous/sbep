@@ -27,7 +27,7 @@ end
 function ENT:MakeWire()
 	
 	if self.PD.MultiFloor then
-		self.Inputs = Wire_CreateInputs(self.Entity, self.SBEPLiftWireInputs )
+		self.Inputs = Wire_CreateInputs(self.Entity, self.PD.SBEPLiftWireInputs )
 	elseif !self.PD.IsShaft then
 		self.Inputs = Wire_CreateInputs(self.Entity, { "Call" })
 	end
@@ -36,8 +36,8 @@ end
 
 function ENT:TriggerInput(k,v)
 	
-	if self.SBEPLiftWireInputs then
-		for m,n in ipairs( self.SBEPLiftWireInputs ) do
+	if self.PD.SBEPLiftWireInputs then
+		for m,n in ipairs( self.PD.SBEPLiftWireInputs ) do
 			if k == n and v == 1 then
 				self.Controller:SetCallFloorNum( self.PD.FN[m] )
 			end
@@ -54,6 +54,25 @@ function ENT:Use()
 
 	if !self.PD.MultiFloor and self.PD.Usable and ValidEntity( self.Controller ) then
 		self.Controller:SetCallFloorNum( self.PD.FN )
+	end
+
+end
+
+function ENT:PreEntityCopy()
+	local dupeInfo = {}
+	
+	if WireAddon then
+		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPElevHousingDupeInfo", dupeInfo)
+end
+duplicator.RegisterEntityModifier( "SBEPElevHousingDupeInfo" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+
+	if(Ent.EntityMods and Ent.EntityMods.SBEPElevHousingDupeInfo.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPElevHousingDupeInfo.WireData, function(id) return CreatedEntities[id] end)
 	end
 
 end

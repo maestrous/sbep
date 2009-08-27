@@ -81,30 +81,37 @@ function ENT:HPFire()
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+function ENT:PreEntityCopy()
+	local dupeInfo = {}
+
 	if (self.Pod) and (self.Pod:IsValid()) then
-	    info.Pod = self.Pod:EntIndex()
+	    dupeInfo.Pod = self.Pod:EntIndex()
 	end
-	info.guns = {}
+	dupeInfo.guns = {}
 	for k,v in pairs(self.HP) do
 		if (v["Ent"]) and (v["Ent"]:IsValid()) then
-			info.guns[k] = v["Ent"]:EntIndex()
+			dupeInfo.guns[k] = v["Ent"]:EntIndex()
 		end
 	end
-	return info
+	
+	if WireAddon then
+		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPWeaponMountDupeInfo", dupeInfo)
 end
+duplicator.RegisterEntityModifier( "SBEPWeaponMountDupeInfo" , function() end)
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Pod) then
-		self.Pod = GetEntByID(info.Pod)
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+
+	if (Ent.EntityMods.SBEPWeaponMountDupeInfo.Pod) then
+		self.Pod = GetEntByID(Ent.EntityMods.SBEPWeaponMountDupeInfo.Pod)
 		if (!self.Pod) then
-			self.Pod = ents.GetByIndex(info.Pod)
+			self.Pod = ents.GetByIndex(Ent.EntityMods.SBEPWeaponMountDupeInfo.Pod)
 		end
 	end
-	if (info.guns) then
-		for k,v in pairs(info.guns) do
+	if (Ent.EntityMods.SBEPWeaponMountDupeInfo.guns) then
+		for k,v in pairs(Ent.EntityMods.SBEPWeaponMountDupeInfo.guns) do
 			local gun = GetEntByID(v)
 			self.HP[k]["Ent"] = gun
 			if (!self.HP[k]["Ent"]) then
@@ -113,4 +120,9 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 			end
 		end
 	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPWeaponMountDupeInfo.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPWeaponMountDupeInfo.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end
