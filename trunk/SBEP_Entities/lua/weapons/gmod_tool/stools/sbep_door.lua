@@ -42,21 +42,16 @@ function TOOL:LeftClick( trace )
 	end
 
 	local model = self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
-	
+
 	local pos = trace.HitPos
-	
+
 	local DoorController = ents.Create( "sbep_base_door_controller" )
 		DoorController:SetModel( model )
 
-		DoorController.Skin = tonumber( self:GetClientNumber( "skin" ) )
-		DoorController:SetSkin( DoorController.Skin )
-		
-		if self:GetClientNumber( "enableuse" ) == 1 then
-			DoorController.EnableUseKey = true
-		else
-			DoorController.EnableUseKey = false
-		end
-		
+		DoorController:SetSkin( tonumber( self:GetClientNumber( "skin" ) ) )
+
+		DoorController.EnableUseKey = self:GetClientNumber( "enableuse" ) == 1
+
 		DoorController:Spawn()
 		DoorController:Activate()
 		
@@ -71,12 +66,9 @@ function TOOL:LeftClick( trace )
 		
 		DoorController:AddAnimDoors()
 	
-		if tonumber(self:GetClientNumber( "wire" )) == 1 then
-			DoorController.SBEPEnableWire = true
-			DoorController:MakeWire()
-		else
-			DoorController.SBEPEnableWire = false
-		end
+		DoorController.SBEPEnableWire = tonumber(self:GetClientNumber( "wire" )) == 1
+		DoorController:MakeWire()
+
 	
 	undo.Create("SBEP Door")
 		undo.AddEntity( DoorController )

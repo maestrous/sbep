@@ -91,23 +91,17 @@ DoorTypesTable[ "Door_ModBridge_23a"]	= { "models/Cerus/Modbridge/Misc/Doors/doo
 		{ [0] = "Doors.Move14" , [0.90] = "Doors.Move14"    , [2.80] = "Doors.FullOpen8" , [5.00] = "Doors.FullOpen9" } , 
 		{ [0] = "Doors.Doors.Fullopen8" , [2.40] = "Doors.FullOpen8" , [3.40] = "Doors.Move14" , [4.40] = "Doors.FullOpen8" , [5.20] = "Doors.FullOpen9" } }
 
+
+
 function ENT:SetDoorType( DoorType )
+
+	self.DoorType  = DoorType
+	self:SetDoorVars( DoorType )
 	
-	self.DataTable = DoorTypesTable[ DoorType ]
-	
-	self.DoorModel			= self.DataTable[1]
 	self.OpenStatus      	= false
 	self.OpenTrigger		= false
 	self.Locked     		= false
 	self.DisableUse 		= false
-	self.UseDelay		 	= self.DataTable[2]
-	self.OpenDelay			= self.DataTable[3]
-	self.CloseDelay			= self.DataTable[4]
-	
-	self.OpenSounds 		= self.DataTable[5]
-	self.CloseSounds 		= self.DataTable[6]
-	
-	self.Timers = {}
 	
 	self:SetModel( self.DoorModel )
 	
@@ -126,6 +120,40 @@ function ENT:SetDoorType( DoorType )
 		
 	self:Close()
 	
+end
+
+function ENT:SetDoorVars( DoorType )
+
+	local DataTable = DoorTypesTable[ DoorType ]
+	self.DoorModel, self.UseDelay, self.OpenDelay, self.CloseDelay, self.OpenSounds, self.CloseSounds = unpack( DataTable )
+	
+	self.Timers = {}
+
+end
+
+function ENT:Attach( ent , vecoff , angoff )
+
+	local vecoff = vecoff or Vector(0,0,0)
+	self.Entity:SetPos( ent:GetPos() + vecoff )
+
+	local angoff = angoff or Angle(0,0,0)
+	self.Entity:SetAngles( ent:GetAngles() + angoff )
+
+	constraint.Weld( ent , self.Entity , 0, 0, 0, true )
+
+	self.Entity:SetSkin( ent:GetSkin() )
+	self.Entity.OpenTrigger = false
+
+	self.Entity:GetPhysicsObject():EnableMotion( true )
+
+	ent:DeleteOnRemove( self.Entity )
+end
+
+function ENT:SetController( controller , sysnum )
+
+	self.Entity.Controller = self.Entity
+	self.Entity.SysDoorNum = k
+
 end
 
 function ENT:OpenDoorSounds()
@@ -250,4 +278,22 @@ function ENT:OnRemove()
 			timer.Remove( v )
 		end
 	end
+end
+
+function ENT:PreEntityCopy()
+	local dupeInfo = {}
+	dupeInfo.DoorType = self.DoorType
+	
+	duplicator.StoreEntityModifier(self, "SBEPDoorDupeInfo", dupeInfo)
+end
+duplicator.RegisterEntityModifier( "SBEPDoorDupeInfo" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+
+	self.DoorType = Ent.EntityMods.SBEPDoorDupeInfo.DoorType
+	self:SetDoorVars( self.DoorType )
+	self:GetSequenceData()
+	self:Close()
+	
+
 end
