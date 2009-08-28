@@ -5,7 +5,7 @@ include( 'shared.lua' )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/props_c17/consolebox01a.mdl" ) 
-	self.Entity:SetName("CargoCrate")
+	self.Entity:SetName("MPC")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
@@ -183,7 +183,7 @@ function ENT:PhysicsUpdate( phys )
 end
 
 */
-
+--[[
 function ENT:SpawnFunction( ply, tr )
 
 	if ( !tr.Hit || !tr.Entity || !tr.Entity:IsValid() ) then return end
@@ -209,10 +209,11 @@ function ENT:SpawnFunction( ply, tr )
 	return ent
 	
 end
+]]--
 
 function ENT:Think()
-	--print(self.PlModel)
-	if !self.Plat || !self.Plat:IsValid() then
+
+	if (!self.Plat || !self.Plat:IsValid()) and self.PlModel then
 		self.Plat = ents.Create( "MobilePlatform" )
 		self.Plat:SetModel( self.PlModel )
 		self.Plat:SetPos( self.Entity:GetPos() )
@@ -221,6 +222,9 @@ function ENT:Think()
 		self.Plat:Initialize()
 		self.Plat:Activate()
 		self.PNoc = constraint.NoCollide(self.Entity,self.Plat,0,0)
+		if self.Skin then
+			self.Plat:SetSkin( self.Skin )
+		end
 		--self.MWeld = constraint.Weld(self.Entity,self.Plat,0,0,0,true)
 		--self.Plat:SetParent(self.Entity)
 	end
