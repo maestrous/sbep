@@ -1,6 +1,6 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
-ENT.PrintName		= "Cargo Crate"
+ENT.PrintName		= "Mobile Platform"
 ENT.Author			= "Paradukes"
 
 ENT.Spawnable		= false

@@ -21,7 +21,8 @@ function ENT:Initialize()
 	util.PrecacheSound( "warpdrive/warp.wav" )
 	util.PrecacheSound( "warpdrive/error2.wav" )
 	
-	self.Entity:SetModel( "models/props_c17/consolebox03a.mdl" )
+	--self.Entity:SetModel( "models/props_c17/consolebox03a.mdl" )
+	self.Entity:SetModel( "models/Slyfo/ftl_drive.mdl" )
 	
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )

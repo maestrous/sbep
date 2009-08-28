@@ -74,6 +74,8 @@ function TOOL:LeftClick( trace )
 		undo.AddEntity( DoorController )
 		undo.SetPlayer( self:GetOwner() )
 	undo.Finish()
+	
+	return true
 
 end
 

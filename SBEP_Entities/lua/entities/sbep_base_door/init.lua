@@ -155,8 +155,8 @@ end
 
 function ENT:SetController( controller , sysnum )
 
-	self.Entity.Controller = self.Entity
-	self.Entity.SysDoorNum = k
+	self.Entity.Controller = controller
+	self.Entity.SysDoorNum = sysnum
 
 end
 
@@ -272,15 +272,15 @@ end
 
 function ENT:OnRemove()
 	
-	if self.Controller and ValidEntity( self.Controller ) then
-		table.remove( self.Controller.Door , self.SysDoorNum )
-		self.Controller:MakeWire( true )
-	end
-	
 	for k,v in ipairs( self.Timers ) do
 		if timer.IsTimer( v ) then
 			timer.Remove( v )
 		end
+	end
+	
+	if self.Controller and ValidEntity( self.Controller ) then
+		table.remove( self.Controller.Door , self.SysDoorNum )
+		self.Controller:MakeWire( true )
 	end
 end
 
