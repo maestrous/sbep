@@ -666,7 +666,7 @@ end
 function ENT:MakeWire() --Adds the appropriate wire inputs.
 	self.SBEP_WireInputsTable = {}
 	self.SBEP_WireInputsTable[1] = "FloorNum"
-	for k,v in ipairs( self.ST.FC ) do
+	for k,v in ipairs( self.ST.FT ) do
 		table.insert( self.SBEP_WireInputsTable , ( "Floor "..tostring(k) ) )
 	end
 	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEP_WireInputsTable)

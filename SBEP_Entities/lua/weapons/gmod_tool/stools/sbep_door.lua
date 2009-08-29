@@ -3,7 +3,7 @@ TOOL.Name			= "#Door"
 TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 
-local ModelSelectTable = list.Get( "SBEP_DoorControllerModels" )
+local MST = list.Get( "SBEP_DoorControllerModels" )
 
 if CLIENT then
 	language.Add( "Tool_sbep_door_name"	, "SBEP Door Tool" 				)
@@ -18,16 +18,16 @@ if CLIENT then
 end
 
 local CategoryTable = {
-					{ "Doors"			, "Door"	, "models/SmallBridge/Panels/sbpaneldoor.mdl" 		} ,
-					{ "ModBridge Doors"	, "Modbridge", "models/Cerus/Modbridge/Misc/Doors/door11a.mdl" 	} ,
-					{ "Hatches (Base)" 	, "Hatch_B"	, "models/SmallBridge/Elevators,Small/sbselevb.mdl" } ,
-					{ "Hatches (Mid)" 	, "Hatch_M"	, "models/SmallBridge/Elevators,Small/sbselevm.mdl" } ,
-					{ "Hatches (Top)"	, "Hatch_T"	, "models/SmallBridge/Elevators,Small/sbselevt.mdl" } ,
-					{ "Other"			, "Other"	, "models/SmallBridge/Station Parts/sbbaydps.mdl" 	}
+					{ name = "Doors"			, cat = "Door"	 	, model = "models/SmallBridge/Panels/sbpaneldoor.mdl" 		 } ,
+					{ name = "ModBridge Doors"	, cat = "Modbridge" , model = "models/Cerus/Modbridge/Misc/Doors/door11a.mdl" 	 } ,
+					{ name = "Hatches (Base)" 	, cat = "Hatch_B"	, model = "models/SmallBridge/Elevators,Small/sbselevb.mdl"  } ,
+					{ name = "Hatches (Mid)" 	, cat = "Hatch_M"	, model = "models/SmallBridge/Elevators,Small/sbselevm.mdl"  } ,
+					{ name = "Hatches (Top)"	, cat = "Hatch_T"	, model = "models/SmallBridge/Elevators,Small/sbselevt.mdl"  } ,
+					{ name = "Other"			, cat = "Other"	 	, model = "models/SmallBridge/Station Parts/sbbaydps.mdl" 	 }
 						}
 
 for k,v in ipairs( CategoryTable ) do
-	TOOL.ClientConVar[ "model_"..tostring(k) ] = v[3]
+	TOOL.ClientConVar[ "model_"..tostring(k) ] = v.model
 end
 TOOL.ClientConVar[ "activecat"  ] = 1
 TOOL.ClientConVar[ "skin"  		] = 0
@@ -57,12 +57,7 @@ function TOOL:LeftClick( trace )
 		
 		DoorController:SetPos( pos - Vector(0,0, DoorController:OBBMins().z ) )
 	
-		DoorController.AnimData = {}
-		local val = 3
-		while ModelSelectTable[model][val] do
-			table.insert( DoorController.AnimData , ModelSelectTable[model][val] )
-			val = val + 1
-		end
+		DoorController.AnimData = table.Copy( MST[model].doors )
 		
 		DoorController:AddAnimDoors()
 	
@@ -76,21 +71,14 @@ function TOOL:LeftClick( trace )
 	undo.Finish()
 	
 	return true
-
 end
 
 function TOOL:RightClick( trace )
 
-	
-
-	//return true
 end
 
 function TOOL:Reload( trace )
 
-	
-
-	//return true
 end
 
 function TOOL.BuildCPanel( panel )
@@ -133,39 +121,38 @@ function TOOL.BuildCPanel( panel )
 			UseCheckBox:SizeToContents()
 		panel:AddItem( UseCheckBox )
 
-	local ModelCollapsibleCategories = {}
+	local MCC = {}
 	
 	for k,v in pairs(CategoryTable) do
-		ModelCollapsibleCategories[k] = {}
-		ModelCollapsibleCategories[k][1] = vgui.Create("DCollapsibleCategory")
-			//ModelCollapsibleCategories[k][1]:SetSize( 200, 50 )
-			ModelCollapsibleCategories[k][1]:SetExpanded( false )
-			ModelCollapsibleCategories[k][1]:SetLabel( v[1] )
-		panel:AddItem( ModelCollapsibleCategories[k][1] )
+		MCC[k] = {}
+		MCC[k][1] = vgui.Create("DCollapsibleCategory")
+			MCC[k][1]:SetExpanded( false )
+			MCC[k][1]:SetLabel( v.name )
+		panel:AddItem( MCC[k][1] )
 	 
-		ModelCollapsibleCategories[k][2] = vgui.Create( "DPanelList" )
-			ModelCollapsibleCategories[k][2]:SetAutoSize( true )
-			ModelCollapsibleCategories[k][2]:SetSpacing( 5 )
-			ModelCollapsibleCategories[k][2]:EnableHorizontal( false )
-			ModelCollapsibleCategories[k][2]:EnableVerticalScrollbar( false )
-		ModelCollapsibleCategories[k][1]:SetContents( ModelCollapsibleCategories[k][2] )
+		MCC[k][2] = vgui.Create( "DPanelList" )
+			MCC[k][2]:SetAutoSize( true )
+			MCC[k][2]:SetSpacing( 5 )
+			MCC[k][2]:EnableHorizontal( false )
+			MCC[k][2]:EnableVerticalScrollbar( false )
+		MCC[k][1]:SetContents( MCC[k][2] )
 
-		ModelCollapsibleCategories[k][3] = vgui.Create( "PropSelect" )
-			ModelCollapsibleCategories[k][3]:SetConVar( "sbep_door_model_"..tostring(k) )
-			ModelCollapsibleCategories[k][3].Label:SetText( "Model:" )
-			for m,n in pairs( ModelSelectTable ) do
-				if n[2] == v[2] then
-					ModelCollapsibleCategories[k][3]:AddModel( m , {} )
+		MCC[k][3] = vgui.Create( "PropSelect" )
+			MCC[k][3]:SetConVar( "sbep_door_model_"..tostring(k) )
+			MCC[k][3].Label:SetText( "Model:" )
+			for m,n in pairs( MST ) do
+				if n.cat == v.cat then
+					MCC[k][3]:AddModel( m , {} )
 				end
 			end
-		ModelCollapsibleCategories[k][2]:AddItem( ModelCollapsibleCategories[k][3] )
+		MCC[k][2]:AddItem( MCC[k][3] )
 	end
-	ModelCollapsibleCategories[1][1]:SetExpanded( true )
+	MCC[1][1]:SetExpanded( true )
 	RunConsoleCommand( "sbep_door_activecat", 1 )
 	
-	for k,v in pairs( ModelCollapsibleCategories ) do
+	for k,v in pairs( MCC ) do
 		v[1].Header.OnMousePressed = function()
-									for m,n in pairs(ModelCollapsibleCategories) do
+									for m,n in pairs(MCC) do
 										if n[1]:GetExpanded() then
 											n[1]:Toggle()
 										end

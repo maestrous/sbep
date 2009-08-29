@@ -3,370 +3,400 @@ TOOL.Name			= "#Lift System Designer"
 TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 
-local ButtonModelTable = {
-			[ 1 ] = { "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	, "M"		 } ,
-			[ 2 ] = { "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	, "ME"		 } ,
-			[ 3 ] = { "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	, "MEdh"	 } ,
-			[ 4 ] = { "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	, "MEdw"	 } ,
-			[ 5 ] = { "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	, "MR"		 } ,
-			[ 6 ] = { "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	, "MT"		 } ,
-			[ 7 ] = { "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	, "MX"		 } ,
-			[ 8 ] = { "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	, "S"		 }
-						}
+local BMT = {
+	{ "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	, "M"		 } ,
+	{ "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	, "ME"		 } ,
+	{ "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	, "MEdh"	 } ,
+	{ "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	, "MEdw"	 } ,
+	{ "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	, "MR"		 } ,
+	{ "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	, "MT"		 } ,
+	{ "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	, "MX"		 } ,
+	{ "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	, "S"		 }
+			}
 
-local SpecialModelTable = {
-			[ 1 ] = { "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" , "VM"		 } ,
-			[ 2 ] = { "models/SmallBridge/Station Parts/sbhuble.mdl" 		, "H"		 }
-						}
+local SMT = {
+	{ "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" , "VM"		 } ,
+	{ "models/SmallBridge/Station Parts/sbhuble.mdl" 		, "H"		 }
+			}
 
 if CLIENT then
-	language.Add( "Tool_sbep_lift_designer_name", "SBEP Lift System Designer" )
-	language.Add( "Tool_sbep_lift_designer_desc", "Create a lift system." )
-	language.Add( "Tool_sbep_lift_designer_0", "Left click somewhere to begin." )
-	language.Add( "undone_SBEP Lift System"	, "Undone SBEP Lift System"			)
+	language.Add( "Tool_sbep_lift_designer_name", "SBEP Lift System Designer" 		)
+	language.Add( "Tool_sbep_lift_designer_desc", "Create a lift system." 			)
+	language.Add( "Tool_sbep_lift_designer_0"	, "Left click somewhere to begin." 	)
+	language.Add( "undone_SBEP Lift System"		, "Undone SBEP Lift System"			)
 end
 
 local ConVars = {
-		{ "editing" 		, 						0							} ,
-		{ "model"			, "models/SmallBridge/Elevators,Small/sbselevm.mdl" } ,
-		{ "yaw"				, 						0							} ,
-		{ "roll"			, 						0							} ,
-		{ "activepart"		,						1							} ,
-		{ "skin"			,						0							} ,
-		{ "enableuse"		,						0							} ,
-		{ "doors"			,						0							} ,
-		{ "size"			,						1							}
-			}
+		editing 		= 0,
+		model			= "models/SmallBridge/Elevators,Small/sbselevm.mdl",
+		yaw				= 0,
+		roll			= 0,
+		activepart		= 1,
+		skin			= 0,
+		enableuse		= 0,
+		doors			= 0,
+		size			= 1
+				}
 for k,v in pairs(ConVars) do
-	TOOL.ClientConVar[ v[1] ] = v[2]
+	TOOL.ClientConVar[k] = v
+end
+
+local function RCC( com , args)
+	
+	RunConsoleCommand( com , unpack( args ) )
+	
 end
 
 if CLIENT then
+
+	SBEPLiftDesignerMenuTable = {}
+
+	function CreateSBEPLiftDesignerMenu()
 	
-	SBEPLiftMenuPanel = vgui.Create( "DFrame" )
-		SBEPLiftMenuPanel:SetPos( 30,30 )
-		SBEPLiftMenuPanel:SetSize( 325, 548 )
-		SBEPLiftMenuPanel:SetTitle( "SBEP Lift System Designer" )
-		SBEPLiftMenuPanel:SetVisible( false )
-		SBEPLiftMenuPanel:SetDraggable( false )
-		SBEPLiftMenuPanel:ShowCloseButton( false )
-		SBEPLiftMenuPanel:MakePopup()
+		local LDT = SBEPLiftDesignerMenuTable
 	
-	SBEPLiftSpecialMenuPanel = vgui.Create( "DFrame" )
-		SBEPLiftSpecialMenuPanel:SetPos( 360,193 )
-		SBEPLiftSpecialMenuPanel:SetSize( 165,85 )
-		SBEPLiftSpecialMenuPanel:SetTitle( " " )
-		SBEPLiftSpecialMenuPanel:SetBackgroundBlur( true )
-		SBEPLiftSpecialMenuPanel:SetVisible( false )
-		SBEPLiftSpecialMenuPanel:SetDraggable( false )
-		SBEPLiftSpecialMenuPanel:ShowCloseButton( false )
-		SBEPLiftSpecialMenuPanel:MakePopup()
-	
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//					MENU CONTROLS
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		LDT.Frame = vgui.Create( "DFrame" )
+			LDT.Frame:SetPos( 30,30 )
+			LDT.Frame:SetSize( 325, 548 )
+			LDT.Frame:SetTitle( "SBEP Lift System Designer" )
+			LDT.Frame:SetVisible( false )
+			LDT.Frame:SetDraggable( false )
+			LDT.Frame:ShowCloseButton( false )
+			LDT.Frame:MakePopup()
 		
-	SBEPLiftMenuCloseButton = vgui.Create("DSysButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCloseButton:SetPos( 285 , 4 )   
-		SBEPLiftMenuCloseButton:SetSize( 35 , 13 )   
-		SBEPLiftMenuCloseButton:SetType( "close" )
-		SBEPLiftMenuCloseButton.DoClick = function()
-												SBEPLiftMenuPanelVisible = false
-												SBEPLiftMenuPanel:SetVisible( SBEPLiftMenuPanelVisible )
+		LDT.SFrame = vgui.Create( "DFrame" )
+			LDT.SFrame:SetPos( 360,193 )
+			LDT.SFrame:SetSize( 165,85 )
+			LDT.SFrame:SetTitle( " " )
+			LDT.SFrame:SetBackgroundBlur( true )
+			LDT.SFrame:SetVisible( false )
+			LDT.SFrame:SetDraggable( false )
+			LDT.SFrame:ShowCloseButton( false )
+			LDT.SFrame:MakePopup()
+		
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//					MENU CONTROLS
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+		LDT.SButtons = {}
+		
+		LDT.SButtons.Close = vgui.Create("DSysButton", LDT.Frame )
+			LDT.SButtons.Close:SetPos( 285 , 4 )   
+			LDT.SButtons.Close:SetSize( 35 , 13 )   
+			LDT.SButtons.Close:SetType( "close" )
+			LDT.SButtons.Close.DoClick = function()
 												RunConsoleCommand( "SBEP_LiftCancelMenu_ser" )
-										end
-	
-	SBEPLiftMenuFinishButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuFinishButton:SetPos( 5 , 508 )
-		SBEPLiftMenuFinishButton:SetSize( 315 , 35 )
-		SBEPLiftMenuFinishButton:SetImage( "sbep_icons/Finish.vmt" )
-		SBEPLiftMenuFinishButton.DoClick = function()
-												RunConsoleCommand( "SBEP_LiftFinishSystem_ser" )
-										end
-	
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//					MODEL CONTROLS
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	SBEPLiftMenuPartButton = {}
-	for k,v in ipairs(ButtonModelTable) do
-		SBEPLiftMenuPartButton[k] = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-			SBEPLiftMenuPartButton[k]:SetImage( "sbep_icons/SBSelev"..v[2]..".vmt" )
-			SBEPLiftMenuPartButton[k]:SetPos( 5 + 80 * ((k - 1)%4) , 28 + 80 * math.floor((k - 1)/ 4))
-			SBEPLiftMenuPartButton[k]:SetSize( 75 , 75 )
-			SBEPLiftMenuPartButton[k].DoClick = function()
-													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , v[1] )
-												end
-	end
-	
-	SBEPLiftMenuSpecialButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuSpecialButton:SetPos( 165 , 188 )   
-		SBEPLiftMenuSpecialButton:SetSize( 155 , 35 )
-		SBEPLiftMenuSpecialButton:SetImage( "sbep_icons/Special.vmt" )
-		SBEPLiftMenuSpecialButton.DoClick = function()
-												SBEPLiftSpecialVisible = !SBEPLiftSpecialVisible
-												SBEPLiftSpecialMenuPanel:SetVisible( SBEPLiftSpecialVisible )
+												LDT.Frame:Remove()
 											end
-	
-	SBEPLiftMenuSpecial1 = vgui.Create("DImageButton", SBEPLiftSpecialMenuPanel )
-		SBEPLiftMenuSpecial1:SetImage( "sbep_icons/SBSelevVM.vmt" )
-		SBEPLiftMenuSpecial1:SetPos( 5 , 5 )
-		SBEPLiftMenuSpecial1:SetSize( 75 , 75 )
-		SBEPLiftMenuSpecial1.DoClick = function()
-												SBEPLiftSpecialVisible = false
-												SBEPLiftSpecialMenuPanel:SetVisible( SBEPLiftSpecialVisible )
-												RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , SpecialModelTable[1][1] )
-											end
-
-	SBEPLiftMenuSpecial2 = vgui.Create("DImageButton", SBEPLiftSpecialMenuPanel )
-		SBEPLiftMenuSpecial2:SetImage( "sbep_icons/SBSelevH.vmt" )
-		SBEPLiftMenuSpecial2:SetPos( 85 , 5 )
-		SBEPLiftMenuSpecial2:SetSize( 75 , 75 )
-		SBEPLiftMenuSpecial2.DoClick = function()
-												SBEPLiftSpecialVisible = false
-												SBEPLiftSpecialMenuPanel:SetVisible( SBEPLiftSpecialVisible )
-												RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , SpecialModelTable[2][1] )
-											end
-	
-	function SBEPDisableButtons( ply , cmd , args )
-		local size = tonumber( GetConVarNumber( "sbep_lift_designer_size" ) )
-		if size == 2 then
-			SBEPLiftMenuPartButton[4]:SetDisabled( true )
-			SBEPLiftMenuSpecialButton:SetDisabled( true )
-		else
-			SBEPLiftMenuPartButton[4]:SetDisabled( false )
-			SBEPLiftMenuSpecialButton:SetDisabled( false )
-		end
-	end
-	concommand.Add( "SBEPDisableButtons_cl" , SBEPDisableButtons )
-
-	
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//					CONSTRUCTION CONTROLS
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	SBEPLiftMenuConstructButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuConstructButton:SetPos( 5 , 268 )
-		SBEPLiftMenuConstructButton:SetSize( 155 , 195 )
-		SBEPLiftMenuConstructButton:SetImage( "sbep_icons/Construct.vmt" )
-		SBEPLiftMenuConstructButton.DoClick = function()
-												local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
-												pos = pos + 1
-												RunConsoleCommand( "SBEP_LiftConstructPart_ser" , pos )
-										end
-	
-	SBEPLiftMenuUpPosButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuUpPosButton:SetPos( 45 , 228 )   
-		SBEPLiftMenuUpPosButton:SetSize( 75 , 35 )   
-		SBEPLiftMenuUpPosButton:SetImage( "sbep_icons/ArrowUp.vmt" )
-		SBEPLiftMenuUpPosButton.DoClick = function()
-												local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
-												pos = math.Clamp( pos + 1 , 1 , CL.LiftSystem:GetNetworkedInt( "SBEP_LiftPartCount" ) )
-												RunConsoleCommand( "sbep_lift_designer_activepart" , pos )
-												RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
-										end
-	
-	SBEPLiftMenuDownPosButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuDownPosButton:SetPos( 45 , 468 )   
-		SBEPLiftMenuDownPosButton:SetSize( 75 , 35 )   
-		SBEPLiftMenuDownPosButton:SetImage( "sbep_icons/ArrowDown.vmt" )
-		SBEPLiftMenuDownPosButton.DoClick = function()
-												local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
-												pos = math.Clamp( pos - 1 , 1 , CL.LiftSystem:GetNetworkedInt( "SBEP_LiftPartCount" ) )
-												RunConsoleCommand( "sbep_lift_designer_activepart" , pos )
-												RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
-										end
-	
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//					PART CONTROLS
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	SBEPLiftMenuInvertPartButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuInvertPartButton:SetPos( 45 , 188 )   
-		SBEPLiftMenuInvertPartButton:SetSize( 75 , 35 )   
-		SBEPLiftMenuInvertPartButton:SetImage( "sbep_icons/Invert.vmt" )
-		SBEPLiftMenuInvertPartButton.DoClick = function()
-													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartRoll_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , 180 )
-													RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
-												end
-
-	SBEPLiftMenuRotPartCButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuRotPartCButton:SetPos( 5 , 188 )   
-		SBEPLiftMenuRotPartCButton:SetSize( 35 , 35 )
-		SBEPLiftMenuRotPartCButton:SetImage( "sbep_icons/RotC.vmt" )
-		SBEPLiftMenuRotPartCButton.DoClick = function()
-												RunConsoleCommand( "SBEP_LiftSys_SetLiftPartYaw_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , 270 )
-											end
-	
-	SBEPLiftMenuRotPartACButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuRotPartACButton:SetPos( 125 , 188 )   
-		SBEPLiftMenuRotPartACButton:SetSize( 35 , 35 )
-		SBEPLiftMenuRotPartACButton:SetImage( "sbep_icons/RotAC.vmt" )
-		SBEPLiftMenuRotPartACButton.DoClick = function()
-												RunConsoleCommand( "SBEP_LiftSys_SetLiftPartYaw_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , 90 )
-											end
-	
-	SBEPLiftMenuDeletePartButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuDeletePartButton:SetPos( 125 , 228 )   
-		SBEPLiftMenuDeletePartButton:SetSize( 35 , 35 )
-		SBEPLiftMenuDeletePartButton:SetImage( "sbep_icons/Delete.vmt" )
-		SBEPLiftMenuDeletePartButton.DoClick = function()
-												RunConsoleCommand( "SBEP_LiftDeletePart_ser" )	
-											end
-	
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//					CAMERA CONTROLS
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	SBEPLiftMenuCamUpButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCamUpButton:SetPos( 205 , 348 )   
-		SBEPLiftMenuCamUpButton:SetSize( 75 , 35 )   
-		SBEPLiftMenuCamUpButton:SetImage( "sbep_icons/ArrowUp.vmt" )
-		SBEPLiftMenuCamUpButton.DoClick = function()
-											CL.MVPitch = CL.MVPitch + 2
-											ReCalcViewAngles()
-										end
-	
-	SBEPLiftMenuCamDownButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCamDownButton:SetPos( 205 , 468 )   
-		SBEPLiftMenuCamDownButton:SetSize( 75 , 35 )   
-		SBEPLiftMenuCamDownButton:SetImage( "sbep_icons/ArrowDown.vmt" )
-		SBEPLiftMenuCamDownButton.DoClick = function()
-												CL.MVPitch = CL.MVPitch - 2
-												ReCalcViewAngles()
-										end
-	
-	SBEPLiftMenuCamLeftButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCamLeftButton:SetPos( 165 , 388 )   
-		SBEPLiftMenuCamLeftButton:SetSize( 35 , 75 )
-		SBEPLiftMenuCamLeftButton:SetImage( "sbep_icons/ArrowLeft.vmt" )
-		SBEPLiftMenuCamLeftButton.DoClick = function()
-												CL.MVYaw = CL.MVYaw - 2
-												ReCalcViewAngles()
-										end
-	
-	SBEPLiftMenuCamRightButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCamRightButton:SetPos( 285 , 388 )   
-		SBEPLiftMenuCamRightButton:SetSize( 35 , 75 )
-		SBEPLiftMenuCamRightButton:SetImage( "sbep_icons/ArrowRight.vmt" )
-		SBEPLiftMenuCamRightButton.DoClick = function()
-												CL.MVYaw = CL.MVYaw + 2
-												ReCalcViewAngles()
-										end
-
-	SBEPLiftMenuCamIcon = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCamIcon:SetPos( 205 , 388 )   
-		SBEPLiftMenuCamIcon:SetSize( 75 , 75 ) 
-		SBEPLiftMenuCamIcon:SetImage( "sbep_icons/Camera.vmt" )		
-		SBEPLiftMenuCamIcon.DoClick = function()
-											DefaultViewAngles()
-										end
-	
-	SBEPLiftMenuCamZoomInButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCamZoomInButton:SetPos( 285 , 348 )   
-		SBEPLiftMenuCamZoomInButton:SetSize( 35 , 35 )
-		SBEPLiftMenuCamZoomInButton:SetImage( "sbep_icons/ZoomIn.vmt" )
-		SBEPLiftMenuCamZoomInButton.DoClick = function()
-												CL.MVRange = CL.MVRange - 10
-												ReCalcViewAngles()
-										end
-	
-	SBEPLiftMenuCamZoomOutButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuCamZoomOutButton:SetPos( 165 , 348 )   
-		SBEPLiftMenuCamZoomOutButton:SetSize( 35 , 35 )
-		SBEPLiftMenuCamZoomOutButton:SetImage( "sbep_icons/ZoomOut.vmt" )
-		SBEPLiftMenuCamZoomOutButton.DoClick = function()
-												CL.MVRange = CL.MVRange + 10
-												ReCalcViewAngles()
-										end
-	
-	SBEPLiftMenuRotCamCButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuRotCamCButton:SetPos( 165 , 468 )   
-		SBEPLiftMenuRotCamCButton:SetSize( 35 , 35 )
-		SBEPLiftMenuRotCamCButton:SetImage( "sbep_icons/RotC.vmt" )
-		SBEPLiftMenuRotCamCButton.DoClick = function()
-												CL.MVYaw = CL.MVYaw - 90
-												ReCalcViewAngles()
-											end
-	
-	SBEPLiftMenuRotCamACButton = vgui.Create("DImageButton", SBEPLiftMenuPanel )
-		SBEPLiftMenuRotCamACButton:SetPos( 285 , 468 )   
-		SBEPLiftMenuRotCamACButton:SetSize( 35 , 35 )
-		SBEPLiftMenuRotCamACButton:SetImage( "sbep_icons/RotAC.vmt" )
-		SBEPLiftMenuRotCamACButton.DoClick = function()
-												CL.MVYaw = CL.MVYaw + 90
-												ReCalcViewAngles()
-											end
-	
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	//					CLIENT FUNCTIONS
-	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	function SBEP_OpenLiftDesignMenu()
-
-		CL.StartPos = CL:GetNetworkedVector( "SBEP_LiftStartPos" )
-		CL.LiftSystem = CL:GetNetworkedEntity( "SBEP_LiftSystem" )
-	
-		DefaultViewAngles()
-		ReCalcViewAngles()
 		
-		SBEPLiftMenuPanelVisible = true
-		SBEPLiftMenuPanel:SetVisible( SBEPLiftMenuPanelVisible )
+		LDT.SButtons.finish = vgui.Create("DImageButton", LDT.Frame )
+			LDT.SButtons.finish:SetPos( 5 , 508 )
+			LDT.SButtons.finish:SetSize( 315 , 35 )
+			LDT.SButtons.finish:SetImage( "sbep_icons/Finish.vmt" )
+			LDT.SButtons.finish.DoClick = function()
+												RunConsoleCommand( "SBEP_LiftFinishSystem_ser" )
+												LDT.Frame:Remove()
+											end
+		
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//					MODEL CONTROLS
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	end
-	
-	concommand.Add("SBEP_OpenLiftDesignMenu_cl",SBEP_OpenLiftDesignMenu)
-	
-	function SBEP_CloseLiftDesignMenu()
-
-		SBEPLiftMenuPanelVisible = false
-		SBEPLiftMenuPanel:SetVisible( SBEPLiftMenuPanelVisible )
-
-	end
-	
-	concommand.Add("SBEP_CloseLiftDesignMenu_cl",SBEP_CloseLiftDesignMenu)
-	
-	function DefaultViewAngles()
-			CL.MBVec = Vector(-1,0,0)
-			CL.MVYaw = -135
-			CL.MVPitch = 30
-			CL.MVRange = 500
-
-			ReCalcViewAngles()
-	end
-
-	function ReCalcViewAngles()
-		CL.MBVec = Vector(-1,0,0)
-		CL.MRAng = Angle( CL.MVPitch , CL.MVYaw , 0 )
-		CL.MBVec:Rotate( CL.MRAng )
-		CL.MVOffset = CL.MVRange * CL.MBVec
-	end
-	
-	hook.Add("InitPostEntity", "GetSBEPLocalPlayer", function()
-		CL = LocalPlayer()
-	end)
-
-	function SBEP_LiftCalcView( ply, origin, angles, fov )
- 
-		if SBEPLiftMenuPanelVisible then
-			local view = {}
-				CL.StartPos = CL:GetNetworkedVector( "SBEP_LiftStartPos" )
-				CL.PHOffset = CL.LiftSystem:GetNetworkedFloat( "SBEP_LiftCamHeight" )
-				if CL.PHOffset then
-					view.origin = CL.StartPos + CL.MVOffset + Vector( 0 , 0 , CL.PHOffset )
-				else
-					view.origin = CL.StartPos + CL.MVOffset
-				end
-				view.angles = CL.MRAng
-
-			return view
-		else
-			return GAMEMODE:CalcView(ply,origin,angles,fov)
+		LDT.PButtons = {}
+		
+		for k,v in ipairs(BMT) do
+			LDT.PButtons[k] = vgui.Create("DImageButton", LDT.Frame )
+				LDT.PButtons[k]:SetImage( "sbep_icons/SBSelev"..v[2]..".vmt" )
+				LDT.PButtons[k]:SetPos( 5 + 80 * ((k - 1)%4) , 28 + 80 * math.floor((k - 1)/ 4))
+				LDT.PButtons[k]:SetSize( 75 , 75 )
+				LDT.PButtons[k].DoClick = function()
+														RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , v[1] )
+													end
 		end
- 
+		
+		LDT.PButtons.Special = {}
+		
+		LDT.PButtons.Special.B = vgui.Create("DImageButton", LDT.Frame )
+			LDT.PButtons.Special.B:SetPos( 165 , 188 )   
+			LDT.PButtons.Special.B:SetSize( 155 , 35 )
+			LDT.PButtons.Special.B:SetImage( "sbep_icons/Special.vmt" )
+			LDT.PButtons.Special.B.DoClick = function()
+													LDT.SFrame.visible = !LDT.SFrame.visible
+													LDT.SFrame:SetVisible( LDT.SFrame.visible )
+												end
+		
+		LDT.PButtons.Special[1] = vgui.Create("DImageButton", LDT.SFrame )
+			LDT.PButtons.Special[1]:SetImage( "sbep_icons/SBSelevVM.vmt" )
+			LDT.PButtons.Special[1]:SetPos( 5 , 5 )
+			LDT.PButtons.Special[1]:SetSize( 75 , 75 )
+			LDT.PButtons.Special[1].DoClick = function()
+													LDT.SFrame.visible = false
+													LDT.SFrame:SetVisible( LDT.SFrame.visible )
+													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , SMT[1][1] )
+												end
+
+		LDT.PButtons.Special[2] = vgui.Create("DImageButton", LDT.SFrame )
+			LDT.PButtons.Special[2]:SetImage( "sbep_icons/SBSelevH.vmt" )
+			LDT.PButtons.Special[2]:SetPos( 85 , 5 )
+			LDT.PButtons.Special[2]:SetSize( 75 , 75 )
+			LDT.PButtons.Special[2].DoClick = function()
+													LDT.SFrame.visible = false
+													LDT.SFrame:SetVisible( LDT.SFrame.visible )
+													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartModel_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , SMT[2][1] )
+												end
+		
+		function SBEPDisableButtons( ply , cmd , args )
+			local size = tonumber( GetConVarNumber( "sbep_lift_designer_size" ) )
+			if size == 2 then
+				LDT.PButtons[4]:SetDisabled( true )
+				LDT.PButtons.Special.B:SetDisabled( true )
+			else
+				LDT.PButtons[4]:SetDisabled( false )
+				LDT.PButtons.Special.B:SetDisabled( false )
+			end
+		end
+		concommand.Add( "SBEPDisableButtons_cl" , SBEPDisableButtons )
+
+		
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//					CONSTRUCTION CONTROLS
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+		LDT.BButtons = {}
+		
+		LDT.BButtons.Construct = vgui.Create("DImageButton", LDT.Frame )
+			LDT.BButtons.Construct:SetPos( 5 , 268 )
+			LDT.BButtons.Construct:SetSize( 155 , 195 )
+			LDT.BButtons.Construct:SetImage( "sbep_icons/Construct.vmt" )
+			LDT.BButtons.Construct.DoClick = function()
+													local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
+													pos = pos + 1
+													RunConsoleCommand( "SBEP_LiftConstructPart_ser" , pos )
+											end
+		
+		LDT.BButtons.up = vgui.Create("DImageButton", LDT.Frame )
+			LDT.BButtons.up:SetPos( 45 , 228 )   
+			LDT.BButtons.up:SetSize( 75 , 35 )   
+			LDT.BButtons.up:SetImage( "sbep_icons/ArrowUp.vmt" )
+			LDT.BButtons.up.DoClick = function()
+													local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
+													pos = math.Clamp( pos + 1 , 1 , CL.LiftSystem:GetNetworkedInt( "SBEP_LiftPartCount" ) )
+													RunConsoleCommand( "sbep_lift_designer_activepart" , pos )
+													RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
+											end
+		
+		LDT.BButtons.down = vgui.Create("DImageButton", LDT.Frame )
+			LDT.BButtons.down:SetPos( 45 , 468 )   
+			LDT.BButtons.down:SetSize( 75 , 35 )   
+			LDT.BButtons.down:SetImage( "sbep_icons/ArrowDown.vmt" )
+			LDT.BButtons.down.DoClick = function()
+													local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
+													pos = math.Clamp( pos - 1 , 1 , CL.LiftSystem:GetNetworkedInt( "SBEP_LiftPartCount" ) )
+													RunConsoleCommand( "sbep_lift_designer_activepart" , pos )
+													RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
+											end
+		
+		LDT.BButtons.inv = vgui.Create("DImageButton", LDT.Frame )
+			LDT.BButtons.inv:SetPos( 45 , 188 )   
+			LDT.BButtons.inv:SetSize( 75 , 35 )   
+			LDT.BButtons.inv:SetImage( "sbep_icons/Invert.vmt" )
+			LDT.BButtons.inv.DoClick = function()
+														RunConsoleCommand( "SBEP_LiftSys_SetLiftPartRoll_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , 180 )
+														RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
+													end
+
+		LDT.BButtons.RotC = vgui.Create("DImageButton", LDT.Frame )
+			LDT.BButtons.RotC:SetPos( 5 , 188 )   
+			LDT.BButtons.RotC:SetSize( 35 , 35 )
+			LDT.BButtons.RotC:SetImage( "sbep_icons/RotC.vmt" )
+			LDT.BButtons.RotC.DoClick = function()
+													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartYaw_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , 270 )
+												end
+		
+		LDT.BButtons.RotAC = vgui.Create("DImageButton", LDT.Frame )
+			LDT.BButtons.RotAC:SetPos( 125 , 188 )   
+			LDT.BButtons.RotAC:SetSize( 35 , 35 )
+			LDT.BButtons.RotAC:SetImage( "sbep_icons/RotAC.vmt" )
+			LDT.BButtons.RotAC.DoClick = function()
+													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartYaw_ser" , GetConVarNumber( "sbep_lift_designer_activepart" ) , 90 )
+												end
+		
+		LDT.BButtons.Delete = vgui.Create("DImageButton", LDT.Frame )
+			LDT.BButtons.Delete:SetPos( 125 , 228 )   
+			LDT.BButtons.Delete:SetSize( 35 , 35 )
+			LDT.BButtons.Delete:SetImage( "sbep_icons/Delete.vmt" )
+			LDT.BButtons.Delete.DoClick = function()
+													RunConsoleCommand( "SBEP_LiftDeletePart_ser" )	
+												end
+		
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//					CAMERA CONTROLS
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+		LDT.CButtons = {}
+		
+		LDT.CButtons.up = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.up:SetPos( 205 , 348 )   
+			LDT.CButtons.up:SetSize( 75 , 35 )   
+			LDT.CButtons.up:SetImage( "sbep_icons/ArrowUp.vmt" )
+			LDT.CButtons.up.DoClick = function()
+												CL.MVPitch = CL.MVPitch + 2
+												ReCalcViewAngles()
+											end
+		
+		LDT.CButtons.down = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.down:SetPos( 205 , 468 )   
+			LDT.CButtons.down:SetSize( 75 , 35 )   
+			LDT.CButtons.down:SetImage( "sbep_icons/ArrowDown.vmt" )
+			LDT.CButtons.down.DoClick = function()
+													CL.MVPitch = CL.MVPitch - 2
+													ReCalcViewAngles()
+											end
+		
+		LDT.CButtons.left = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.left:SetPos( 165 , 388 )   
+			LDT.CButtons.left:SetSize( 35 , 75 )
+			LDT.CButtons.left:SetImage( "sbep_icons/ArrowLeft.vmt" )
+			LDT.CButtons.left.DoClick = function()
+													CL.MVYaw = CL.MVYaw - 2
+													ReCalcViewAngles()
+											end
+		
+		LDT.CButtons.right = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.right:SetPos( 285 , 388 )   
+			LDT.CButtons.right:SetSize( 35 , 75 )
+			LDT.CButtons.right:SetImage( "sbep_icons/ArrowRight.vmt" )
+			LDT.CButtons.right.DoClick = function()
+													CL.MVYaw = CL.MVYaw + 2
+													ReCalcViewAngles()
+											end
+
+		LDT.CButtons.default = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.default:SetPos( 205 , 388 )   
+			LDT.CButtons.default:SetSize( 75 , 75 ) 
+			LDT.CButtons.default:SetImage( "sbep_icons/Camera.vmt" )		
+			LDT.CButtons.default.DoClick = function()
+												SetBaseViewAngles()
+											end
+		
+		LDT.CButtons.Zplus = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.Zplus:SetPos( 285 , 348 )   
+			LDT.CButtons.Zplus:SetSize( 35 , 35 )
+			LDT.CButtons.Zplus:SetImage( "sbep_icons/ZoomIn.vmt" )
+			LDT.CButtons.Zplus.DoClick = function()
+													CL.MVRange = CL.MVRange - 0.1
+													ReCalcViewAngles()
+											end
+		
+		LDT.CButtons.Zminus = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.Zminus:SetPos( 165 , 348 )   
+			LDT.CButtons.Zminus:SetSize( 35 , 35 )
+			LDT.CButtons.Zminus:SetImage( "sbep_icons/ZoomOut.vmt" )
+			LDT.CButtons.Zminus.DoClick = function()
+													CL.MVRange = CL.MVRange + 0.1
+													ReCalcViewAngles()
+											end
+		
+		LDT.CButtons.RotC = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.RotC:SetPos( 165 , 468 )   
+			LDT.CButtons.RotC:SetSize( 35 , 35 )
+			LDT.CButtons.RotC:SetImage( "sbep_icons/RotC.vmt" )
+			LDT.CButtons.RotC.DoClick = function()
+													CL.MVYaw = CL.MVYaw - 90
+													ReCalcViewAngles()
+												end
+		
+		LDT.CButtons.RotAC = vgui.Create("DImageButton", LDT.Frame )
+			LDT.CButtons.RotAC:SetPos( 285 , 468 )   
+			LDT.CButtons.RotAC:SetSize( 35 , 35 )
+			LDT.CButtons.RotAC:SetImage( "sbep_icons/RotAC.vmt" )
+			LDT.CButtons.RotAC.DoClick = function()
+													CL.MVYaw = CL.MVYaw + 90
+													ReCalcViewAngles()
+												end
+	
 	end
- 
-	hook.Add("CalcView", "SBEP_LiftCalcView", SBEP_LiftCalcView)
+		
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//					CLIENT FUNCTIONS
+		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+		function SBEP_OpenLiftDesignMenu( um )
+			CreateSBEPLiftDesignerMenu()
+			
+			SBEPLiftDesignerMenuTable.Frame.visible = true
+			SBEPLiftDesignerMenuTable.Frame:SetVisible( true )
+
+			CL.StartPos 	= um:ReadVector() 
+			CL.LiftSystem 	= um:ReadEntity()
+			CL.CVOffset 	= Vector(  246 ,  235 ,  143 )
+			CL.CHOffset		= 0
+		
+			SetBaseViewAngles()
+		end
+		usermessage.Hook("SBEP_OpenLiftDesignMenu_cl", SBEP_OpenLiftDesignMenu)
+		
+		function SBEP_CloseLiftDesignMenu( um )
+			SBEPLiftDesignerMenuTable.Frame:Remove()
+		end
+		usermessage.Hook("SBEP_CloseLiftDesignMenu_cl", SBEP_CloseLiftDesignMenu)
+		
+		function SetBaseViewAngles()
+				CL.MVYaw = 0
+				CL.MVPitch = 0
+				CL.MVRange = 2.2
+
+				ReCalcViewAngles()
+		end
+
+		function ReCalcViewAngles( um )
+			if um then
+				CL.MBVec = um:ReadVector()
+			else
+				CL.MBVec = CL.MBVec or Vector(  246 ,  235 ,  143 )
+			end
+			CL.MRVec = Vector( CL.MBVec.x , CL.MBVec.y , CL.MBVec.z )
+			CL.MRAng = Angle( -1 * CL.MVPitch , CL.MVYaw , CL.MVPitch )
+			CL.MRVec:Rotate( CL.MRAng )
+			CL.MVOffset = CL.MVRange * CL.MRVec
+		end
+		usermessage.Hook("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", ReCalcViewAngles)
+		
+		hook.Add("InitPostEntity", "GetSBEPLocalPlayer", function()
+			CL = LocalPlayer()
+		end)
+
+		function SBEPSetStartPos( um )
+			CL.StartPos = um:ReadVector()
+		end
+		usermessage.Hook("SBEP_SetStartPosLiftDesignMenu_cl", SBEPSetStartPos)
+
+		function SBEPSetPHOffset( um )
+			CL.PHOffset = um:ReadFloat()
+		end
+		usermessage.Hook("SBEP_SetPHOffsetLiftDesignMenu_cl", SBEPSetPHOffset)
+		
+		function SBEP_LiftCalcView( ply, origin, angles, fov )
+	 
+			if SBEPLiftDesignerMenuTable.Frame and SBEPLiftDesignerMenuTable.Frame.visible then
+				local view = {}
+					CL.CVOffset.x = CL.CVOffset.x + math.Clamp( CL.MVOffset.x - CL.CVOffset.x , -0.02 * CL.MVOffset.x , 0.02 * CL.MVOffset.x )
+					CL.CVOffset.y = CL.CVOffset.y + math.Clamp( CL.MVOffset.y - CL.CVOffset.y , -0.02 * CL.MVOffset.y , 0.02 * CL.MVOffset.y )
+					CL.CVOffset.z = CL.CVOffset.z + math.Clamp( CL.MVOffset.z - CL.CVOffset.z , -0.02 * CL.MVOffset.z , 0.02 * CL.MVOffset.z )
+					
+					CL.CHOffset = CL.CHOffset + math.Clamp( CL.PHOffset - CL.CHOffset , -2 , 2 )
+
+					view.origin = CL.StartPos + CL.CVOffset + Vector( 0 , 0 , CL.CHOffset )
+					view.angles = (-1 * CL.CVOffset):Angle()
+
+				return view
+			else
+				return GAMEMODE:CalcView(ply,origin,angles,fov)
+			end
+	 
+		end
+	 
+		hook.Add("CalcView", "SBEP_LiftDesignerCalcView", SBEP_LiftCalcView)
 
 end
 
@@ -417,8 +447,10 @@ if SERVER then
 	
 	function SBEP_LiftGetCamHeight( ply , cmd , args )
 		local n = tonumber(GetConVarNumber( "sbep_lift_designer_activepart" ))
-	
-		LiftSystem_SER:SetNetworkedFloat( "SBEP_LiftCamHeight" , LiftSystem_SER.PT[ n ].PD.HO )
+
+		umsg.Start("SBEP_SetPHOffsetLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
+			umsg.Float( LiftSystem_SER.PT[ n ].PD.HO )
+		umsg.End()
 		for k,v in ipairs( LiftSystem_SER.PT ) do
 			v:SetColor( 255 , 255 , 255 , 255 )
 		end
@@ -428,6 +460,9 @@ if SERVER then
 			LiftSystem_SER.PT[ n ]:SetColor( 64 , 128 , 255 , 180 )
 			LiftSystem_SER.PT[ LiftSystem_SER.ST.PC ]:SetColor( 255 , 255 , 255 , 100 )
 		end
+		umsg.Start("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
+			umsg.Vector( LiftSystem_SER.PT[ n ]:OBBMaxs() )
+		umsg.End()
 	end
 	concommand.Add( "SBEP_LiftGetCamHeight_ser" , SBEP_LiftGetCamHeight )	
 	
@@ -442,8 +477,8 @@ if SERVER then
 		LiftSystem_SER:CreatePart( n )
 		local NP = LiftSystem_SER.PT[ n ]
 
-		NP.PD.Yaw = GetConVarNumber( "sbep_lift_designer_yaw" )
-		NP.PD.Roll = GetConVarNumber( "sbep_lift_designer_roll" )
+		NP.PD.Yaw 	= GetConVarNumber( "sbep_lift_designer_yaw" )
+		NP.PD.Roll 	= GetConVarNumber( "sbep_lift_designer_roll" )
 		NP.PD.model = GetConVarString( "sbep_lift_designer_model" )
 		LiftSystem_SER:RefreshPart( n )
 		
@@ -454,7 +489,10 @@ if SERVER then
 	function SBEP_LiftFinishSystem( ply , cmd , args )
 		if LiftSystem_SER.ST.PC == 1 then return end
 		if LiftSystem_SER.PT[ LiftSystem_SER.ST.PC - 1 ].PD.IsShaft or LiftSystem_SER.PT[ LiftSystem_SER.ST.PC - 1 ].PD.IsHub then return end
-		RunConsoleCommand( "SBEP_CloseLiftDesignMenu_cl" )
+		
+		umsg.Start("SBEP_CloseLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
+		umsg.End()
+		
 		LiftSystem_SER:FinishSystem()
 		RunConsoleCommand( "sbep_lift_designer_editing" , 0 )
 	end
@@ -464,7 +502,7 @@ if SERVER then
 		local n = tonumber(GetConVarNumber( "sbep_lift_designer_activepart" ))
 		if n == 1 then return end
 		
-		LiftSystem_SER.PT[ n ]:Remove()
+		LiftSystem_SER.PT[n]:Remove()
 		table.remove( LiftSystem_SER.PT , n )
 		
 		for k,v in ipairs( LiftSystem_SER.PT ) do
@@ -479,7 +517,7 @@ if SERVER then
 	concommand.Add( "SBEP_LiftDeletePart_ser" , SBEP_LiftDeletePart )
 	
 	for k,v in ipairs( ConVars ) do
-	RunConsoleCommand( "sbep_lift_designer_"..v[1] , v[2] )
+	RunConsoleCommand( "sbep_lift_designer_"..k , v )
 	end
 end
 
@@ -506,15 +544,13 @@ function TOOL:LeftClick( trace )
 		LiftSystem_SER:Spawn()
 		LiftSystem_SER.StartPos = startpos + Vector(0,0,65.1)
 
-		self:GetOwner():SetNetworkedEntity( "SBEP_LiftSystem" , LiftSystem_SER )
-		self:GetOwner():SetNetworkedVector( "SBEP_LiftStartPos" , startpos + Vector(0,0,65.1) )
+		umsg.Start("SBEP_SetStartPosLiftDesignMenu_cl", RecipientFilter():AddPlayer( self:GetOwner() ) )
+			umsg.Vector( LiftSystem_SER.StartPos )
+		umsg.End()
 		
 		local hatchconvar = tonumber(self:GetClientNumber( "doors" ))
-		if hatchconvar == 2 then
-			LiftSystem_SER.ST.UseHatches = true
-		elseif hatchconvar == 3 then
-			LiftSystem_SER.ST.UseDoors = true
-		end		
+		LiftSystem_SER.ST.UseHatches = hatchconvar == 2
+		LiftSystem_SER.ST.UseDoors   = hatchconvar == 3	
 		
 		undo.Create( "SBEP Lift System" )
 			undo.AddEntity( LiftSystem_SER )
@@ -530,28 +566,27 @@ function TOOL:LeftClick( trace )
 		RunConsoleCommand( "SBEPDisableButtons_cl" )
 		
 		RunConsoleCommand( "sbep_lift_designer_model" , "models/SmallBridge/Elevators,Small/sbselevm.mdl" )
-	
 		RunConsoleCommand( "sbep_lift_designer_activepart" , 1 )
 	
+		umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( self:GetOwner() ) )
+			umsg.Vector( LiftSystem_SER.StartPos )
+			umsg.Entity( LiftSystem_SER )
+		umsg.End()
+		
 		RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
-	
-		RunConsoleCommand( "SBEP_OpenLiftDesignMenu_cl" )
 	
 		RunConsoleCommand( "sbep_lift_designer_editing" , 1 )
 	
 		return true
 	end
-	
 end
 
 function TOOL:RightClick( trace )
 
-	return true
 end
 
 function TOOL:Reload( trace )
-	
-	return true
+
 end
 
 function TOOL.BuildCPanel(panel)

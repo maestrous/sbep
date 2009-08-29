@@ -3,115 +3,115 @@
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local DCT = {}
 
-			DCT[ "models/SmallBridge/Panels/sbpaneldoor.mdl"			] = { 65.1  , "Door" 	, { "Door_Anim1" } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldoorsquare.mdl"		] = { 65.1  , "Door" 	, { "Door_Anim3" } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldooriris.mdl"		] = { 65.1  , "Door" 	, { "Door_Iris"  } }
-			DCT[ "models/SmallBridge/Panels/sbpaneliris.mdl"			] = { 65.1  , "Door" 	, { "Door_Iris"  } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldoorwide.mdl"		] = { 65.1  , "Door" 	, { "Door_DW"	 } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldoordh.mdl"			] = { 65.1  , "Door" 	, { "Door_Anim3dh"}}
-			DCT[ "models/SmallBridge/Panels/sbpaneldoordhdw.mdl"		] = { 65.1  , "Door" 	, { "Door_DWDH"  } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldoordw.mdl"			] = { 65.1  , "Door" 	, { "Door_Anim1" } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldoordw2.mdl"			] = { 65.1  , "Door" 	, { "Door_Anim1" , Vector(0, 111.6,0) , Angle( 0, 180  ,0) } ,
-																								  { "Door_Anim1" , Vector(0,-111.6,0) } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldoorsquaredw.mdl"	] = { 65.1  , "Door" 	, { "Door_Anim3" } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldoorsquaredw2.mdl"	] = { 65.1  , "Door" 	, { "Door_Anim3" , Vector(0, 111.6,0) , Angle( 0, 180  ,0) } ,
-																								  { "Door_Anim3" , Vector(0,-111.6,0) } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldockin.mdl"			] = { 65.1  , "Door" 	, { "Door_Anim3" } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldockout.mdl"			] = { 65.1  , "Door" 	, { "Door_Anim3" } }
-			DCT[ "models/SmallBridge/Ship Parts/sbhulldse.mdl"			] = { 65.1  , "Door" 	, { "Door_Hull"  } ,
-																								  { "Door_Hull"  , 			nil 	  , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Ship Parts/sbhulldseb.mdl"			] = { 65.1  , "Door" 	, { "Door_Hull"  } }
-			DCT[ "models/SmallBridge/Ship Parts/sbhulldst.mdl"			] = { 65.1  , "Door" 	, { "Door_Hull"  } }
-			DCT[ "models/SmallBridge/Ship Parts/sbhulldsdwe.mdl"		] = { 65.1  , "Door" 	, { "Door_Hull"  , Vector(0,111.6 ,0) } ,
-																								  { "Door_Hull"  , Vector(0,-111.6,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Panels/sbpaneldbsmall.mdl"			] = { 65.1  , "Door" 	, { "Door_DBS"   } }
-			DCT[ "models/Slyfo/SLYpaneldoor1.mdl"						] = { 0		, "Door" 	, { "Door_Sly1"  } }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoor.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Anim1" 			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoorsquare.mdl"		] = { cat = "Door" 		, doors = {	{ "Door_Anim3" 			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldooriris.mdl"		] = { cat = "Door" 		, doors = {	{ "Door_Iris"  			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneliris.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Iris"  			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoorwide.mdl"		] = { cat = "Door" 		, doors = {	{ "Door_DW"	 			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoordh.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Anim3dh" 		}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoordhdw.mdl"		] = { cat = "Door" 		, doors = {	{ "Door_DWDH"  			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoordw.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Anim1" 			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoordw2.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Anim1" , Vector(0, 111.6,0) , Angle(  0,180,  0) 	} ,
+																											{ "Door_Anim1" , Vector(0,-111.6,0) 						}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoorsquaredw.mdl"	] = { cat = "Door" 		, doors = {	{ "Door_Anim3" 			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldoorsquaredw2.mdl"	] = { cat = "Door" 		, doors = {	{ "Door_Anim3" , Vector(0, 111.6,0) , Angle(  0,180,  0) 	} ,
+																											{ "Door_Anim3" , Vector(0,-111.6,0) 						}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldockin.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Anim3" 			}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldockout.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Anim3" 			}} }
+			DCT[ "models/SmallBridge/Ship Parts/sbhulldse.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Hull"  			} ,
+																											{ "Door_Hull"  , 		nil    	    , Angle(  0,180,  0) 	}} }
+			DCT[ "models/SmallBridge/Ship Parts/sbhulldseb.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Hull"  			}} }
+			DCT[ "models/SmallBridge/Ship Parts/sbhulldst.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_Hull"  			}} }
+			DCT[ "models/SmallBridge/Ship Parts/sbhulldsdwe.mdl"		] = { cat = "Door" 		, doors = {	{ "Door_Hull"  , Vector(0,111.6 ,0) 						} ,
+																											{ "Door_Hull"  , Vector(0,-111.6,0) , Angle(  0,180,  0)	}} }
+			DCT[ "models/SmallBridge/Panels/sbpaneldbsmall.mdl"			] = { cat = "Door" 		, doors = {	{ "Door_DBS"   			}} }
+			DCT[ "models/Slyfo/SLYpaneldoor1.mdl"						] = { cat = "Door" 		, doors = {	{ "Door_Sly1"  			}} }
 
-			DCT[ "models/Cerus/Modbridge/Misc/Doors/door11a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_11a"  } }
-			DCT[ "models/Cerus/Modbridge/Misc/Doors/door12a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_12a"  } }
-			DCT[ "models/Cerus/Modbridge/Misc/Doors/door13a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_13a"  } }
-			DCT[ "models/Cerus/Modbridge/Misc/Doors/door23a.mdl"		] = { 0		,"Modbridge", { "Door_ModBridge_23a"  } }
+			DCT[ "models/Cerus/Modbridge/Misc/Doors/door11a.mdl"		] = { cat = "Modbridge"	, doors = {	{ "Door_ModBridge_11a"  }} }
+			DCT[ "models/Cerus/Modbridge/Misc/Doors/door12a.mdl"		] = { cat = "Modbridge"	, doors = {	{ "Door_ModBridge_12a"  }} }
+			DCT[ "models/Cerus/Modbridge/Misc/Doors/door13a.mdl"		] = { cat = "Modbridge"	, doors = {	{ "Door_ModBridge_13a"  }} }
+			DCT[ "models/Cerus/Modbridge/Misc/Doors/door23a.mdl"		] = { cat = "Modbridge"	, doors = {	{ "Door_ModBridge_23a"  }} }
 			
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevb.mdl" 		] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevbe.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevbedh.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector(0,0,190.65) } ,
-																								  { "Door_Anim3dh"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3dh"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevbedw.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevbr.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0,270,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevbt.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0, 90,0) } ,
-																								  { "Door_Anim3"	 , Vector(0,-60.45,0) , Angle(0,-90,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevbx.mdl" 	] = { 65.1  , "Hatch_B" , { "Door_ElevHatch" , Vector( 0,0,60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0, 90,0) } ,
-																								  { "Door_Anim3"	 , Vector(0,-60.45,0) , Angle(0,-90,0) } }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevb.mdl" 		] = { cat = "Hatch_B"	, doors = {	{ "Door_ElevHatch" , Vector( 0,0,60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevbe.mdl" 	] = { cat = "Hatch_B"	, doors = {	{ "Door_ElevHatch" , Vector( 0,0,60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevbedh.mdl" 	] = { cat = "Hatch_B"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,190.65) 					} ,
+																											{ "Door_Anim3dh"   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3dh"   , Vector(-60.45,0,0) , Angle(0,180,0) }} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevbedw.mdl" 	] = { cat = "Hatch_B"	, doors = {	{ "Door_ElevHatch" , Vector( 0,0,60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevbr.mdl" 	] = { cat = "Hatch_B"	, doors = {	{ "Door_ElevHatch" , Vector( 0,0,60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0,270,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevbt.mdl" 	] = { cat = "Hatch_B"	, doors = {	{ "Door_ElevHatch" , Vector( 0,0,60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0, 90,0) 	} ,
+																											{ "Door_Anim3"	   , Vector(0,-60.45,0) , Angle(0,-90,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevbx.mdl" 	] = { cat = "Hatch_B"	, doors = {	{ "Door_ElevHatch" , Vector( 0,0,60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0, 90,0) 	} ,
+																											{ "Door_Anim3"	   , Vector(0,-60.45,0) , Angle(0,-90,0) 	}} }
 
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevm.mdl" 		] = { 65.1  , "Hatch_M" , { "Door_ElevHatch" , Vector(0,0,60.45 ) } ,
-																								  { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	] = { 65.1  , "Hatch_M" , { "Door_ElevHatch" , Vector(0,0,60.45 ) } ,
-																								  { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	] = { 65.1  , "Hatch_M" , { "Door_ElevHatch" , Vector(0,0,190.65) } ,
-																								  { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3dh"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3dh"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	] = { 65.1  , "Hatch_M" , { "Door_ElevHatch" , Vector(0,0,60.45 ) } ,
-																								  { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	] = { 65.1  , "Hatch_M" , { "Door_ElevHatch" , Vector(0,0,60.45 ) } ,
-																								  { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0,270,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	] = { 65.1  , "Hatch_M" , { "Door_ElevHatch" , Vector(0,0,60.45 ) } ,
-																								  { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0, 90,0) } ,
-																								  { "Door_Anim3"	 , Vector(0,-60.45,0) , Angle(0,-90,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	] = { 65.1  , "Hatch_M" , { "Door_ElevHatch" , Vector(0,0,60.45 ) } ,
-																								  { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0, 90,0) } ,
-																								  { "Door_Anim3"	 , Vector(0,-60.45,0) , Angle(0,-90,0) } }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevm.mdl" 		] = { cat = "Hatch_M"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,60.45 ) 					} ,
+																											{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	] = { cat = "Hatch_M"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,60.45 ) 					} ,
+																											{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	] = { cat = "Hatch_M"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,190.65) 					} ,
+																											{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3dh"   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3dh"   , Vector(-60.45,0,0) , Angle(0,180,0) }} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	] = { cat = "Hatch_M"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,60.45 ) 					} ,
+																											{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	] = { cat = "Hatch_M"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,60.45 ) 					} ,
+																											{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0,270,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	] = { cat = "Hatch_M"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,60.45 ) 					} ,
+																											{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0, 90,0) 	} ,
+																											{ "Door_Anim3"	   , Vector(0,-60.45,0) , Angle(0,-90,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	] = { cat = "Hatch_M"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,60.45 ) 					} ,
+																											{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0, 90,0) 	} ,
+																											{ "Door_Anim3"	   , Vector(0,-60.45,0) , Angle(0,-90,0) 	}} }
 
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevt.mdl" 		] = { 65.1  , "Hatch_T" , { "Door_ElevHatch" , Vector(0,0,-60.45) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevte.mdl" 	] = { 65.1  , "Hatch_T" , { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevtedh.mdl"	] = { 65.1  , "Hatch_T" , { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3dh"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3dh"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevtedw.mdl"	] = { 65.1  , "Hatch_T" , { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevtr.mdl" 	] = { 65.1  , "Hatch_T" , { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0,270,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevtt.mdl" 	] = { 65.1  , "Hatch_T" , { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0, 90,0) } ,
-																								  { "Door_Anim3"	 , Vector(0,-60.45,0) , Angle(0,-90,0) } }
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevtx.mdl" 	] = { 65.1  , "Hatch_T" , { "Door_ElevHatch" , Vector(0,0,-60.45) } ,
-																								  { "Door_Anim3"	 , Vector( 60.45,0,0) } ,
-																								  { "Door_Anim3"	 , Vector(-60.45,0,0) , Angle(0,180,0) } ,
-																								  { "Door_Anim3"	 , Vector( 0,60.45,0) , Angle(0, 90,0) } ,
-																								  { "Door_Anim3"	 , Vector(0,-60.45,0) , Angle(0,-90,0) } }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevt.mdl" 		] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) 					}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevte.mdl" 	] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevtedh.mdl"	] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3dh"   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3dh"   , Vector(-60.45,0,0) , Angle(0,180,0) }} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevtedw.mdl"	] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevtr.mdl" 	] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0,270,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevtt.mdl" 	] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0, 90,0) 	} ,
+																											{ "Door_Anim3"	   , Vector(0,-60.45,0) , Angle(0,-90,0) 	}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevtx.mdl" 	] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
+																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0)	} ,
+																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0, 90,0) 	} ,
+																											{ "Door_Anim3"	   , Vector(0,-60.45,0) , Angle(0,-90,0) 	}} }
 			
-			DCT[ "models/SmallBridge/Station Parts/sbbaydps.mdl"		] = { 65.1  , "Other" 	, { "Door_Anim3" , Vector(51.15,0,0     ) } ,
-																								  { "Door_Iris"  , Vector(-37.2,0,-60.45) , Angle( 90 , 0 , 0 ) } }
+			DCT[ "models/SmallBridge/Station Parts/sbbaydps.mdl"		] = { cat = "Other" 	, doors = {	{ "Door_Anim3" 	   , Vector(51.15,0,0     ) 						} ,
+																											{ "Door_Iris"  	   , Vector(-37.2,0,-60.45) , Angle( 90 , 0 , 0 )	}} }
 
 for k,v in pairs( DCT ) do
 	list.Set( "SBEP_DoorControllerModels", k , v )
@@ -270,86 +270,86 @@ end
 local DCMT = {}
 			DCMT[ "models/SmallBridge/Ship Parts/sblandramp.mdl"  	] = { ListCat = "SmallBridge"	, ALType = "SWSHA", 
 																	Compatible = { 	{ Type = "SWSHB", AF = -4.65, AYaw = 180 } } , 
-																	EfPoints = 	{	{ x =  -65 , y = -110 , z =   50 , sp = 0 } , 
-																					{ x =  -90 , y =   95 , z =  -60 , sp = 3 } , 
-																					{ x =   90 , y =   95 , z =  -60 , sp = 0 } , 
-																					{ x =   65 , y = -110 , z =   50 , sp = 1 } } }
+																	EfPoints = 	{	{ vec = Vector(-65 , -110 ,  50 ) , sp = 0 } , 
+																					{ vec = Vector(-90 ,   95 , -60 ) , sp = 3 } , 
+																					{ vec = Vector( 90 ,   95 , -60 ) , sp = 0 } , 
+																					{ vec = Vector( 65 , -110 ,  50 ) , sp = 1 } } }
 			DCMT[ "models/SmallBridge/Ship Parts/sblanduramp.mdl"  	] = { ListCat = "SmallBridge"	, ALType = "SWSHB",
 																	Compatible = { 	{ Type = "SWSHA", AF = -4.65, AYaw = 180 } } ,
-																	EfPoints = {	{ x =  -65 , y =  100 , z =   60 , sp = 0 } , 
-																					{ x =  -90 , y = -110 , z =  -50 , sp = 3 } , 
-																					{ x =   90 , y = -110 , z =  -50 , sp = 0 } , 
-																					{ x =   65 , y =  100 , z =   60 , sp = 1 } } }
+																	EfPoints = {	{ vec = Vector(-65 ,  100 ,  60 ) , sp = 0 } , 
+																					{ vec = Vector(-90 , -110 , -50 ) , sp = 3 } , 
+																					{ vec = Vector( 90 , -110 , -50 ) , sp = 0 } , 
+																					{ vec = Vector( 65 ,  100 ,  60 ) , sp = 1 } } }
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			DCMT[ "models/SmallBridge/Panels/sbpaneldockin.mdl"  	] = { ListCat = "SmallBridge"	, ALType = "PLockA", 
 																	Compatible = { 	{ Type = "PLockB", AF = -4.65 } }, 
-																	EfPoints = {	{ x =  -60 , y =  -10 , z =   60 , sp = 1 } , 
-																					{ x =  -95 , y =  -10 , z =    0 , sp = 0 } , 
-																					{ x =  -87 , y =  -10 , z =  -60 , sp = 3 } , 
-																					{ x =   87 , y =  -10 , z =  -60 , sp = 0 } , 
-																					{ x =   95 , y =  -10 , z =    0 , sp = 5 } , 
-																					{ x =   60 , y =  -10 , z =   60 , sp = 0 } } ,
+																	EfPoints = {	{ vec = Vector(-60 , -10 ,  60 ) , sp = 1 } , 
+																					{ vec = Vector(-95 , -10 ,   0 ) , sp = 0 } , 
+																					{ vec = Vector(-87 , -10 , -60 ) , sp = 3 } , 
+																					{ vec = Vector( 87 , -10 , -60 ) , sp = 0 } , 
+																					{ vec = Vector( 95 , -10 ,   0 ) , sp = 5 } , 
+																					{ vec = Vector( 60 , -10 ,  60 ) , sp = 0 } } ,
 																	Doors	 = {	{ "Door_Anim3" } } }
 			DCMT[ "models/SmallBridge/Panels/sbpaneldockout.mdl"  	] = { ListCat = "SmallBridge"	, ALType = "PLockB",
 																	Compatible = { 	{ Type = "PLockA", AF = 4.65 } },  
-																	EfPoints = {	{ x =  -60 , y =   10 , z =   60 , sp = 0 } , 
-																					{ x =  -95 , y =   10 , z =    0 , sp = 2 } , 
-																					{ x =  -87 , y =   10 , z =  -60 , sp = 0 } , 
-																					{ x =   87 , y =   10 , z =  -60 , sp = 4 } , 
-																					{ x =   95 , y =   10 , z =    0 , sp = 5 } , 
-																					{ x =   60 , y =   10 , z =   60 , sp = 6 } } ,
+																	EfPoints = {	{ vec = Vector(-60 , 10 ,  60 ) , sp = 0 } , 
+																					{ vec = Vector(-95 , 10 ,   0 ) , sp = 2 } , 
+																					{ vec = Vector(-87 , 10 , -60 ) , sp = 0 } , 
+																					{ vec = Vector( 87 , 10 , -60 ) , sp = 4 } , 
+																					{ vec = Vector( 95 , 10 ,   0 ) , sp = 5 } , 
+																					{ vec = Vector( 60 , 10 ,  60 ) , sp = 6 } } ,
 																	Doors	 = {	{ "Door_Anim3" } } }
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			DCMT[ "models/Slyfo/airlock_docksys.mdl"			  	] = { ListCat = "MedBridge"		, ALType = "MedGLB",
 																	Compatible = { 	{ Type = "MedGLB", AYaw = 180 } },
-																	EfPoints = {	{ x =  -70 , y =  -30 , z =  125 , sp = 0 } , 
-																					{ x = -190 , y =  -30 , z =   60 , sp = 5 } , 
-																					{ x = -195 , y =  -30 , z = -115 , sp = 0 } , 
-																					{ x =  195 , y =  -30 , z = -125 , sp = 3 } , 
-																					{ x =  195 , y =  -30 , z =   60 , sp = 2 } , 
-																					{ x =   70 , y =  -30 , z =  125 , sp = 1 } } }
+																	EfPoints = {	{ vec = Vector( -70 , -30 ,  125 ) , sp = 0 } , 
+																					{ vec = Vector(-190 , -30 ,   60 ) , sp = 5 } , 
+																					{ vec = Vector(-195 , -30 , -115 ) , sp = 0 } , 
+																					{ vec = Vector( 195 , -30 , -125 ) , sp = 3 } , 
+																					{ vec = Vector( 195 , -30 ,   60 ) , sp = 2 } , 
+																					{ vec = Vector(  70 , -30 ,  125 ) , sp = 1 } } }
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			DCMT[ "models/SmallBridge/Ship Parts/sblandrampdw.mdl"  ] = { ListCat = "SmallBridge"	, ALType = "DWSHA",
 																	Compatible = {  { Type = "DWSHB", AF = -4.65, AYaw = 180} } , 
-																	EfPoints = 	{	{ x = -175 , y = -110 , z =   50 , sp = 0 } , 
-																					{ x = -200 , y =   95 , z =  -60 , sp = 3 } , 
-																					{ x =  200 , y =   95 , z =  -60 , sp = 0 } , 
-																					{ x =  175 , y = -110 , z =   50 , sp = 1 } } }
+																	EfPoints = 	{	{ vec = Vector(-175 , -110 ,  50 ) , sp = 0 } , 
+																					{ vec = Vector(-200 ,   95 , -60 ) , sp = 3 } , 
+																					{ vec = Vector( 200 ,   95 , -60 ) , sp = 0 } , 
+																					{ vec = Vector( 175 , -110 ,  50 ) , sp = 1 } } }
 			DCMT[ "models/SmallBridge/Ship Parts/sblandurampdw.mdl"  ] = { ListCat = "SmallBridge"	, ALType = "DWSHB",
 																	Compatible = {  { Type = "DWSHA", AF = -4.65, AYaw = 180} } , 
-																	EfPoints = 	{	{ x = -175 , y =  100 , z =   60 , sp = 0 } , 
-																					{ x = -200 , y = -110 , z =  -50 , sp = 3 } , 
-																					{ x =  200 , y = -110 , z =  -50 , sp = 0 } , 
-																					{ x =  175 , y =  100 , z =   60 , sp = 1 } } }
+																	EfPoints = 	{	{ vec = Vector(-175 ,  100 ,  60 ) , sp = 0 } , 
+																					{ vec = Vector(-200 , -110 , -50 ) , sp = 3 } , 
+																					{ vec = Vector( 200 , -110 , -50 ) , sp = 0 } , 
+																					{ vec = Vector( 175 ,  100 ,  60 ) , sp = 1 } } }
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			DCMT[ "models/SmallBridge/Ship Parts/sblandrampdwdh.mdl" ] = { ListCat = "SmallBridge", ALType = "DWDHA", 
 																	Compatible = {  { Type = "DWDHB", AF = -4.65, AYaw = 180} } ,
-																	EfPoints = 	{	{ x = -175 , y = -110 , z =  180 , sp = 0 } , 
-																					{ x = -200 , y =   90 , z =  -60 , sp = 3 } , 
-																					{ x =  200 , y =   90 , z =  -60 , sp = 0 } , 
-																					{ x =  175 , y = -110 , z =  180 , sp = 1 } } }
+																	EfPoints = 	{	{ vec = Vector(-175 , -110 , 180 ) , sp = 0 } , 
+																					{ vec = Vector(-200 ,   90 , -60 ) , sp = 3 } , 
+																					{ vec = Vector( 200 ,   90 , -60 ) , sp = 0 } , 
+																					{ vec = Vector( 175 , -110 , 180 ) , sp = 1 } } }
 			DCMT[ "models/SmallBridge/Ship Parts/sblandurampdwdh.mdl"] = { ListCat = "SmallBridge"	, ALType = "DWDHB",
 																	Compatible = {  { Type = "DWDHA", AF = -4.65, AYaw = 180} } ,
-																	EfPoints = 	{	{ x = -175 , y =  100 , z =  190 , sp = 0 } , 
-																					{ x = -200 , y = -120 , z =  -60 , sp = 3 } , 
-																					{ x =  200 , y = -120 , z =  -60 , sp = 0 } , 
-																					{ x =  175 , y =  100 , z =  190 , sp = 1 } } }
+																	EfPoints = 	{	{ vec = Vector(-175 ,  100 , 190 ) , sp = 0 } , 
+																					{ vec = Vector(-200 , -120 , -60 ) , sp = 3 } , 
+																					{ vec = Vector( 200 , -120 , -60 ) , sp = 0 } , 
+																					{ vec = Vector( 175 ,  100 , 190 ) , sp = 1 } } }
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			DCMT[ "models/SmallBridge/Elevators,Small/sbselevb.mdl"] = { ListCat = "ElevatorSmall"	, ALType = "ElevSU" ,
 																	Compatible = { 	{ Type = "ElevSU", AU = 65.1, RYaw = 90, ARoll = 180 }, 
 																					{ Type = "ElevSD", AU = 65.1, RYaw = 90 } },
-																	EfPoints = 	{	{ x = -60.45 , y =  60.45 , z =  69.75 , sp = 1 } , 
-																					{ x = -60.45 , y = -60.45 , z =  69.75 , sp = 0 } , 
-																					{ x =  60.45 , y = -60.45 , z =  69.75 , sp = 3 } , 
-																					{ x =  60.45 , y =  60.45 , z =  69.75 , sp = 0 } } ,
+																	EfPoints = 	{	{ vec = Vector(-60.45 ,  60.45 , 69.75 ) , sp = 1 } , 
+																					{ vec = Vector(-60.45 , -60.45 , 69.75 ) , sp = 0 } , 
+																					{ vec = Vector( 60.45 , -60.45 , 69.75 ) , sp = 3 } , 
+																					{ vec = Vector( 60.45 ,  60.45 , 69.75 ) , sp = 0 } } ,
 																	Doors	 = {	{ "Door_ElevHatch" , Vector(0,0, 60.45) } } }
 			DCMT[ "models/SmallBridge/Elevators,Small/sbselevt.mdl"] = { ListCat = "ElevatorSmall"	, ALType = "ElevSD" , 
 																	Compatible = { 	{ Type = "ElevSD", AU = -65.1, RYaw = 90, ARoll = 180 }, 
 																					{ Type = "ElevSU", AU = -65.1, RYaw = 90 } },
-																	EfPoints = 	{	{ x = -60.45 , y =  60.45 , z =  -69.75 , sp = 0 } , 
-																					{ x = -60.45 , y = -60.45 , z =  -69.75 , sp = 2 } , 
-																					{ x =  60.45 , y = -60.45 , z =  -69.75 , sp = 0 } , 
-																					{ x =  60.45 , y =  60.45 , z =  -69.75 , sp = 4 } } ,
+																	EfPoints = 	{	{ vec = Vector(-60.45 ,  60.45 , -69.75 ) , sp = 0 } , 
+																					{ vec = Vector(-60.45 , -60.45 , -69.75 ) , sp = 2 } , 
+																					{ vec = Vector( 60.45 , -60.45 , -69.75 ) , sp = 0 } , 
+																					{ vec = Vector( 60.45 ,  60.45 , -69.75 ) , sp = 4 } } ,
 																	Doors	 = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) } } }
 
 for k,v in pairs( DCMT ) do
