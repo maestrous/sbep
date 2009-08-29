@@ -57,14 +57,7 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	Ang.r = self.Roll
 	Ang.p = self.Pitch
 	
-	if self.TPD == 1 then
-		self.Entity:SetPos(Vector(self.XCo,self.YCo,self.ZCo))
-		if self.AbsAng then
-			self.Entity:SetAngles(Ang)
-		else
-			self.Entity:SetAngles(self.Controller:LocalToWorldAngles(Ang))
-		end
-	end
+	
 	
 	self.ShadowParams.secondstoarrive = self.Duration
 	self.ShadowParams.pos = Vector(self.XCo,self.YCo,self.ZCo)
@@ -89,5 +82,40 @@ end
 function ENT:Think()
 	if !self.Controller || !self.Controller:IsValid() then
 		self.Entity:Remove()
+	end
+	
+	if self.TPD == 1 then
+		self.Entity:SetPos(Vector(self.XCo,self.YCo,self.ZCo))
+		local Ang = Angle(0,0,0)
+		Ang.y = self.Yaw
+		Ang.r = self.Roll
+		Ang.p = self.Pitch
+		if self.AbsAng then
+			self.Entity:SetAngles(Ang)
+		else
+			self.Entity:SetAngles(self.Controller:LocalToWorldAngles(Ang))
+		end
+	end
+	
+	self.Entity:NextThink( CurTime() + 0.01 )
+	return true
+end
+
+
+function ENT:BuildDupeInfo()
+	local info = self.BaseClass.BuildDupeInfo(self) or {}
+	if (self.Controller) and (self.Controller:IsValid()) then
+	    info.Controller = self.Controller:EntIndex()
+	end
+	return info
+end
+
+function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
+	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
+	if (info.Controller) then
+		self.Controller = GetEntByID(info.Controller)
+		if (!self.Controller) then
+			self.Controller = ents.GetByIndex(info.Controller)
+		end
 	end
 end
