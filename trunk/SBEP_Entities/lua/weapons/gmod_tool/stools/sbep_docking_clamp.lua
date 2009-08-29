@@ -11,28 +11,32 @@ if CLIENT then
 	language.Add( "Tool_sbep_docking_clamp_0"		, "Left click to spawn a docking clamp." 			)
 	language.Add( "undone_SBEP Docking Clamp"		, "Undone SBEP Docking Clamp"						)
 	
-	function SBEP_AddDockCLEffectsTable( ply , cmd , args )
+	function SBEP_AddDockCLEffectsTable( um )
 	
-		local CLDockEnt = LocalPlayer():GetNetworkedEntity( "SBEP_DockEnt" )
-		
-		CLDockEnt.EfPoints = {}
-		for i = 1, args[1] do
-			CLDockEnt.EfPoints[i] = {}
-			CLDockEnt.EfPoints[i]["x"]  = (LocalPlayer():GetNetworkedVector( "SBEP_DockEnt_Vec_"..tostring(i) )).x
-			CLDockEnt.EfPoints[i]["y"]  = (LocalPlayer():GetNetworkedVector( "SBEP_DockEnt_Vec_"..tostring(i) )).y
-			CLDockEnt.EfPoints[i]["z"]  = (LocalPlayer():GetNetworkedVector( "SBEP_DockEnt_Vec_"..tostring(i) )).z
-			CLDockEnt.EfPoints[i]["sp"] =  LocalPlayer():GetNetworkedInt(    "SBEP_DockEnt_Int_"..tostring(i) )
-		end		
+		local CLDockEnt = um:ReadEntity()
+		local NumPoints = um:ReadShort()
+
+		local EfPoints = {}
+		for i = 1, NumPoints do
+			EfPoints[i] = {}
+			local Vec = um:ReadVector()
+			local sp  = um:ReadShort()
+			print( tostring( Vec ) )
+			EfPoints[i]["x" ] = Vec.x
+			EfPoints[i]["y" ] = Vec.y
+			EfPoints[i]["z" ] = Vec.z
+			EfPoints[i]["sp"] = sp
+			print( tostring( sp ) )
+		end
+		CLDockEnt:AddEfPointsTable( EfPoints )
 	end
-	
-	concommand.Add( "SBEP_AddDockCLEffectsTable_cl" , SBEP_AddDockCLEffectsTable )
-	
+	usermessage.Hook("SBEP_AddDockCLEffectsTable_cl", SBEP_AddDockCLEffectsTable)
 end
 
 local CategoryTable = {
-			{ "SmallBridge"			, "SmallBridge"	, "models/SmallBridge/Ship Parts/sblanduramp.mdl" } ,
-			{ "MedBridge"		 	, "MedBridge"	, "models/Slyfo/airlock_docksys.mdl" 			  } ,
-			{ "ElevatorSmall"		, "ElevatorSmall", "models/SmallBridge/Elevators,Small/sbselevt.mdl"}
+			{ "SmallBridge"			, "SmallBridge"	  , "models/SmallBridge/Ship Parts/sblanduramp.mdl"  } ,
+			{ "MedBridge"		 	, "MedBridge"	  , "models/Slyfo/airlock_docksys.mdl" 			     } ,
+			{ "ElevatorSmall"		, "ElevatorSmall" , "models/SmallBridge/Elevators,Small/sbselevt.mdl"}
 					}
 
 for k,v in ipairs( CategoryTable ) do
@@ -48,28 +52,29 @@ function TOOL:LeftClick( trace )
 	local pos = trace.HitPos
 	
 	local DockEnt = ents.Create( "sbep_base_docking_clamp" )
-		
-		self:GetOwner():SetNetworkedEntity( "SBEP_DockEnt" , DockEnt )
-		
-		for k,v in ipairs( DataTable[ "EfPoints" ] ) do
-			self:GetOwner():SetNetworkedVector( "SBEP_DockEnt_Vec_"..tostring(k) , Vector( v.x , v.y , v.z ) )
-			self:GetOwner():SetNetworkedInt(    "SBEP_DockEnt_Int_"..tostring(k) , 			v.sp 			 )
-		end
-		
-		
+				
 		DockEnt.SPL = self:GetOwner()
 				
-		DockEnt.ALType  = DataTable["ALType"] or ""
+		DockEnt.ALType  = DataTable.ALType or ""
 
 		DockEnt:SetModel( model )
-		DockEnt:SetName( DataTable["ALType"] )
+		DockEnt:SetName( DataTable.ALType )
 		
-		DockEnt.CompatibleLocks = DataTable[ "Compatible" ]
+		DockEnt.CompatibleLocks = DataTable.Compatible
+		--DataTable.EfPoints = table.Copy( DataTable.EfPoints )
 
 		DockEnt:Spawn()
+		DockEnt:Initialize()
 		DockEnt:Activate()
 		
-		RunConsoleCommand( "SBEP_AddDockCLEffectsTable_cl" , #DataTable[ "EfPoints" ] )
+		umsg.Start("SBEP_AddDockCLEffectsTable_cl", RecipientFilter():AddAllPlayers())
+		    umsg.Entity( DockEnt )
+			umsg.Short( #DataTable.EfPoints )
+			for k,v in pairs( DataTable.EfPoints ) do
+				umsg.Vector( v.vec )
+				umsg.Short( v.sp )
+			end
+		umsg.End()
 
 		DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
 		

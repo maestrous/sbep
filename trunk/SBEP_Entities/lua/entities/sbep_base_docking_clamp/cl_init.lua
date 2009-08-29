@@ -7,11 +7,17 @@ function ENT:Initialize()
 	self.STime = CurTime()
 end
 
+function ENT:AddEfPointsTable( tab )
+
+	self.EfPoints = tab
+
+end
+
 function ENT:Draw()
 	
 	self.Entity:DrawModel()
 	
-	if self.STime > CurTime() + 2 then return end
+	if self.STime > CurTime() + 5 then return end
 	if self.EfPoints && table.getn(self.EfPoints) > 0 then
 		--print("We have points...")
 		local DMode = self.Entity:GetNWInt("DMode")
@@ -60,7 +66,10 @@ function ENT:Draw()
 			end
 		end
 	else
-		print("No effect data")
+		if !self.EfError then
+			print("No effect data")
+			self.EfError = true
+		end
 	end
 		
 end

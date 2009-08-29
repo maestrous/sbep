@@ -5,7 +5,7 @@ TOOL.ConfigName 	= ""
 
 if CLIENT then
 	language.Add( "Tool_sbep_mpc_name"	, "SBEP MPC Tool" 				)
-	language.Add( "Tool_sbep_mpc_desc"	, "Create an SBEP MPC." 		)
+	language.Add( "Tool_sbep_mpc_desc"	, "Create an SBEP Mobile Platform Controller." 		)
 	language.Add( "Tool_sbep_mpc_0"		, "Left click to spawn an mpc. Right click to copy the model of whatever you're looking at." )
 	language.Add( "undone_SBEP MPC"		, "Undone SBEP MPC"				)
 	
@@ -84,7 +84,7 @@ function TOOL:RightClick( tr )
 	
 	RunConsoleCommand( "SBEPMPCTool_ModelConfirm_cl" , "Copied Model!" )
 
-	umsg.Start("SBEP_MPCTool_Model", RecipientFilter():AddAllPlayers())
+	umsg.Start("SBEP_MPCTool_Model", RecipientFilter():AddPlayer( self:GetOwner() ) )
 	    umsg.String( PlModel )
 		umsg.Vector( vec )
 		umsg.Char( skin )

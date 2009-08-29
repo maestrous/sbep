@@ -1,11 +1,14 @@
 include('shared.lua')
 
 function ENT:SpawnFunction( ply, tr )
-	local ent = ents.Create("CupNoodle") 			// Create the entity
-		ent:SetPos(tr.HitPos + Vector(0, 0, 10)) 	// Set it to spawn 20 units over the spot you aim at when spawning it
-		ent:Spawn()									// Spawn it
-		return ent 									// You need to return the entity to make it work
-end --SpawnFunction end
+
+	local ent = ents.Create("CupNoodle")
+		ent:Spawn()
+		
+		ent:SetPos(tr.HitPos - Vector(0, 0, ent:OBBMins().z))
+	
+	return ent
+end
 	
 function ENT:Initialize()
 
@@ -15,16 +18,21 @@ function ENT:Initialize()
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	self.Entity:SetUseType( SIMPLE_USE )
 
-local phys = self.Entity:GetPhysicsObject()
+	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
-	end -- if end
-end -- Initialize end
+	end
+end
 
 function ENT:Use( activator, caller )
-	self.Entity:Remove()
+
 	if ( activator:IsPlayer() ) then
 		local health = activator:Health()
-		activator:SetHealth( health + 25 )
-	end -- if end
-end -- Use end
+		if health < 101 then
+			activator:SetHealth( health + 25 )
+		elseif health < 125 then
+			activator:SetHealth( 125 )
+		end
+	end
+	self.Entity:Remove()
+end
