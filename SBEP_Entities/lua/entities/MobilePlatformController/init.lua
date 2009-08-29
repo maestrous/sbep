@@ -217,6 +217,7 @@ function ENT:Think()
 		self.Plat = ents.Create( "MobilePlatform" )
 		self.Plat:SetModel( self.PlModel )
 		self.Plat:SetPos( self.Entity:GetPos() )
+		self.Plat:SetAngles( self.Entity:GetAngles() )
 		self.Plat.Controller = self.Entity
 		self.Plat:Spawn()
 		self.Plat:Initialize()
