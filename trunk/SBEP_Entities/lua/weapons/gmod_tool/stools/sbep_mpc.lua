@@ -6,7 +6,7 @@ TOOL.ConfigName 	= ""
 if CLIENT then
 	language.Add( "Tool_sbep_mpc_name"	, "SBEP MPC Tool" 				)
 	language.Add( "Tool_sbep_mpc_desc"	, "Create an SBEP Mobile Platform Controller." 		)
-	language.Add( "Tool_sbep_mpc_0"		, "Left click to spawn an mpc. Right click to copy the model of whatever you're looking at." )
+	language.Add( "Tool_sbep_mpc_0"		, "Left click to spawn an MPC. Right click to copy the model of whatever you're looking at. Press Reload to replace the target prop with an MPC." )
 	language.Add( "undone_SBEP MPC"		, "Undone SBEP MPC"				)
 	
 	local function SBEPMPCModelToolError( ply, cmd, args )
@@ -38,7 +38,7 @@ function TOOL:LeftClick( tr )
 	local ply   = self:GetOwner()
 
 	local MPCEnt = ents.Create( "MobilePlatformController" )
-		MPCEnt:SetPos( pos + Vector(0,0,50) )//MPCEnt:OBBMins().z ) )
+		MPCEnt:SetPos( pos + Vector(0,0,50) )
 		MPCEnt:Spawn()
 		MPCEnt:Initialize()
 		MPCEnt:Activate()
@@ -59,7 +59,7 @@ function TOOL:LeftClick( tr )
 	
 	undo.Create("SBEP MPC")
 		undo.AddEntity( MPCEnt )
-		undo.SetPlayer( self:GetOwner() )
+		undo.SetPlayer( ply )
 	undo.Finish()
 	
 	return true
@@ -95,6 +95,37 @@ function TOOL:RightClick( tr )
 end
 
 function TOOL:Reload( tr )
+
+	if !tr.Hit || !tr.Entity || !tr.Entity:IsValid() then return end
+
+	local model = tr.Entity:GetModel()
+	local skin  = tr.Entity:GetSkin()
+	local pos   = tr.Entity:GetPos()
+	local ang   = tr.Entity:GetAngles()
+	local ply   = self:GetOwner()
+
+	local MPCEnt = ents.Create( "MobilePlatformController" )
+		MPCEnt:SetPos( pos )
+		MPCEnt:SetAngles( ang )
+		MPCEnt:Spawn()
+		MPCEnt:Initialize()
+		MPCEnt:Activate()
+		MPCEnt:GetPhysicsObject():EnableMotion( false )
+		
+		MPCEnt.SPL 		= ply
+		MPCEnt.PlModel 	= model
+		if skin ~= 0 then
+			MPCEnt.Skin = skin
+		end
+	
+	undo.Create("SBEP MPC")
+		undo.AddEntity( MPCEnt )
+		undo.SetPlayer( ply )
+	undo.Finish()
+	
+	tr.Entity:Remove()
+	
+	return true
 
 end
 
