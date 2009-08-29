@@ -231,7 +231,7 @@ function ENT:Think()
 	
 	--self.Plat:SetLocalPos(Vector(self.XCo, self.YCo, self.ZCo))
 	--self.Plat:SetLocalAngles(Vector(self.Pitch, self.Yaw, self.Roll))
-	
+	--print(self.PlModel)
 	/*
 	if !self.AbsAng then
 		local RAng = self.Entity:GetAngles()
@@ -279,7 +279,7 @@ function ENT:Think()
 		phys:SetVelocity(NVel)
 	end
 		
-	self.Entity:NextThink( CurTime() + 0.1 ) 
+	self.Entity:NextThink( CurTime() + 0.01 ) 
 	return true
 end
 
@@ -289,4 +289,23 @@ end
 
 function ENT:Touch( ent )
 	
+end
+
+function ENT:BuildDupeInfo()
+	local info = self.BaseClass.BuildDupeInfo(self) or {}
+	if (self.Plat) and (self.Plat:IsValid()) then
+	    info.Plat = self.Plat:EntIndex()
+	end
+	return info
+end
+
+function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
+	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
+	if (info.Plat) then
+		self.Plat = GetEntByID(info.Plat)
+		if (!self.Plat) then
+			self.Plat = ents.GetByIndex(info.Plat)
+		end
+	end
+	self.Entity:Think()
 end
