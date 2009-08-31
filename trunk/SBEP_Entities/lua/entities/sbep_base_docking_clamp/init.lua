@@ -227,7 +227,21 @@ function ENT:Think()
 			
 			local Distance = self.LinkLock:GetPos():Distance(self.Entity:GetPos())
 			
-			if Distance > self.ScanDist then 
+			local YawBreak = false
+			local RollBreak = false
+			local PitchBreak = false
+			
+			if math.AngleDifference(math.fmod((self.LinkLock:GetAngles().r + self.ARoll + self.CRoll), 360),self.Entity:GetAngles().r) >= self.MRoll * 3 || math.AngleDifference(math.fmod((self.LinkLock:GetAngles().r + self.ARoll + self.CRoll), 360),self.Entity:GetAngles().r) <= self.MRoll * -3 then
+				RollBreak = true
+			end
+			if math.AngleDifference(math.fmod((self.LinkLock:GetAngles().p + self.APitch + self.CPitch), 360),self.Entity:GetAngles().p) >= self.MPitch * 3 || math.AngleDifference(math.fmod((self.LinkLock:GetAngles().p + self.APitch + self.CPitch), 360),self.Entity:GetAngles().p) <= self.MPitch * -3 then
+				PitchBreak = true
+			end
+			if math.AngleDifference(math.fmod((self.LinkLock:GetAngles().y + self.AYaw + self.CYaw), 360),self.Entity:GetAngles().y) >= self.MYaw * 3 || math.AngleDifference(math.fmod((self.LinkLock:GetAngles().y + self.AYaw + self.CYaw), 360),self.Entity:GetAngles().y) <= self.MYaw * -3 then
+				YawBreak = true
+			end
+			
+			if Distance > self.ScanDist || YawBreak || RollBreak || PitchBreak then 
 				self.LinkLock.DMode = 2
 				self.LinkLock.LinkLock = nil
 				self.LinkLock:SetNetworkedEntity( "LinkLock", nil )
@@ -237,7 +251,7 @@ function ENT:Think()
 				self.Entity:EmitSound("Building_Teleporter.Receive")
 				return
 			end
-			
+						
 			if self.LinkLock.DMode != 3 then
 				self.Entity:SetNetworkedEntity( "LinkLock", nil )
 				self.LinkLock = nil
@@ -352,6 +366,8 @@ function ENT:PreEntityCopy()
 		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
 	end
 	
+	dupeInfo.CompatibleLocks = self.CompatibleLocks
+	
 	duplicator.StoreEntityModifier(self, "SBEPDockingClampDupeInfo", dupeInfo)
 end
 duplicator.RegisterEntityModifier( "SBEPDockingClampDupeInfo" , function() end)
@@ -360,6 +376,9 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
 	if(Ent.EntityMods and Ent.EntityMods.SBEPDockingClampDupeInfo.WireData) then
 		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPDockingClampDupeInfo.WireData, function(id) return CreatedEntities[id] end)
+		self.CompatibleLocks = Ent.EntityMods.SBEPDockingClampDupeInfo.CompatibleLocks
 	end
+	
+	
 
 end

@@ -9,17 +9,17 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Disable"}
-	local inTypes = {"NORMAL","NORMAL","NORMAL","VECTOR","NORMAL","NORMAL","NORMAL","ANGLE","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL"}
+	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Disable", "FulcrumX", "FulcrumY", "FulcrumZ", "FulcrumVec" }
+	local inTypes = {"NORMAL","NORMAL","NORMAL","VECTOR","NORMAL","NORMAL","NORMAL","ANGLE","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","VECTOR"}
 	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
 	self.Entity:SetUseType( 3 )
 
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
-		phys:EnableGravity(true)
+		phys:EnableGravity(false)
 		phys:EnableDrag(true)
-		phys:EnableCollisions(true)
+		phys:EnableCollisions(false)
 		phys:SetMass(20)
 	end
 
@@ -31,11 +31,15 @@ function ENT:Initialize()
 	self.XCo = 0
 	self.YCo = 0
 	self.ZCo = 0
-	
+		
 	self.Yaw = 0
 	self.Roll = 0
 	self.Pitch = 0
 	
+	self.FulX = 0
+	self.FulY = 0
+	self.FulZ = 0
+		
 	self.AbsVec = false
 	self.AbsAng = false
 	self.Recip = false
@@ -59,6 +63,8 @@ function ENT:Initialize()
 		self.ShadowParams.teleportdistance = 0 // If it's further away than this it'll teleport (Set to 0 to not teleport)
 
 	self:StartMotionController()
+	
+	self.PasteDelay = true
 end
 
 function ENT:TriggerInput(iname, value)
@@ -131,8 +137,17 @@ function ENT:TriggerInput(iname, value)
 		else
 			self.Disabled = false
 		end
-	end
 	
+	elseif (iname == "FulcrumX") then
+		self.FulX = value
+		
+	elseif (iname == "FulcrumY") then
+		self.FulY = value
+		
+	elseif (iname == "FulcrumZ") then
+		self.FulZ = value
+		
+	end
 end
 /*
 function ENT:PhysicsSimulate( phys, deltatime )
@@ -212,6 +227,8 @@ end
 ]]--
 
 function ENT:Think()
+	
+	if self.PasteDelay then return end
 
 	if (!self.Plat || !self.Plat:IsValid()) and self.PlModel then
 		self.Plat = ents.Create( "MobilePlatform" )
@@ -226,6 +243,7 @@ function ENT:Think()
 		if self.Skin then
 			self.Plat:SetSkin( self.Skin )
 		end
+		self.Plat.PasteDelay = false
 		--self.MWeld = constraint.Weld(self.Entity,self.Plat,0,0,0,true)
 		--self.Plat:SetParent(self.Entity)
 	end
@@ -254,11 +272,30 @@ function ENT:Think()
 	self.Plat.AbsAng = self.AbsAng
 	
 	if !self.AbsVec then
-		local RPos = self.Entity:GetPos() + (self.Entity:GetUp() * self.ZCo) + (self.Entity:GetForward() * self.YCo) + (self.Entity:GetRight() * self.XCo)
+		local YawX = 0
+		local YawY = 0
+		local RollX = 0
+		local RollZ = 0
+		local PitchY = 0
+		local PitchZ = 0
+		
+		if self.FulX != 0 || self.FulY != 0 || self.FulZ != 0 then
+			if self.Pitch != 0 then
+				PitchY = (math.cos(math.rad(self.Pitch)) * -self.FulY) + (math.sin(math.rad(self.Pitch)) * self.FulZ)
+				PitchZ = (math.sin(math.rad(self.Pitch)) * self.FulY) + (math.cos(math.rad(self.Pitch)) * self.FulZ)
+			elseif self.Roll != 0 then
+				RollX = (math.sin(math.rad(self.Roll)) * self.FulZ) + (math.cos(math.rad(self.Yaw)) * self.FulX)
+				RollZ = (math.cos(math.rad(self.Roll)) * self.FulZ) + (math.sin(math.rad(self.Yaw)) * -self.FulX)
+			elseif self.Yaw != 0 then
+				YawX = (math.sin(math.rad(self.Yaw)) * self.FulY) + (math.cos(math.rad(self.Yaw)) * self.FulX)
+				YawY = (math.cos(math.rad(self.Yaw)) * -self.FulY) + (math.sin(math.rad(self.Yaw)) * self.FulX)
+			end
+		end
+		local RPos = self.Entity:GetPos() + (self.Entity:GetUp() * (self.ZCo + RollZ + PitchZ)) + (self.Entity:GetForward() * (self.YCo + YawY + PitchY)) + (self.Entity:GetRight() * (self.XCo + YawX + RollX))
 		
 		self.Plat.XCo = RPos.x
 		self.Plat.YCo = RPos.y
-		self.Plat.ZCo = RPos.z		
+		self.Plat.ZCo = RPos.z
 	else
 		self.Plat.XCo = self.XCo
 		self.Plat.YCo = self.YCo
@@ -300,6 +337,10 @@ function ENT:BuildDupeInfo()
 	return info
 end
 
+function ENT:PreEntityPaste()
+	--self.PasteDelay = true
+end
+
 function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
 	if (info.Plat) then
@@ -308,5 +349,6 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 			self.Plat = ents.GetByIndex(info.Plat)
 		end
 	end
+	self.PasteDelay = false
 	self.Entity:Think()
 end

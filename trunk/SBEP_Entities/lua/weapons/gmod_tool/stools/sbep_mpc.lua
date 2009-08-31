@@ -117,6 +117,7 @@ function TOOL:Reload( tr )
 		if skin ~= 0 then
 			MPCEnt.Skin = skin
 		end
+		MPCEnt.PasteDelay = false --I really need a better system than this...
 	
 	undo.Create("SBEP MPC")
 		undo.AddEntity( MPCEnt )
