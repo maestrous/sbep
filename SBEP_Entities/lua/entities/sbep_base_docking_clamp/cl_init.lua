@@ -8,9 +8,9 @@ function ENT:Initialize()
 end
 
 function ENT:AddEfPointsTable( tab )
-
+	print("Clientside")
 	self.EfPoints = tab
-
+	return true
 end
 
 function ENT:Draw()

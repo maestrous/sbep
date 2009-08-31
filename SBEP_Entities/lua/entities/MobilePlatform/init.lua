@@ -45,11 +45,13 @@ function ENT:Initialize()
 		self.ShadowParams.teleportdistance = 0 // If it's further away than this it'll teleport (Set to 0 to not teleport)
 
 	self:StartMotionController()
+	
+	self.PasteDelay = true
 end
 
 function ENT:PhysicsSimulate( phys, deltatime )
 
-	if !self.Controller || !self.Controller:IsValid() || self.Controller.Disabled then return SIM_NOTHING end
+	if self.PasteDelay || !self.Controller || !self.Controller:IsValid() || self.Controller.Disabled then return SIM_NOTHING end
 	
 	phys:Wake()
 	local Ang = Angle(0,0,0)
@@ -80,8 +82,12 @@ function ENT:PhysicsSimulate( phys, deltatime )
 end
 
 function ENT:Think()
+
+	if self.PasteDelay || self.Controller.Disabled then return end
+	
 	if !self.Controller || !self.Controller:IsValid() then
 		self.Entity:Remove()
+		return
 	end
 	
 	if self.TPD == 1 then
@@ -110,6 +116,11 @@ function ENT:BuildDupeInfo()
 	return info
 end
 
+function ENT:PreEntityPaste()
+	--self.PasteDelay = true
+	--print("Freezing")
+end
+
 function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
 	if (info.Controller) then
@@ -118,4 +129,5 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 			self.Controller = ents.GetByIndex(info.Controller)
 		end
 	end
+	self.PasteDelay = false
 end

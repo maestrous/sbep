@@ -18,9 +18,9 @@ function ENT:Initialize()
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	self.Entity:SetMaterial("spacebuild/SBLight5");
-	self.Inputs = WireLib.CreateSpecialInputs( self.Entity, {"Activate", "Forward", "Back", "MoveLeft", "MoveRight", "MoveUp", "MoveDown", "RollLeft", "RollRight",
-								"PitchUp", "PitchDown", "YawLeft", "YawRight", "PitchMult", "YawMult", "RollMult", "ThrustMult", "MPH Limit", "Level", "Freeze", "AimMode",
-								"AimX", "AimY", "AimZ", "AimVec"},{"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL",
+	self.Inputs = WireLib.CreateSpecialInputs( self.Entity, {"Activate", "Forward", "Back", "SpeedAbs", "MoveLeft", "MoveRight", "MoveUp", "MoveDown", "RollLeft", "RollRight", "RollAbs",
+								"PitchUp", "PitchDown", "PitchAbs", "YawLeft", "YawRight", "YawAbs", "PitchMult", "YawMult", "RollMult", "ThrustMult", "MPH Limit", "Level", "Freeze", "AimMode",
+								"AimX", "AimY", "AimZ", "AimVec"},{"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL",
 								"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","VECTOR"} )
 	--self.Outputs = Wire_CreateOutputs(self.Entity, { "On", "Frozen", "Targeting Mode", "MPH", "KmPH", "Leveler", "Total Mass", "Props Linked" })
 	self.Outputs = WireLib.CreateSpecialOutputs(self.Entity, { "On", "Frozen", "Targeting Mode", "MPH", "KmPH", "Leveler", "Total Mass", "Props Linked", "Angles" }, { "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "ANGLE" })
@@ -69,6 +69,10 @@ function ENT:Initialize()
 	self.Debug = 0
 	self.GyroPitch = 0
 	self.GyroYaw = 0
+	self.PitchAbs = 0
+	self.RollAbs = 0
+	self.YawAbs = 0
+	self.SpAbs = 0
 end
 
 
@@ -173,7 +177,9 @@ function ENT:TriggerInput(iname, value)
 			self.Back = 1
 		else
 			self.Back = 0
-		end	
+		end
+	elseif (iname == "SpeedAbs") then
+		self.SpAbs = value
 	elseif (iname == "MoveLeft") then
 		if (value ~= 0) then
 			self.SLeft = 1
@@ -209,7 +215,9 @@ function ENT:TriggerInput(iname, value)
 			self.RollRight = 1
 		else
 			self.RollRight = 0
-		end	
+		end
+	elseif (iname == "RollAbs") then
+		self.RollAbs = value
 	elseif (iname == "PitchUp") then
 		if (value ~= 0) then
 			self.GyroPitchUp = 1
@@ -221,7 +229,9 @@ function ENT:TriggerInput(iname, value)
 			self.GyroPitchDown = 1
 		else
 			self.GyroPitchDown = 0
-		end	
+		end
+	elseif (iname == "PitchAbs") then
+		self.PitchAbs = value	
 	elseif (iname == "YawLeft") then
 		if (value ~= 0) then
 			self.GyroYawLeft = 1
@@ -233,7 +243,9 @@ function ENT:TriggerInput(iname, value)
 			self.GyroYawRight = 1
 		else
 			self.GyroYawRight = 0
-		end			
+		end
+	elseif (iname == "YawAbs") then
+		self.YawAbs = value	
 	elseif (iname == "PitchMult") then
 		if value ~= 0 then
 			self.PMult = value
@@ -346,8 +358,8 @@ function ENT:Think()
 					self:AimByMouse()				
 				end
 			else						
-				self.GyroPitch =  (self.GyroPitchDown - self.GyroPitchUp) * 2
-				self.GyroYaw = self.GyroYawLeft - self.GyroYawRight
+				self.GyroPitch =  ((self.GyroPitchDown - self.GyroPitchUp) + self.PitchAbs )* 2
+				self.GyroYaw = (self.GyroYawLeft - self.GyroYawRight)+ self.YawAbs
 				self.ViewDelay = true
 			end
 		end	
@@ -386,7 +398,7 @@ function ENT:Think()
 		self.LowDroneSound.ChangePitch(self.LowDroneSound, self.LowDronePitch)
 		
 		local speedx, speedy, speedz = abs(localentorparvel.x) / 17.6, abs(localentorparvel.y) / 17.6, abs(localentorparvel.z) / 17.6
-		local SMult, HMult, VMult, GyroRoll = self.Forw - self.Back, self.SRight - self.SLeft, self.HUp - self.HDown, self.RollRight - self.RollLeft		
+		local SMult, HMult, VMult, GyroRoll = (self.Forw - self.Back) + self.SpAbs, self.SRight - self.SLeft, self.HUp - self.HDown, (self.RollRight - self.RollLeft) + self.RollAbs
 		if abs(speedx) >= self.SpdL then  --Speed Limit modifiers
 			self.XMult = 0 
 		else
