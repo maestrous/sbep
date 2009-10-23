@@ -82,14 +82,21 @@ function ENT:PhysicsSimulate( phys, deltatime )
 end
 
 function ENT:Think()
-
+	
+	self.Entity:SetLocalPos(Vector(self.Controller.XCo,self.Controller.YCo,self.Controller.ZCo))
+	local Ang = Angle(0,0,0)
+	Ang.y = self.Yaw
+	Ang.r = self.Roll
+	Ang.p = self.Pitch
+	self.Entity:SetLocalAngles(Ang)
+	
 	if self.PasteDelay || self.Controller.Disabled then return end
 	
 	if !self.Controller || !self.Controller:IsValid() then
 		self.Entity:Remove()
 		return
 	end
-	
+			
 	if self.TPD == 1 then
 		self.Entity:SetPos(Vector(self.XCo,self.YCo,self.ZCo))
 		local Ang = Angle(0,0,0)

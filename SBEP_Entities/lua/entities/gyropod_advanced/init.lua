@@ -18,9 +18,9 @@ function ENT:Initialize()
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	self.Entity:SetMaterial("spacebuild/SBLight5");
-	self.Inputs = WireLib.CreateSpecialInputs( self.Entity, {"Activate", "Forward", "Back", "SpeedAbs", "MoveLeft", "MoveRight", "MoveUp", "MoveDown", "RollLeft", "RollRight", "RollAbs",
+	self.Inputs = WireLib.CreateSpecialInputs( self.Entity, {"Activate", "Forward", "Back", "SpeedAbs", "MoveLeft", "MoveRight", "Lateral", "MoveUp", "MoveDown", "Vertical", "RollLeft", "RollRight", "RollAbs",
 								"PitchUp", "PitchDown", "PitchAbs", "YawLeft", "YawRight", "YawAbs", "PitchMult", "YawMult", "RollMult", "ThrustMult", "MPH Limit", "Level", "Freeze", "AimMode",
-								"AimX", "AimY", "AimZ", "AimVec"},{"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL",
+								"AimX", "AimY", "AimZ", "AimVec"},{"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL",
 								"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","VECTOR"} )
 	--self.Outputs = Wire_CreateOutputs(self.Entity, { "On", "Frozen", "Targeting Mode", "MPH", "KmPH", "Leveler", "Total Mass", "Props Linked" })
 	self.Outputs = WireLib.CreateSpecialOutputs(self.Entity, { "On", "Frozen", "Targeting Mode", "MPH", "KmPH", "Leveler", "Total Mass", "Props Linked", "Angles" }, { "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "ANGLE" })
@@ -73,6 +73,8 @@ function ENT:Initialize()
 	self.RollAbs = 0
 	self.YawAbs = 0
 	self.SpAbs = 0
+	self.LatAbs = 0
+	self.VertAbs = 0
 end
 
 
@@ -191,7 +193,9 @@ function ENT:TriggerInput(iname, value)
 			self.SRight = 1
 		else
 			self.SRight = 0
-		end	
+		end
+	elseif (iname == "Lateral") then
+		self.LatAbs = value
 	elseif (iname == "MoveUp") then
 		if (value ~= 0) then
 			self.HUp = 1
@@ -204,6 +208,8 @@ function ENT:TriggerInput(iname, value)
 		else
 			self.HDown = 0
 		end	
+	elseif (iname == "Vertical") then
+		self.VertAbs = value
 	elseif (iname == "RollLeft") then
 		if (value ~= 0) then
 			self.RollLeft = 1
@@ -394,11 +400,11 @@ function ENT:Think()
 		self.HighEnginePitch = (speedmph * 1.2) + 60
 		self.LowDronePitch = 35+(speedmph * 0.2)
 		self.HighEngineSound.ChangeVolume(self.HighEngineSound, self.HighEngineVolume)
-		self.HighEngineSound.ChangePitch(self.HighEngineSound, self.HighEnginePitch)
-		self.LowDroneSound.ChangePitch(self.LowDroneSound, self.LowDronePitch)
+		self.HighEngineSound.ChangePitch(self.HighEngineSound, math.Clamp(self.HighEnginePitch, 0, 255))
+		self.LowDroneSound.ChangePitch(self.LowDroneSound, math.Clamp(self.LowDronePitch, 0, 255))
 		
 		local speedx, speedy, speedz = abs(localentorparvel.x) / 17.6, abs(localentorparvel.y) / 17.6, abs(localentorparvel.z) / 17.6
-		local SMult, HMult, VMult, GyroRoll = (self.Forw - self.Back) + self.SpAbs, self.SRight - self.SLeft, self.HUp - self.HDown, (self.RollRight - self.RollLeft) + self.RollAbs
+		local SMult, HMult, VMult, GyroRoll = (self.Forw - self.Back) + self.SpAbs, (self.SRight - self.SLeft) + self.LatAbs, (self.HUp - self.HDown) + self.VertAbs, (self.RollRight - self.RollLeft) + self.RollAbs
 		if abs(speedx) >= self.SpdL then  --Speed Limit modifiers
 			self.XMult = 0 
 		else
@@ -416,22 +422,23 @@ function ENT:Think()
 		end
 
 		if (SMult > 0) and (self.GyroSpeed >= 0) then  --pressing forward and moving forwards
-			self.GyroSpeed = self.GyroSpeed + (7 * self.XMult * (abs(sqrt(speedx)-10.583) * 0.2))
+			self.GyroSpeed = self.GyroSpeed + (3 * self.XMult * (abs(sqrt(speedx)-10.583) * 0.2))
 		elseif (SMult < 0) and (self.GyroSpeed <= 0) then --pressing reverse moving backwards
-			self.GyroSpeed = self.GyroSpeed - (7 * self.XMult * (abs(sqrt(speedx)-10.583) * 0.2))
+			self.GyroSpeed = self.GyroSpeed - (3 * self.XMult * (abs(sqrt(speedx)-10.583) * 0.2))
 		elseif (SMult > 0) and (self.GyroSpeed < 0) then --pressing forward and moving backwards, increase speed faster until moving forwards again
-			self.GyroSpeed = clamp(self.GyroSpeed + 20, -2000, 0)
+			self.GyroSpeed = clamp(self.GyroSpeed + 20, -1000, 0)
 		elseif (SMult < 0) and (self.GyroSpeed > 0) then  --pressing reverse and moving forwards, reverse speed faster until moving backwards again
-			self.GyroSpeed = clamp(self.GyroSpeed - 20, 0, 2000)
+			self.GyroSpeed = clamp(self.GyroSpeed - 20, 0, 1000)
 		elseif (SMult == 0) and (self.GyroSpeed > 0) then  --not pressing for or back and moving forwards, slow movement faster until stopped
-			self.GyroSpeed = clamp(self.GyroSpeed - 15, 0, 2000)
+			self.GyroSpeed = clamp(self.GyroSpeed - 15, 0, 1000)
 		elseif (SMult == 0) and (self.GyroSpeed < 0) then  --not pressing forw or back and moving backwards slow movement faster until stopped
-			self.GyroSpeed = clamp(self.GyroSpeed + 15, -2000, 0)
-		end		
+			self.GyroSpeed = clamp(self.GyroSpeed + 15, -1000, 0)
+		end
+		
 		if (HMult > 0) and (self.HSpeed >= 0) then  --Strafe movement
-			self.HSpeed = self.HSpeed + (7 * self.YMult * (abs(sqrt(speedy)-10.583) * 0.1))
+			self.HSpeed = self.HSpeed + (3 * self.YMult * (abs(sqrt(speedy)-10.583) * 0.1))
 		elseif (HMult < 0) and (self.HSpeed <= 0) then
-			self.HSpeed = self.HSpeed - (7 * self.YMult * (abs(sqrt(speedy)-10.583) * 0.1))
+			self.HSpeed = self.HSpeed - (3 * self.YMult * (abs(sqrt(speedy)-10.583) * 0.1))
 		elseif (HMult > 0) and (self.HSpeed < 0) then
 			self.HSpeed = clamp(self.HSpeed + 20, -2000, 0)
 		elseif (HMult < 0) and (self.HSpeed > 0) then
@@ -442,9 +449,9 @@ function ENT:Think()
 			self.HSpeed = clamp(self.HSpeed + 15, -2000, 0)
 		end
 		if (VMult > 0) and (self.VSpeed >= 0) then  --Height Movement
-			self.VSpeed = self.VSpeed + (7 * self.ZMult * (abs(sqrt(speedz)-10.583) * 0.3))
+			self.VSpeed = self.VSpeed + (3 * self.ZMult * (abs(sqrt(speedz)-10.583) * 0.1))
 		elseif (VMult < 0) and (self.VSpeed <= 0) then
-			self.VSpeed = self.VSpeed - (7 * self.ZMult * (abs(sqrt(speedz)-10.583) * 0.3))
+			self.VSpeed = self.VSpeed - (3 * self.ZMult * (abs(sqrt(speedz)-10.583) * 0.1))
 		elseif (VMult > 0) and (self.VSpeed < 0) then
 			self.VSpeed = clamp(self.VSpeed + 20, -2000, 0)
 		elseif (VMult < 0) and (self.VSpeed > 0) then
