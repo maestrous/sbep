@@ -49,7 +49,7 @@ function TOOL.BuildCPanel( panel )
 	panel:SetSpacing( 10 )
 	panel:SetName( "SBEP SmallBridge Skin Selector" )
 	
-	ModelDisp = vgui.Create( "DModelPanel" )
+	local ModelDisp = vgui.Create( "DModelPanel" )
 		ModelDisp:SetSize( 100,200 )
 		ModelDisp:SetModel( "models/SmallBridge/Hulls,SW/sbhulle1.mdl" )
 		ModelDisp:SetCamPos( Vector(  246 ,  235 ,  143 ) )
