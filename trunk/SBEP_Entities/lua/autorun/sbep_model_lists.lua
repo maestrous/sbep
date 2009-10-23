@@ -353,16 +353,16 @@ local DCMT = {}
 																	Doors	 = {	{ "Door_ElevHatch" , Vector(0,0,-60.45) } } }
 			DCMT[ "models/props_phx/construct/metal_wire1x1.mdl"] = { ListCat = "PHX"	, ALType = "PHX1x1" , 
 																	Compatible = { 	{ Type = "PHX1x1", AU = 6, RYaw = 90, ARoll = 180 } },
-																	EfPoints = 	{	{ vec = Vector(-60.45 ,  60.45 , -69.75 ) , sp = 0 } , 
-																					{ vec = Vector(-60.45 , -60.45 , -69.75 ) , sp = 2 } , 
-																					{ vec = Vector( 60.45 , -60.45 , -69.75 ) , sp = 0 } , 
-																					{ vec = Vector( 60.45 ,  60.45 , -69.75 ) , sp = 4 } } }
+																	EfPoints = 	{	{ vec = Vector(-20 ,  20 , 8 ) , sp = 0 } , 
+																					{ vec = Vector(-20 , -20 , 8 ) , sp = 2 } , 
+																					{ vec = Vector( 20 , -20 , 8 ) , sp = 0 } , 
+																					{ vec = Vector( 20 ,  20 , 8 ) , sp = 4 } } }
 			DCMT[ "models/props_phx/construct/metal_wire2x2b.mdl"] = { ListCat = "PHX"	, ALType = "PHX2x2" , 
 																	Compatible = { 	{ Type = "PHX2x2", AU = 6, RYaw = 90, ARoll = 180 } },
-																	EfPoints = 	{	{ vec = Vector(-60.45 ,  60.45 , -69.75 ) , sp = 0 } , 
-																					{ vec = Vector(-60.45 , -60.45 , -69.75 ) , sp = 2 } , 
-																					{ vec = Vector( 60.45 , -60.45 , -69.75 ) , sp = 0 } , 
-																					{ vec = Vector( 60.45 ,  60.45 , -69.75 ) , sp = 4 } } }
+																	EfPoints = 	{	{ vec = Vector(-44.5 ,  44.5 , 8 ) , sp = 0 } , 
+																					{ vec = Vector(-44.5 , -44.5 , 8 ) , sp = 2 } , 
+																					{ vec = Vector( 44.5 , -44.5 , 8 ) , sp = 0 } , 
+																					{ vec = Vector( 44.5 ,  44.5 , 8 ) , sp = 4 } } }
 
 for k,v in pairs( DCMT ) do
 	list.Set( "SBEP_DockingClampModels", k , v )

@@ -5,12 +5,7 @@ function ENT:Initialize()
 	self.CMat = Material( "cable/blue_elec" )
 	self.SMat = Material( "sprites/light_glow02_add" )
 	self.STime = CurTime()
-end
-
-function ENT:AddEfPointsTable( tab )
-	print("Clientside")
-	self.EfPoints = tab
-	return true
+	self.EfPoints = {}
 end
 
 function ENT:Draw()
@@ -72,4 +67,20 @@ function ENT:Draw()
 		end
 	end
 		
+end
+
+function ENT:Think()
+	for i = 1,10 do
+		local Vec = self.Entity:GetNetworkedVector("EfVec"..i)
+		if Vec && Vec != Vector(0,0,0) then
+			self.EfPoints[i] = {}
+			self.EfPoints[i].x = Vec.x
+			self.EfPoints[i].y = Vec.y
+			self.EfPoints[i].z = Vec.z
+			self.EfPoints[i].sp = self.Entity:GetNetworkedInt("EfSp"..i) or 0
+		end
+	end
+	
+	--self.Entity:SetNextThink( CurTime() + 1 )
+	--return true
 end
