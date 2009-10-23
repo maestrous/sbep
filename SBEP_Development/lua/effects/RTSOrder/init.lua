@@ -21,7 +21,7 @@ function EFFECT:Init( data )
 	
 	self:SetColor(150,255,150,100)
 	
-	print("Creating...")
+	--print("Creating...")
 	
 end
 

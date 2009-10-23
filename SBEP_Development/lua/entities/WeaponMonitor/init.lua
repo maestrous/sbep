@@ -30,8 +30,10 @@ function ENT:Initialize()
 	self.Entity:SetKeyValue("rendercolor", "255 255 255")
 	self.PhysObj = self.Entity:GetPhysicsObject()
 	
+	self.hasdamagecase = true
+	
 	self.Priority = 0
-	self.FReady = false
+	self.FReady = true
 	self.Range = 4000
 	self.PArc = 15
 	self.YArc = 15
@@ -83,17 +85,50 @@ function ENT:Think()
 	local InRange = 0	
 	local Firing = 0
 
-	if self.Master && self.Master:IsValid() && self.Master.TFound then
-		local RAng = (self.Master.TVec - self.Entity:GetPos()):Angle()
-		local SAng = self.Entity:GetAngles()
-		if math.abs(math.AngleDifference(SAng.p,RAng.p)) < self.PArc && math.abs(math.AngleDifference(SAng.y,RAng.y)) < self.YArc && self.Entity:GetPos():Distance(self.Master.TVec) < self.Range then
-			InRange = 1
-			if self.Master.Stance > 1 then
-				Firing = 1
+	if self.Master && self.Master:IsValid()  then
+		if self.Master.TFound then
+			local RAng = (self.Master.TVec - self.Entity:GetPos()):Angle()
+			local SAng = self.Entity:GetAngles()
+			if math.abs(math.AngleDifference(SAng.p,RAng.p)) < self.PArc && math.abs(math.AngleDifference(SAng.y,RAng.y)) < self.YArc && self.Entity:GetPos():Distance(self.Master.TVec) < self.Range then
+				Wire_TriggerOutput( self.Entity, "TVec", self.Master.TVec )
+				InRange = 1
+				if self.Master.Stance > 1 && self.FReady then
+					Firing = 1
+				end
+				--print("Main Target Available")
+			else
+				--print("Cheking Alternates")
+				for i = 1,5 do
+					--print("Alternate "..i)
+					RAng = (self.Master.Alternates[i] - self.Entity:GetPos()):Angle()
+					if math.abs(math.AngleDifference(SAng.p,RAng.p)) < self.PArc && math.abs(math.AngleDifference(SAng.y,RAng.y)) < self.YArc && self.Entity:GetPos():Distance(self.Master.TVec) < self.Range && self.Master.Targets > i then
+						--print("Found one")
+						Wire_TriggerOutput( self.Entity, "TVec", self.Master.Alternates[i] )
+						InRange = 1
+						if self.Master.Stance > 1 && self.FReady then
+							Firing = 1
+						end
+						break
+					end
+				end
 			end
 		end
-		Wire_TriggerOutput( self.Entity, "TVec", self.Master.TVec )
+		if self.Master.Fade then
+			self.Entity:SetColor(255,255,255,20)
+			self.Entity:SetNotSolid( true )
+			self.Entity:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+		else
+			self.Entity:SetColor(255,255,255,255)
+			self.Entity:SetCollisionGroup(COLLISION_GROUP_INTERACTIVE)
+			self.Entity:SetNotSolid( false )
+		end
+	else
+		self.Entity:SetColor(255,255,255,255)
+		self.Entity:SetCollisionGroup(COLLISION_GROUP_INTERACTIVE)
+		self.Entity:SetNotSolid( false )
 	end
+	
+	
 	
 	Wire_TriggerOutput( self.Entity, "Firing", 0 )
 	Wire_TriggerOutput( self.Entity, "Firing", Firing )
@@ -110,5 +145,27 @@ function ENT:Touch( ent )
 		table.insert(ent.Weaponry,self.Entity)
 		self.Master = ent
 		--print("Linking")
+	end
+end
+
+function ENT:gcbt_breakactions(damage, pierce)
+	
+end
+
+function ENT:BuildDupeInfo()
+	local info = self.BaseClass.BuildDupeInfo(self) or {}
+	if (self.Master) and (self.Master:IsValid()) then
+	    info.master = self.Master:EntIndex()
+	end
+	return info
+end
+
+function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
+	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
+	if (info.master) then
+		self.Master = GetEntByID(info.master)
+		if (!self.Master) then
+			self.Master = ents.GetByIndex(info.master)
+		end
 	end
 end
