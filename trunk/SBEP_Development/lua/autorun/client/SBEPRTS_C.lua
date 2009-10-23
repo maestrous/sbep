@@ -45,13 +45,14 @@ function SBEPRTS() --It stands for Spacebuild Enhancement Project - Real Time St
 				    ply.BCOrderBox:SetDraggable( false )
 				    ply.BCOrderBox:SetTitle( "Set Stance:" )
 				   	
-				    local Button = vgui.Create( "Button", ply.BCOrderBox ) --Create a button that is attached to Frame 
-				    Button:SetText( "Offence" ) --Set the button's text to "Click me!" 
-				    Button:SetPos( 20, 35 ) --Set the button's position relative to it's parent(Frame) 
-				    Button:SetWide( 80 ) --Sets the width of the button you're making 
-					function Button:DoClick( ) --This is called when the button is clicked 
+				    ply.BCOrderBox.Offence = vgui.Create( "Button", ply.BCOrderBox ) --Create a button that is attached to Frame 
+				    ply.BCOrderBox.Offence:SetText( "Offence" ) --Set the button's text to "Click me!" 
+				    ply.BCOrderBox.Offence:SetPos( 20, 35 ) --Set the button's position relative to it's parent(Frame) 
+				    ply.BCOrderBox.Offence:SetWide( 80 ) --Sets the width of the button you're making 
+					function ply.BCOrderBox.Offence:DoClick( ) --This is called when the button is clicked 
 				    	--self:SetText( "Clicked" ) --Set the text to "Clicked"
-				    	SBEPRTS_SetStance( 3, BComp )
+				    	--SBEPRTS_SetStance( 3, BComp )
+				    	SBEPRTS_SetStance( 3, LocalPlayer():GetVehicle():GetNetworkedEntity( "BattleComputer" ) )
 					end
 					local Button2 = vgui.Create( "Button", ply.BCOrderBox ) --Create a button that is attached to Frame 
 				    Button2:SetText( "Defence" ) --Set the button's text to "Click me!" 
@@ -152,15 +153,14 @@ function SBEPRTS() --It stands for Spacebuild Enhancement Project - Real Time St
 						BComp.UnitsSelected = {}
 						local FEnts = ents.FindInBox( BComp.RTS_SelStartP - Vector(0,0,10000), BComp.RTS_SelCurP + Vector(0,0,10000) ) 
 						for _,i in ipairs(FEnts) do
-							print(i:GetClass())
+							--print(i:GetClass())
 							local Com = i.BCCommandable
-							print(Com)
-							--if table.HasValue( CommandableUnits, i:GetClass() ) then
+							--print(Com)
 							if Com then
 								table.insert( BComp.UnitsSelected, i )
 							end
 							--LocalPlayer():ConCommand("RTSSelection "..BComp.RTS_SelStartP.x.." "..BComp.RTS_SelStartP.y.." "..BComp.RTS_SelStartP.z.." "..BComp.RTS_SelCurP.x.." "..BComp.RTS_SelCurP.y.." "..BComp.RTS_SelCurP.z)
-							PrintTable(BComp.UnitsSelected)
+							--PrintTable(BComp.UnitsSelected)
 						end
 						 
 					end
@@ -169,22 +169,41 @@ function SBEPRTS() --It stands for Spacebuild Enhancement Project - Real Time St
 					
 				end
 				
-				
+				for k,i in ipairs(BComp.UnitsSelected) do
+					if !i || !i:IsValid() then
+						table.remove(BComp.UnitsSelected, k)
+					end
+					--PrintTable(BComp.UnitsSelected)
+				end
 				
 				if input.IsMouseDown(MOUSE_FIRST) && BComp.COrder then
 					
 				end
 				
 				
+				------------------------------------Orders------------------------------------
+				
+				local Y,X = gui.MousePos()
 				if input.IsMouseDown(MOUSE_RIGHT) then
-					BComp.AltC = true
+					if !BComp.AltC then
+						BComp.OYOff = X
+						BComp.OrderBaseVec = RTSViewTrace()
+						BComp.AltC = true
+					else
+						local AVec = BComp.OrderBaseVec + Vector(0,0,(X - BComp.OYOff) * -10)
+						local effectdata = EffectData() 
+						effectdata:SetOrigin( BComp.OrderBaseVec ) 
+						effectdata:SetStart( AVec ) 
+						util.Effect( "RTSSelection", effectdata )
+					end
 				else
 					if BComp.AltC then
-						local trace = RTSViewTrace()
+						local AVec = BComp.OrderBaseVec + Vector(0,0,(X - BComp.OYOff) * -10) + Vector(0,0,BComp.MSize * 3)
+						--local trace = RTSViewTrace()
 						--LocalPlayer():ConCommand("IssueRTSOrder "..trace.x.." "..trace.y.." "..trace.z)
-						SBEPRTS_IssueOrder( trace + Vector(0,0,500), BComp, 1 )
+						SBEPRTS_IssueOrder( AVec, BComp, 1 )
 						local effectdata = EffectData() 
-						effectdata:SetOrigin( trace )
+						effectdata:SetOrigin( AVec - Vector(0,0,BComp.MSize * 3) )
 						util.Effect( "RTSOrder", effectdata )
 						BComp.AltC = false
 					end
@@ -194,38 +213,57 @@ function SBEPRTS() --It stands for Spacebuild Enhancement Project - Real Time St
 				local Y,X = gui.MousePos()
 				if X < 50 then
 					BComp.CVVec.x = BComp.CVVec.x + ( ( ( 50 - X ) * 0.5 ) * 5 )
-					if BComp.CVVec.x > 6000 then
-						BComp.CVVec.x = 6000
+					if BComp.CVVec.x > 10000 then
+						BComp.CVVec.x = 10000
 					end
-				elseif X > ( ScrH() - 20 ) then
-					BComp.CVVec.x = BComp.CVVec.x - ( ( ( X - ( ScrH() - 20 ) ) * 0.5 ) * 5 )
-					if BComp.CVVec.x < -6000 then
-						BComp.CVVec.x = -6000
+				elseif X > ( ScrH() - 50 ) then
+					BComp.CVVec.x = BComp.CVVec.x - ( ( ( X - ( ScrH() - 50 ) ) * 0.5 ) * 5 )
+					if BComp.CVVec.x < -10000 then
+						BComp.CVVec.x = -10000
 					end
 				end
 				if Y < 50 then
 					BComp.CVVec.y = BComp.CVVec.y + ( ( ( 50 - Y ) * 0.5 ) * 5 )
-					if BComp.CVVec.y > 6000 then
-						BComp.CVVec.y = 6000
+					if BComp.CVVec.y > 10000 then
+						BComp.CVVec.y = 10000
 					end
-				elseif Y > ( ScrW() - 20 ) then
+				elseif Y > ( ScrW() - 50 ) then
 					BComp.CVVec.y = BComp.CVVec.y - ( ( ( Y - ( ScrW() - 50 ) ) * 0.5 ) * 5 )
-					if BComp.CVVec.y < -6000 then
-						BComp.CVVec.y = -6000
+					if BComp.CVVec.y < -10000 then
+						BComp.CVVec.y = -10000
 					end
 				end
+							
+				BComp.BCZScroll = BComp.BCZScroll or 0
 				
+				if input.IsKeyDown( KEY_PAGEDOWN ) then
+					BComp.BCZScroll = math.Clamp(BComp.BCZScroll - 15,-700,700)
+				elseif input.IsKeyDown( KEY_PAGEUP ) then
+					BComp.BCZScroll = math.Clamp(BComp.BCZScroll + 15,-700,700)
+				else
+					BComp.BCZScroll = 0
+				end
+				
+				--print(BComp.BCZScroll)
+				
+				BComp.CVVec.z = math.Clamp(BComp.CVVec.z + BComp.BCZScroll,-10000,10000)
 				
 				------------------------------------Selection Display------------------------------------
 				BComp.UnitsSelected = BComp.UnitsSelected or {}
+				local MSize = 0
 				for _,i in ipairs(BComp.UnitsSelected) do
 					if i && i:IsValid() then
+						local Mag = i:GetNetworkedInt( "Size" )
+						if Mag <= 0 then Mag = 500 end
+						if Mag > MSize then MSize = Mag end
 						local effectdata = EffectData() 
-						effectdata:SetOrigin( i:GetPos() ) --
+						effectdata:SetOrigin( i:GetPos() )
 						effectdata:SetStart( i:GetPos() ) 
+						effectdata:SetMagnitude( Mag )
 						util.Effect( "RTSSelected", effectdata )
 					end
 				end
+				BComp.MSize = MSize
 				
 			else
 				if ply.BCOrderBox then
@@ -266,6 +304,16 @@ function RTSC()
 end
 
 function SBEPRTS_SetStance( Stance, Computer )
+	--print(table.Count(Computer.UnitsSelected))
+	if !Computer then
+		print("No Computer!")
+		return 
+	end
+	
+	if !Computer.UnitsSelected then 
+		print("Critical Unit Failure!")
+		return 
+	end
 	for _,i in ipairs(Computer.UnitsSelected) do
 		if i && i:IsValid() then
 			LocalPlayer():ConCommand("RTSSetStance "..i:EntIndex().." "..Stance)
@@ -273,12 +321,63 @@ function SBEPRTS_SetStance( Stance, Computer )
 	end
 end
 
-function SBEPRTS_IssueOrder( Vector, Computer, OrderType )
-	for _,i in ipairs(Computer.UnitsSelected) do
-		if i && i:IsValid() then
-			LocalPlayer():ConCommand("IssueRTSOrder "..i:EntIndex().." "..Vector.x.." "..Vector.y.." "..Vector.z.." "..OrderType)
+function SBEPRTS_IssueOrder( Vec, Computer, OrderType )
+	--print(Computer)
+	local UCount = table.Count(Computer.UnitsSelected)
+	local Dir = Vector(0,0,0)
+	local Ang = Angle(0,0,0)
+	local Distance = Computer.MSize * 3
+	if UCount > 0 then
+		local First = Computer.UnitsSelected[1]
+		if First && First:IsValid() then
+			Dir = (First:GetPos() - Vec):GetNormal()
+			Ang = (Dir * -1):Angle()
+			Ang.p = 0 --I'll figure out vertical formations later
+		end
+		if UCount > 1 then
+			if Computer.Formation == 0 then
+				for k,i in ipairs(Computer.UnitsSelected) do
+					if i && i:IsValid() then
+						local Ri = (k - (UCount/2)) * Distance
+						local AV = Vec + (Ang:Right() * Ri)
+						LocalPlayer():ConCommand("IssueRTSOrder "..i:EntIndex().." "..AV.x.." "..AV.y.." "..AV.z.." "..OrderType.." "..Ang.r.." "..Ang.p.." "..Ang.y.." "..1)
+					end
+				end
+			elseif Computer.Formation == 1 then
+				local RC = 0 --Y'know, sometimes I think I deliberately label variables as ambiguously as possible just to make things difficult for myself...
+				local CR = 0
+				local ColumnWidth = 3
+				for k,i in ipairs(Computer.UnitsSelected) do
+					if i && i:IsValid() then
+						RC = RC + 1
+						if RC >= ColumnWidth then
+							RC = 0
+							CR = CR + 1
+						end
+						local Ri = (RC - (ColumnWidth/2)) * Distance
+						local Fr = (CR * -Distance)
+						local AV = Vec + (Ang:Right() * Ri) + (Ang:Forward() * Fr) 
+						LocalPlayer():ConCommand("IssueRTSOrder "..i:EntIndex().." "..AV.x.." "..AV.y.." "..AV.z.." "..OrderType.." "..Ang.r.." "..Ang.p.." "..Ang.y.." "..1)
+					end
+				end
+			else
+				for k,i in ipairs(Computer.UnitsSelected) do
+					if i && i:IsValid() then
+						local Ri = (k - (UCount/2)) * Distance
+						local AV = Vec + (Ang:Right() * Ri)
+						LocalPlayer():ConCommand("IssueRTSOrder "..i:EntIndex().." "..AV.x.." "..AV.y.." "..AV.z.." "..OrderType.." "..Ang.r.." "..Ang.p.." "..Ang.y.." "..1)
+					end
+				end
+			end
+		else
+			for _,i in ipairs(Computer.UnitsSelected) do
+				if i && i:IsValid() then
+					LocalPlayer():ConCommand("IssueRTSOrder "..i:EntIndex().." "..Vec.x.." "..Vec.y.." "..Vec.z.." "..OrderType.." "..Ang.r.." "..Ang.p.." "..Ang.y.." "..0)
+				end
+			end
 		end
 	end
+	--print(UCount)
 end
 
 function SBEPBMView( ply, origin, angles, fov ) 
@@ -292,5 +391,15 @@ function SBEPBMView( ply, origin, angles, fov )
 	
 	return GAMEMODE:CalcView(ply,origin,angles,fov)
 end 
-   
 hook.Add("CalcView", "SBEPBMView", SBEPBMView)  
+--[[
+function PlayerPress( ply, bind ) -- Thanks to Catdaemon and Creec for this bit :)
+	if string.find(bind, "invnext") then
+		ply.BCZScroll = math.Clamp(ply.BCZScroll - 10,-100,100) or 0
+	end
+	if string.find(bind, "invprev") then
+		ply.BCZScroll = math.Clamp(ply.BCZScroll + 10,-100,100) or 0
+	end
+end
+hook.Add( "PlayerBindPress", "PlayerPress", PlayerPress )
+]]--
