@@ -50,6 +50,7 @@ function TOOL:LeftClick( tr )
 			MPCEnt.Skin = skin
 		end
 		
+		MPCEnt.PasteDelay = false
 		MPCEnt:Think()
 		
 		if MPCEnt.Plat && MPCEnt.Plat:IsValid() then
@@ -135,11 +136,11 @@ function TOOL.BuildCPanel( panel )
 	panel:SetSpacing( 10 )
 	panel:SetName( "SBEP Mobile Platform Controller" )
 	
-	ModelDispLabel = vgui.Create( "DLabel" )
+	local ModelDispLabel = vgui.Create( "DLabel" )
 		ModelDispLabel:SetText("Copied Model:")
 	panel:AddItem( ModelDispLabel )
 	
-	ModelDisp = vgui.Create( "DModelPanel" )
+	local ModelDisp = vgui.Create( "DModelPanel" )
 		ModelDisp:SetSize( 100,200 )
 		ModelDisp:SetModel( "models/SmallBridge/Panels/sbdooriris.mdl" )
 		ModelDisp:SetCamPos( Vector( 100, 100, 100 ) )
@@ -154,7 +155,7 @@ function TOOL.BuildCPanel( panel )
 	end
 	usermessage.Hook("SBEP_MPCTool_Model", SBEP_MPCTool_Model)
 	
-	ModelSelect = vgui.Create( "PropSelect" )
+	local ModelSelect = vgui.Create( "PropSelect" )
 		ModelSelect:SetConVar( "sbep_mpc_model" )
 		ModelSelect.Label:SetText( "Default Models:" )
 		for m,n in pairs( MST ) do
