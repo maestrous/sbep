@@ -112,9 +112,18 @@ function ENT:Initialize()
 	self.ST.CP = 1 --Current Part
 	self.ST.CF = 1 --Current Floor
 	
+	self.CFT = {} --Call Floor Table (for queuing)
+	self.IsHolding = false
+	self.TAD = 0 -- Timer Delay
+	self.TAST = CurTime() -- Timer Start Time
+	self.THD = 0 -- Timer Delay
+	self.THST = CurTime() -- Timer Start Time
+	
 	self.ST.Usable = self.Usable
 	self.ST.Large  = self.Large
 	self.ST.Skin   = self.Skin
+	
+	self.Index = tostring( self:EntIndex() )
 	
 	self.INC = -60.45 --Increment
 	self.TO = -60.45 --Target Offset
@@ -190,7 +199,7 @@ function ENT:UpdatePart( PartNum , DT )
 	P.PD.IsHub   = P.PD.LTC == "H"
 	P.PD.IsDH    = string.Right( P.PD.LT , 2) == "dh"
 	P.PD.Inv     = P.PD.Roll ~= 0
-	P.PD.Usable  = self.Usable and !P.PD.IsShaft
+	P.PD.Usable  = self.Usable && !P.PD.IsShaft
 	
 	if DT.MFT then
 		P.PD.IsMultiFloor = true
@@ -218,7 +227,7 @@ function ENT:UpdatePart( PartNum , DT )
 		end
 	else
 		P.PD.HO = 0
-		if P.PD.Inv and P.PD.IsDH then
+		if P.PD.Inv && P.PD.IsDH then
 			P.PD.HO = 130.2
 		end
 	end
@@ -258,16 +267,91 @@ function ENT:RefreshPart( PartNum )
 
 end
 
+function ENT:AddArriveDelay( delay )
+
+	self.TAST = CurTime() --Timer Arrive Start Time
+	if delay > self.TAD then
+		self.TAD = delay
+	end
+
+end
+
+function ENT:AddHoldDelay( delay )
+
+	self.THST = CurTime() --Timer Hold Start Time
+	if delay > self.THD then
+		self.THD = delay
+	end
+	self.IsHolding = true
+
+end
+
 function ENT:Think()
 
-	if !self.Activated then return end
+	if !self.Activated then 
+		self.Entity:NextThink( CurTime() + 0.1 )
+		return true
+	end
+
+	self.Entity:NextThink( CurTime() + 0.01 )
+	
+	if !self.printcount then
+		self.printcount = 0
+	elseif self.printcount > 100 then
+		PrintTable( self.CFT )
+		print( tostring( self.ATL ).."\n".."------------" )
+		self.printcount = 0
+	end
+	self.printcount = self.printcount + 1
+	
+	if self.CFT[1] then
+		self.ST.FN = self.CFT[1]
+		self.TO = self.ST.FT[self.CFT[1]]
+	end
+
+	self.ATL = ( math.Round(self.INC) == math.Round( self.TO ) )
+
+	if self.ATL ~= self.OldATL then
+		if self.ST.UseDoors then
+			self:CheckDoorStatus()
+		end
+		if self.ATL then
+			self:AddArriveDelay( 4 )
+		else	
+			self:AddHoldDelay( 2 )
+		end
+	end
+	self.OldATL = self.ATL
+	
+	if self.IsHolding ~= self.OIH && self.ST.UseDoors then
+		self:CheckDoorStatus()
+	end
+	self.OIH = self.IsHolding
+	
+	if self.TAD > 0 && CurTime() > ( self.TAST + self.TAD ) && #self.CFT > 1 then
+		table.remove( self.CFT , 1 ) 
+		self.TAD = 0
+	end
+	
+	if self.THD > 0 && CurTime() < ( self.THST + self.THD ) then
+		WireLib.TriggerOutput( self , "Holding" , 1 )
+		return true
+	elseif self.THD > 0 && CurTime() > ( self.THST + self.THD ) then
+		self.THD = 0
+		if self.IsHolding then
+			self:AddHoldDelay( 2 )
+		end
+		self.IsHolding = false
+		WireLib.TriggerOutput( self , "Holding" , 0 )
+	end
+
+	if self.ATL then return true end
 	
 	self.INC = self.INC + math.Clamp( ( self.TO - self.INC) , -0.6 , 0.6 )
-	self.AtTargetLocation = ( math.Round(self.INC) == math.Round( self.TO ) )
 	
 	local endloop = false
 	for k,v in ipairs( self.ST.FT ) do
-		if endloop or ( k == #self.ST.FT ) then break end
+		if endloop || ( k == #self.ST.FT ) then break end
 		if math.abs(self.INC) < math.abs( ( v + self.ST.FT[k + 1] ) / 2 ) then
 			self.ST.CF = k
 			endloop = true
@@ -286,20 +370,11 @@ function ENT:Think()
 	else
 		self.Direction = "DOWN"
 	end
-
+	
 	if self.ST.UseHatches then
 		self:CheckHatchStatus()
 	end
 	
-	if self.ST.UseDoors then
-		if self.AtTargetLocation ~= self.OldATL then
-			self:CheckDoorStatus()
-		end
-		self.OldATL = self.AtTargetLocation
-	end
-	
-	self.Entity:NextThink( CurTime() + 0.01 )
-
 	return true
 end
 
@@ -332,9 +407,9 @@ function ENT:PhysicsSimulate( phys, deltatime )
 end
 
 function ENT:CheckHatchStatus()
-	if 	!self.ST.UseHatches 		or
-		!self.Activated 		or
-		self.AtTargetLocation 	or
+	if 	!self.ST.UseHatches 		||
+		!self.Activated 		||
+		self.ATL 	||
 		!self.HT then return end
 
 	for k,v in ipairs( self.HT ) do
@@ -355,15 +430,15 @@ function ENT:CheckHatchStatus()
 end
 
 function ENT:CheckDoorStatus()
-	if  !self.ST.UseDoors		or
-		!self.Activated		or
+	if  !self.ST.UseDoors	||
+		!self.Activated		||
 		!self.FDT	then return end
-		
-	if self.AtTargetLocation then
+
+	if self.ATL then
 		for k,v in ipairs( self.FDT[ self.ST.FN ] ) do
 			v.OpenTrigger = true
 		end
-	else
+	elseif !self.IsHolding then
 		for k,v in ipairs( self.FDT ) do
 			for m,n in ipairs( v ) do
 				n.OpenTrigger = false
@@ -476,6 +551,8 @@ function ENT:FinishSystem()
 	
 	self:MakeWire()
 	
+	self:AddCallFloorNum( 1 )
+	
 	self.Activated = true
 
 end
@@ -486,7 +563,7 @@ function ENT:CreateHatches()
 	local HI = 0
 	for k,v in ipairs(self.PT) do
 		if !(k == #self.PT) then
-			if not (v.PD.IsShaft and self.PT[k + 1].PD.IsShaft) then
+			if not (v.PD.IsShaft && self.PT[k + 1].PD.IsShaft) then
 				HI = HI + 1
 				self.HT[HI] = ents.Create( "sbep_base_door" )
 				local NH = self.HT[HI]
@@ -588,18 +665,18 @@ function ENT:WeldSystem() --Welds and nocollides the system once completed.
 	if self.ST.PC > 1 then
 
 		for k,v in ipairs( self.PT ) do
-			if ValidEntity( v ) and ValidEntity(self.PT[k + 1]) then
+			if ValidEntity( v ) && ValidEntity(self.PT[k + 1]) then
 				constraint.Weld( v , self.PT[k + 1] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity( v ) and ValidEntity(self.PT[k + 2]) and (k/2 == math.floor(k/2)) then
+			if ValidEntity( v ) && ValidEntity(self.PT[k + 2]) && (k/2 == math.floor(k/2)) then
 				constraint.Weld( v , self.PT[k + 2] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity( v ) and ValidEntity(self) then
+			if ValidEntity( v ) && ValidEntity(self) then
 				constraint.NoCollide( v , self , 0 , 0 )
 			end
 		end
 
-		if ValidEntity(self.PT[1]) and ValidEntity(self.PT[self.ST.PC]) then
+		if ValidEntity(self.PT[1]) && ValidEntity(self.PT[self.ST.PC]) then
 			constraint.Weld( self.PT[1] , self.PT[self.ST.PC] , 0 , 0 , 0 , true )
 		end
 	end
@@ -609,7 +686,7 @@ function ENT:CalcPanelModel( PartNum )
 
 	local P = self.PT[ PartNum ]
 	
-	if P.PD.LTC == "R" and P.PD.Inv then
+	if P.PD.LTC == "R" && P.PD.Inv then
 		P.PD.AT = table.Copy( {0,1,1,0} )
 	end
 	
@@ -650,7 +727,7 @@ function ENT:CalcPanelModel( PartNum )
 		if self.ST.MAT[1] == self.ST.MAT[3] then
 			self:SetModel( DMT[3] )
 			self.ST.AYO = (self.ST.MAT[2] * 90)
-		elseif self.ST.MAT[1] == self.ST.MAT[2] or self.ST.MAT[2] == self.ST.MAT[3] then
+		elseif self.ST.MAT[1] == self.ST.MAT[2] || self.ST.MAT[2] == self.ST.MAT[3] then
 			self:SetModel( DMT[4] )
 			if self.ST.MAT[1] == 1 then
 				self.ST.AYO =  (self.ST.MAT[2] * -90) % 360
@@ -669,30 +746,35 @@ function ENT:MakeWire() --Adds the appropriate wire inputs.
 	for k,v in ipairs( self.ST.FT ) do
 		table.insert( self.SBEP_WireInputsTable , ( "Floor "..tostring(k) ) )
 	end
+	table.insert( self.SBEP_WireInputsTable , ( "Hold" ) )
 	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEP_WireInputsTable)
 	
-	self.Outputs = WireLib.CreateOutputs(self.Entity,{"Floor"})
+	self.Outputs = WireLib.CreateOutputs(self.Entity,{"Floor","Holding"})
 end
 
 function ENT:TriggerInput(k,v)
 
 	if k == "FloorNum" then
-		self.ST.FN = v
-		self.TO = self.ST.FT[self.ST.FN]
+		self:AddCallFloorNum( v )
 	end
 	
 	for i = 1, self.ST.FC do
-		if k == ("Floor "..tostring(i)) and v == 1 then
-			self.ST.FN = i
-			self.TO = self.ST.FT[self.ST.FN]
+		if k == ("Floor "..tostring(i)) && v > 0 then
+			self:AddCallFloorNum( i )
 		end
+	end
+	
+	if k == "Hold" && v > 0 then
+		self:AddHoldDelay( 4 )
 	end
 end
 
-function ENT:SetCallFloorNum( num )
+function ENT:AddCallFloorNum( num )
 
-	self.ST.FN = num
-	self.TO = self.ST.FT[self.ST.FN]
+	for k,v in ipairs( self.CFT ) do
+		if v == num then return end
+	end
+	table.insert( self.CFT , num )
 
 end
 
@@ -790,9 +872,9 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	end
 	
 	self:PasteRefreshSystem()
-	self:SetCallFloorNum( self.ST.FN )
+	self:AddCallFloorNum( self.ST.FN )
 	
-	if(Ent.EntityMods and Ent.EntityMods.SBEPLiftSysDupeInfo.WireData) then
+	if(Ent.EntityMods && Ent.EntityMods.SBEPLiftSysDupeInfo.WireData) then
 		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLiftSysDupeInfo.WireData, function(id) return CreatedEntities[id] end)
 	end
 
