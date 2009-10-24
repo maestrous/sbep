@@ -38,12 +38,12 @@ function ENT:TriggerInput(k,v)
 	
 	if self.PD.SBEPLiftWireInputs then
 		for m,n in ipairs( self.PD.SBEPLiftWireInputs ) do
-			if k == n and v == 1 then
+			if k == n && v == 1 then
 				self.Controller:SetCallFloorNum( self.PD.FN[m] )
 			end
 		end
 	else
-		if k == "Call" and v == 1 then
+		if k == "Call" && v == 1 then
 			self.Controller:SetCallFloorNum( self.PD.FN )
 		end
 	end
@@ -52,8 +52,8 @@ end
 
 function ENT:Use()
 
-	if !self.PD.MultiFloor and self.PD.Usable and ValidEntity( self.Controller ) then
-		self.Controller:SetCallFloorNum( self.PD.FN )
+	if !self.PD.MultiFloor && self.PD.Usable && self.Controller && self.Controller:IsValid() then
+		self.Controller:AddCallFloorNum( self.PD.FN )
 	end
 
 end
@@ -71,7 +71,7 @@ duplicator.RegisterEntityModifier( "SBEPElevHousingDupeInfo" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
-	if(Ent.EntityMods and Ent.EntityMods.SBEPElevHousingDupeInfo.WireData) then
+	if(Ent.EntityMods && Ent.EntityMods.SBEPElevHousingDupeInfo.WireData) then
 		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPElevHousingDupeInfo.WireData, function(id) return CreatedEntities[id] end)
 	end
 
