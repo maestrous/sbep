@@ -72,7 +72,7 @@ function TOOL:Reload(trace)
 	self.LEnt = nil
 end
 
-function TOOL.BuildCPanel( CPanel )
+function TOOL.BuildCPanel( panel )
 
 	panel:SetSpacing( 10 )
 	panel:SetName( "SBEP Gyro-Pod" )

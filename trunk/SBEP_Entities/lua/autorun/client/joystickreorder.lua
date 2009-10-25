@@ -1,12 +1,12 @@
 local a = joystick
-if not type(a) == "table" then
+if !a || !type(a) == "table" then
 	return
 end
-a = tonumber(a.binaryversion)
-if not a then
+b = tonumber(a.binaryversion)
+if !b then
 	return
 end
-if a > 1.1 then
+if b > 1.1 then
 	return
 end
 

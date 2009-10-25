@@ -9,30 +9,47 @@ if CLIENT then
 	language.Add( "Tool_sbep_mpc_0"		, "Left click to spawn an MPC. Right click to copy the model of whatever you're looking at. Press Reload to replace the target prop with an MPC." )
 	language.Add( "undone_SBEP MPC"		, "Undone SBEP MPC"				)
 	
-	local function SBEPMPCModelToolError( ply, cmd, args )
-		GAMEMODE:AddNotify( args[1] , 1 , 4 )
+	local function SBEPMPCModelToolNotify( um )
+		GAMEMODE:AddNotify( um:ReadString() , um:ReadFloat() , 4 )
 	end
-	concommand.Add( "SBEPMPCTool_ModelError_cl" , SBEPMPCModelToolError )
-	
-	local function SBEPMPCModelToolConfirm( ply, cmd, args )
-		GAMEMODE:AddNotify( args[1] , 0 , 4 )
-	end
-	concommand.Add( "SBEPMPCTool_ModelConfirm_cl" , SBEPMPCModelToolConfirm )
+	usermessage.Hook( "SBEPMPCTool_ModelNotify_cl" , SBEPMPCModelToolNotify )
 end
 
 TOOL.ClientConVar[ "model" ] = "models/SmallBridge/Panels/sbdooriris.mdl"
 TOOL.ClientConVar[ "skin"  ] = 0
 
-local MST = { "models/SmallBridge/Elevators,Small/sbselevp0.mdl" ,
+local MST1 = { "models/SmallBridge/Elevators,Small/sbselevp0.mdl" ,
 			  "models/SmallBridge/Panels/sbdooriris.mdl" 		 ,
 			  "models/props_phx/construct/metal_plate2x2.mdl" 	 ,
 			  "models/props_phx/construct/metal_plate1x2.mdl" 	 ,
 			  "models/props_junk/TrashDumpster02b.mdl"	}
-	
+local MST = {}
+
+for k,v in ipairs( MST1 ) do
+	if util.IsValidModel( v ) then
+		table.insert( MST , v )
+	end
+end
+
+if SERVER then
+	function TOOL:CheckBadModel( model )
+		if !util.IsValidModel( model ) then
+			umsg.Start( "SBEPMPCTool_ModelNotify_cl" , RecipientFilter():AddPlayer( self:GetOwner() ) )
+				umsg.String( "Invalid Model" )
+				umsg.Float( 1 )
+			umsg.End()
+			return true
+		else
+			return false
+		end
+	end
+end
 
 function TOOL:LeftClick( tr )
 
 	local model = self:GetClientInfo( "model" )
+	if self:CheckBadModel( model ) then return true end
+	
 	local skin  = tonumber(self:GetClientNumber( "skin" ))
 	local pos   = tr.HitPos
 	local ply   = self:GetOwner()
@@ -75,15 +92,15 @@ function TOOL:RightClick( tr )
 	local skin	  = tr.Entity:GetSkin()
 	local vec	  = tr.Entity:OBBMaxs()
 	
-	if !util.IsValidModel( PlModel ) then
-		RunConsoleCommand( "SBEPMPCTool_ModelError_cl" , "Invalid Model" )
-		return
-	end
+	if self:CheckBadModel( PlModel ) then return true end
 	
 	RunConsoleCommand( "sbep_mpc_model" , PlModel )
 	RunConsoleCommand( "sbep_mpc_skin"  , skin    )
 	
-	RunConsoleCommand( "SBEPMPCTool_ModelConfirm_cl" , "Copied Model!" )
+	umsg.Start( "SBEPMPCTool_ModelNotify_cl" , RecipientFilter():AddPlayer( self:GetOwner() ) )
+			umsg.String( "Copied Model!" )
+			umsg.Float( 0 )
+		umsg.End()
 
 	umsg.Start("SBEP_MPCTool_Model", RecipientFilter():AddPlayer( self:GetOwner() ) )
 	    umsg.String( PlModel )
@@ -100,6 +117,8 @@ function TOOL:Reload( tr )
 	if !tr.Hit || !tr.Entity || !tr.Entity:IsValid() then return end
 
 	local model = tr.Entity:GetModel()
+	if self:CheckBadModel( model ) then return end
+	
 	local skin  = tr.Entity:GetSkin()
 	local pos   = tr.Entity:GetPos()
 	local ang   = tr.Entity:GetAngles()
