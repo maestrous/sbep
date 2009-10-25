@@ -115,6 +115,12 @@ function ENT:CreateFighterParts( PartTable )
 					ent:Activate()
 					ent.Fighter = self.Entity
 	        end
+	        
+	        if part.drive then self.MainDrive = ent end
+	        if type(part.gravity) != nil then ent:GetPhysicsObject():EnableGravity(part.gravity) end
+	        print(type(part.colour))
+	        if type(part.colour) != nil then ent:SetColor(part.colour) end
+	        
 	        if ent then table.insert(self.CreatedParts, ent) end
 	end
 	
@@ -124,7 +130,7 @@ function ENT:CreateFighterParts( PartTable )
 
 	for part=1, #self.CreatedParts do
 		for otherpart = part+1, #self.CreatedParts do
-			constraint.Weld(self.CreatedParts[part], self.CreatedParts[otherpart])
+			constraint.Weld(self.CreatedParts[part], self.CreatedParts[otherpart], 0, 0, 0, true )
 		end
 	end
 end
@@ -133,8 +139,9 @@ hook.Add("PlayerLeaveVehicle", "SBEP_FighterExitPoint", function(pl, veh)
         local ftr = veh.Fighter
         if ftr then
                 local ep = ftr.ExitPoint
-                if ep then
-                        pl:SetPos(ftr:LocalToWorld(ep))
+                local pod = ftr.pod
+                if ep && pod && pod:IsValid() then
+                        pl:SetPos(pod:LocalToWorld(ep))
                 end
         end
 end)
@@ -159,7 +166,7 @@ local function GetJNum(self,sVal, nMax, nMin)
 end
 
 function ENT:Think()
-	if self.Pod and self.Pod:IsValid() then
+	if self.Pod and self.Pod:IsValid() and self.MainDrive and self.MainDrive:IsValid() then
 		self.CPL = self.Pod:GetPassenger()
 		if (self.CPL && self.CPL:IsValid()) then
 			---------------------------------------- Pilot tracing ----------------------------------------
@@ -290,11 +297,11 @@ function ENT:Think()
 				if !self.LTog then
 					if self.Launchy then
 						self.Launchy = false
-						self.Pod:StopSound( "k_lab.ambient_powergenerators" )
+						self.MainDrive:StopSound( "k_lab.ambient_powergenerators" )
 					else
 						self.Launchy = true
-						self.Pod:EmitSound( "k_lab.ambient_powergenerators" )
-						self.Pod:EmitSound( "ambient/machines/thumper_startup1.wav" )
+						self.MainDrive:EmitSound( "k_lab.ambient_powergenerators" )
+						self.MainDrive:EmitSound( "ambient/machines/thumper_startup1.wav" )
 					end
 				end
 				self.LTog = true
@@ -405,7 +412,7 @@ function ENT:Think()
 			end
 			
 			if (self.Launchy) then
-				local PodAng = self.Pod:LocalToWorldAngles(Angle(0,0,0))
+				local PodAng = self.MainDrive:LocalToWorldAngles(Angle(0,0,0))
 				local pitch = self.PMult or 1
 				pitch = pitch * self.Pitch
 				local yaw = self.YMult or 1
@@ -414,12 +421,12 @@ function ENT:Think()
 				roll = roll * self.Roll
 				if (self.EMount) then
 					local physi = self.Entity:GetPhysicsObject()
-					physi:SetVelocity( (physi:GetVelocity() * self.DragRate) + ((self.Pod:GetRight() * self.Speed) + (self.Pod:GetUp() * self.VSpeed) + (self.Pod:GetForward() * -self.HSpeed)) )
+					physi:SetVelocity( (physi:GetVelocity() * self.DragRate) + ((self.MainDrive:GetRight() * self.Speed) + (self.MainDrive:GetUp() * self.VSpeed) + (self.MainDrive:GetForward() * -self.HSpeed)) )
 					physi:AddAngleVelocity((physi:GetAngleVelocity() * -self.DragRate) + Angle(roll,pitch,yaw))
 					physi:EnableGravity(false)
-					self.Pod:GetPhysicsObject():EnableGravity(false)
+					self.MainDrive:GetPhysicsObject():EnableGravity(false)
 				end
-				local physi = self.Pod:GetPhysicsObject()
+				local physi = self.MainDrive:GetPhysicsObject()
 				physi:SetVelocity( (physi:GetVelocity() * self.DragRate) + ((PodAng:Forward() * self.Speed) + (PodAng:Up() * self.VSpeed) + (PodAng:Right() * self.HSpeed)) )
 				physi:AddAngleVelocity((physi:GetAngleVelocity() * -self.DragRate) + Angle(roll,pitch,yaw))
 				physi:EnableGravity(false)
@@ -431,9 +438,9 @@ function ENT:Think()
 				if (self.EMount) then
 					local physi = self.Entity:GetPhysicsObject()
 					physi:EnableGravity(true)
-					self.Pod:GetPhysicsObject():EnableGravity(true)
+					self.MainDrive:GetPhysicsObject():EnableGravity(true)
 				else
-					local physi = self.Pod:GetPhysicsObject()
+					local physi = self.MainDrive:GetPhysicsObject()
 					physi:EnableGravity(true)
 				end
 			end
@@ -472,10 +479,14 @@ function ENT:Touch( ent )
 end
 
 function ENT:OnRemove()
-	if self.Pod && self.Pod:IsValid() then
-		self.Pod:StopSound( "k_lab.ambient_powergenerators" )
-		self.Pod:Remove()
+	for _, part in pairs(self.CreatedParts) do
+		if part && part:IsValid() then
+			part:StopSound( "k_lab.ambient_powergenerators" )
+			part:Remove()
+		end
 	end
+		
+	
 end
 
 function ENT:Use( activator, caller )

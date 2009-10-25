@@ -314,6 +314,9 @@ function ENT:Think()
 		self.Plat.ZCo = self.ZCo
 	end
 	
+	self.Plat:SetLocalPos(Vector(self.XCo,self.YCo,self.ZCo))
+	self.Plat:SetLocalAngles(Angle(self.Pitch,self.Yaw,self.Roll))
+	
 	self.Plat.Duration = self.Duration
 	
 	self.Plat.TPD = self.TPD

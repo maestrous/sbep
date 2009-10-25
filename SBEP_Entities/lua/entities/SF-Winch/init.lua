@@ -111,7 +111,7 @@ function ENT:HPFire()
 		NewShell:Initialize()
 		NewShell:Activate()
 		local NC = constraint.NoCollide(self.Entity, NewShell, 0, 0)
-		--NewShell.PhysObj:SetVelocity(self.Entity:GetForward() * 5000)
+		NewShell.PhysObj:SetVelocity(self.Entity:GetForward() * 5000)
 		NewShell.Active = true
 		NewShell.ATime = 0
 		NewShell:Fire("kill", "", 120)
