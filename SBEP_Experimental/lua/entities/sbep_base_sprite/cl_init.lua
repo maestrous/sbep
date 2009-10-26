@@ -13,7 +13,7 @@ ENT.Mat2 = Material( "cable/blue_elec" )
 
 function ENT:Draw()
 
-	self.Mat = self.MatTab[ self:GetNWString( "SBEPSpriteType" ) ]
+	self.Mat = self.MatTab[ self:GetNWString( "SBEPSpriteType" ) ] or self.MatTab.SWSH
 	
 	render.SetMaterial( self.Mat )
 	render.DrawSprite( self:GetPos() , 30 , 30 , Color(255,255,255,255) )
@@ -22,5 +22,7 @@ function ENT:Draw()
 	render.DrawBeam( self:GetPos() , self:GetPos() + 50 * self:GetForward() , 10 , 0 , 0 , Color(255,255,255,255) )
 	
 	render.DrawBeam( self:GetPos() , self:GetPos() + 50 * self:GetUp() , 10 , 0 , 0 , Color(255,255,255,255) )
+	
+	self:DrawEntityOutline( 0 )
 
 end
