@@ -1,7 +1,5 @@
 include( "shared.lua" ) 
-
 ENT.RenderGroup = RENDERGROUP_OPAQUE
-
 
 function ENT:Draw()
 	
@@ -9,7 +7,7 @@ function ENT:Draw()
 
 end
 
-function ENT:GhostEntity()
+--[[function ENT:GhostEntity()
 
 	if self.Editable then
 			GhostEnt = ents.Create( "prop_physics" )
@@ -19,4 +17,4 @@ function ENT:GhostEntity()
 
 	end
 
-end
+end]]
