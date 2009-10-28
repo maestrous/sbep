@@ -22,7 +22,7 @@ local SMT = {
 if CLIENT then
 	language.Add( "Tool_sbep_lift_designer_name", "SBEP Lift System Designer" 		)
 	language.Add( "Tool_sbep_lift_designer_desc", "Create a lift system." 			)
-	language.Add( "Tool_sbep_lift_designer_0"	, "Left click somewhere to begin." 	)
+	language.Add( "Tool_sbep_lift_designer_0"	, "Left click somewhere to begin, or right click an existing lift shaft to start from there." 	)
 	language.Add( "undone_SBEP Lift System"		, "Undone SBEP Lift System"			)
 end
 
@@ -409,7 +409,7 @@ if CLIENT then
 	 
 		end
 	 
-		hook.Add("CalcView", "SBEP_LiftDesigner_CustomCalcView", SBEP_LiftCalcView)
+		hook.Add("CalcView", "SBEP_LiftDesigner_CalcView", SBEP_LiftCalcView)
 
 end
 
@@ -421,8 +421,6 @@ if SERVER then
 
 	function SBEP_SetLiftPartModel( ply , cmd , args )
 		n = GetConVarNumber( "sbep_lift_designer_activepart" )
-		--[[if n == 1 && ( args[2] == "models/SmallBridge/Elevators,Small/sbselevs.mdl" || 
-						args[2] == "models/SmallBridge/Station Parts/sbhuble.mdl" )	 then return end]]
 		if !LiftSystem_SER.PT[n] then return end
 		
 		LiftSystem_SER.PT[n].PD.model = args[1]
@@ -557,7 +555,11 @@ function TOOL:LeftClick( trace )
 			LiftSystem_SER.Skin = tonumber( skin )
 			
 		LiftSystem_SER.Usable =  tonumber(self:GetClientNumber( "enableuse" )) == 1
-		LiftSystem_SER.Large = tonumber(self:GetClientNumber( "size" )) == 2
+		if tonumber(self:GetClientNumber( "size" )) == 2 then
+			LiftSystem_SER.Size = { "L" , "l" , "Large" }
+		else
+			LiftSystem_SER.Size = { "S" , "s" , "Small" }
+		end
 		
 		LiftSystem_SER:Spawn()
 		LiftSystem_SER.StartPos = startpos + Vector(0,0,65.1)
@@ -580,13 +582,6 @@ function TOOL:LeftClick( trace )
 			LiftSystem_SER.PT[1].PD.Roll  = 0		
 			LiftSystem_SER.PT[1].PD.model = "models/SmallBridge/Elevators,Small/sbselevm.mdl"		
 		LiftSystem_SER:RefreshPart( 1 )
-		
-		--[[
-		umsg.Start("SBEPDisableButtons_cl", RecipientFilter():AddPlayer( ply ) )
-			umsg.Short(1)
-			umsg.Short( LiftSystem_SER.ST.PC )
-		umsg.End()
-		]]
 		
 		RCC( "sbep_lift_designer_model" , "models/SmallBridge/Elevators,Small/sbselevm.mdl" )
 		RCC( "sbep_lift_designer_activepart" , 1 )

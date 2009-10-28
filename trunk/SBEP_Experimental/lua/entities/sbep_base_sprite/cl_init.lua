@@ -2,9 +2,9 @@ include('shared.lua')
 ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 ENT.MatTab = {
 	SWSH = { Material( "sprites/SWSHblue"		) , { 42 , 30 } } ,
-	SWDH = { Material( "sprites/greensquare"	) , { 30 , 30 } } ,
-	DWSH = { Material( "sprites/redsquare"		) , { 30 , 30 } } ,
-	DWDH = { Material( "sprites/yellowsquare"	) , { 30 , 30 } }
+	SWDH = { Material( "sprites/SWDHgreen"		) , { 21 , 30 } } ,
+	DWSH = { Material( "sprites/DWSHred"		) , { 42 , 15 } } ,
+	DWDH = { Material( "sprites/DWDHyellow"		) , { 42 , 30 } }
 			}
 
 ENT.Mat = ENT.MatTab.SWSH
@@ -25,5 +25,11 @@ function ENT:Draw()
 	render.DrawBeam( self:GetPos() , self:GetPos() + 50 * self:GetForward() , 10 , 0 , 0 , Color(255,255,255,255) )
 	
 	render.DrawBeam( self:GetPos() , self:GetPos() + 50 * self:GetUp() , 10 , 0 , 0 , Color(255,255,255,255) )]]
+
+end
+
+function ENT:DrawTranslucent()
+
+	self:Draw()
 
 end
