@@ -13,6 +13,7 @@ if CLIENT then
 	language.Add( "Tool_sbep_part_assembler_name" , "SBEP Part Assembly Tool" 								)
 	language.Add( "Tool_sbep_part_assembler_desc" , "Easily assemble SBEP parts." 							)
 	language.Add( "Tool_sbep_part_assembler_0"	  , "Left click." 											)
+	language.Add( "undone_SBEP Part Assembly"	  , "Undone SBEP Part Assembly"								)
 end
 
 
@@ -24,7 +25,10 @@ function TOOL:LeftClick( trace )
 	if self.ent1 && self.ent1:IsValid() then
 	
 		if self.ent1:GetSpriteType() ~= ent:GetSpriteType() then return end
-	
+		
+		local pos = self.ent1.SEO:GetPos()
+		local ang = self.ent1.SEO:GetAngles()
+		
 		self.ent2 = ent
 		local E1 = self.ent1
 		local E2 = self.ent2
@@ -40,10 +44,30 @@ function TOOL:LeftClick( trace )
 		E1.SEO:SetPos( E1:LocalToWorld( -1 * E1.Offset ) )
 		E1.SEO:SetAngles( E1:LocalToWorldAngles( -1 * E1.Dir ) )
 		
-		constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , true )
+		local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , true )
 		
-		E1:Remove()
-		E2:Remove()
+		local function MoveUndo( Undo, Entity, pos , ang )
+					if Entity:IsValid() then
+						Entity:SetAngles( ang )
+						Entity:SetPos( pos )
+					end
+				end
+		
+		undo.Create( "SBEP Part Assembly" )
+			undo.AddEntity( LiftSystem_SER )
+			undo.AddEntity( weld )
+			undo.SetPlayer( self:GetOwner() )
+			undo.AddFunction( MoveUndo, self.ent1.SEO , pos , ang )
+		undo.Finish()
+		
+		E1.SEO.SPR = nil
+		E2.SEO.SPR = nil
+		
+		for k,v in pairs( self.SPR ) do
+			if v && v:IsValid() then
+				v:Remove()
+			end
+		end
 		
 		self.ent1 = nil
 		self.ent2 = nil

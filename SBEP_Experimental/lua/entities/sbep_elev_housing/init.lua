@@ -29,7 +29,7 @@ end
 
 function ENT:MakeWire()
 	
-	if self.PD.MultiFloor then
+	if self.PD.IsMultiFloor then
 		self.Inputs = Wire_CreateInputs(self.Entity, self.PD.SBEPLiftWireInputs )
 	elseif !self.PD.IsShaft then
 		self.Inputs = Wire_CreateInputs(self.Entity, { "Call" })
@@ -42,12 +42,12 @@ function ENT:TriggerInput(k,v)
 	if self.PD.SBEPLiftWireInputs then
 		for m,n in ipairs( self.PD.SBEPLiftWireInputs ) do
 			if k == n && v == 1 then
-				self.Controller:SetCallFloorNum( self.PD.FN[m] )
+				self.Controller:AddCallFloorNum( self.PD.FN[m] )
 			end
 		end
 	else
 		if k == "Call" && v == 1 then
-			self.Controller:SetCallFloorNum( self.PD.FN )
+			self.Controller:AddCallFloorNum( self.PD.FN )
 		end
 	end
 
@@ -68,7 +68,6 @@ function ENT:UpdatePartData( DT , cont , n )
 	P.PD.IsHub   = P.PD.LTC == "H"
 	P.PD.IsDH    = string.Right( P.PD.LT , 2) == "dh"
 	P.PD.Inv     = P.PD.Roll ~= 0
-	P.PD.Usable  = cont.Usable && !P.PD.IsShaft
 	
 	if DT.MFT then
 		P.PD.IsMultiFloor = true
@@ -80,6 +79,8 @@ function ENT:UpdatePartData( DT , cont , n )
 	else
 		P.PD.IsMultiFloor = false
 	end
+	
+	P.PD.Usable  = cont.Usable && !P.PD.IsShaft && !P.PD.IsMultiFloor
 
 	--Setting up the part height offset values--
 	if n > 1 then
@@ -102,41 +103,28 @@ function ENT:UpdatePartData( DT , cont , n )
 	end
 end
 
-function ENT:RefreshPart( PartNum )
-
-	local n = tonumber( PartNum )
-	local P = self.PT[ n ]
-	
-	local DT = LMT[self.Size[1]][ P.PD.model ]
-	P.PD.model = "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elev"..string.sub( P.PD.model , 43 )
-	
-	P:SetModel( P.PD.model )
-	
-	CheckSkin( self.Entity , P , self.Skin )
-	
-	self.ST.PC = #self.PT
-	
-	P:UpdatePartData( DT , cont )
-	
-	P:SetPos( self.StartPos + Vector(0,0, P.PD.HO ) )
-	P:SetAngles( Angle( 0 , P.PD.Yaw , P.PD.Roll ) )
-
-	for k,v in ipairs( self.PT ) do		
-		if k > n then
-			self:RefreshPart( k )
-		end
+function ENT:RefreshModel( size , special )
+	if !special then
+		local pt = string.sub( self.PD.model , 43 )
+		self.PD.model = "models/SmallBridge/Elevators,"..size[3].."/sb"..size[2].."elev"..pt
 	end
-	
-	return P
+	self:SetModel( self.PD.model )
+end
 
+function ENT:RefreshPos( cont )
+	if cont && cont:IsValid() then
+		self:SetPos( cont:LocalToWorld( Vector(0,0, self.PD.HO + 60.45 ) ) )
+	end
+end
+
+function ENT:RefreshAng()
+	self.Entity:SetAngles( Angle( 0 , self.PD.Yaw , self.PD.Roll ) )
 end
 
 function ENT:Use()
-
-	if !self.PD.MultiFloor && self.PD.Usable && self.Controller && self.Controller:IsValid() then
-		self.Controller:AddCallFloorNum( self.PD.FN )
-	end
-
+	if self.PD.IsMultiFloor || !self.PD.Usable || !self.Controller || !self.Controller:IsValid() then return end
+	
+	self.Controller:AddCallFloorNum( self.PD.FN )
 end
 
 function ENT:PreEntityCopy()
