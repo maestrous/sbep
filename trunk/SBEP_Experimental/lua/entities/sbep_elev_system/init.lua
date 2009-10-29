@@ -167,7 +167,7 @@ function ENT:CreatePart( n )
 	
 	self.PT[ n ] = NP
 	self.ST.PC = #self.PT
-	self:SetNetworkedInt( "SBEP_LiftPartCount" , self.ST.PC )
+	self:SetNWInt( "SBEP_LiftPartCount" , self.ST.PC )
 	
 	NP.Controller = self.Entity
 	NP:Spawn()
@@ -176,15 +176,18 @@ function ENT:CreatePart( n )
 	return NP
 end
 
+local function IsSpecial( model , ent )
+	return ( ( string.Left( LMT[ent.Size[1]][ model ].LT , 1) == "V" ) || ( string.Left( LMT[ent.Size[1]][ model ].LT , 1) == "H" ) )
+end
+
 function ENT:RefreshPart( PartNum )
 
 	local n = tonumber( PartNum )
 	local P = self.PT[ n ]
 
-	P.PD.model = "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elev"..string.sub( P.PD.model , 43 )
+	P:RefreshModel( self.Size , IsSpecial( P.PD.model , self ) )
+	--P.PD.model = "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elev"..string.sub( P.PD.model , 43 )
 	local DT = LMT[self.Size[1]][ P.PD.model ]
-	
-	P:SetModel( P.PD.model )
 	
 	CheckSkin( P , self.Skin )
 	
@@ -192,12 +195,14 @@ function ENT:RefreshPart( PartNum )
 	
 	P:UpdatePartData( DT , self , n )
 	
-	P:SetPos( self.StartPos + Vector(0,0, P.PD.HO ) )
-	P:SetAngles( Angle( 0 , P.PD.Yaw , P.PD.Roll ) )
+	P:RefreshPos( self.Entity )
+	P:RefreshAng()
+	--P:SetPos( self:LocalToWorld( Vector(0,0, P.PD.HO + 60.45 ) ) )
+	--P:SetAngles( Angle( 0 , P.PD.Yaw , P.PD.Roll ) )
 
 	for k,v in ipairs( self.PT ) do		
 		if k > n then
-			self:RefreshPart( k )
+			P:RefreshPos( self.Entity )
 		end
 	end
 	
@@ -518,7 +523,7 @@ function ENT:CreateHatches()
 					weldpart = 1
 				end
 				NH.HD.HO = v.PD.HO + NH.HD.PO
-				NH:SetPos( self.StartPos + Vector(0,0,NH.HD.HO) )
+				NH:SetPos( self:LocalToWorld( Vector(0,0,NH.HD.HO + 60.45 ) ) )
 				constraint.Weld( NH, self.PT[k + weldpart] , 0, 0, 0, true )
 				
 				if self.Skin then
@@ -613,7 +618,7 @@ function ENT:CalcPanelModel( PartNum )
 	local P = self.PT[ PartNum ]
 	
 	if P.PD.LTC == "R" && P.PD.Inv then
-		P.PD.AT = table.Copy( {0,1,1,0} )
+		P.PD.AT = {0,1,1,0}
 	end
 	
 	local function RotateAT( r )
@@ -638,27 +643,32 @@ function ENT:CalcPanelModel( PartNum )
 	self.ST.MATSum = self.ST.MAT[1] + self.ST.MAT[2] + self.ST.MAT[3] + self.ST.MAT[4]
 	
 	DMT = PMT[self.Size[1]]
+	local function SetLiftModel( n )
+		self:SetModel( DMT[ n ] )
+	end
+	local S = self.ST.MATSum
+	local T = self.ST.MAT
 	
 	--Using the model access table to work out the model and rotation of the elevator panel.-----------------
-	if self.ST.MATSum == 4 then
-		self:SetModel( DMT[1] )
+	if S == 4 then
+		SetLiftModel( 1 )
 		self.ST.AYO = 0
-	elseif self.ST.MATSum == 1 then 
-		self:SetModel( DMT[5] )
-		self.ST.AYO = ((self.ST.MAT[4] * 90) + (self.ST.MAT[3] * 180) + (self.ST.MAT[2] * 270) )
-	elseif self.ST.MATSum == 3 then 
-		self:SetModel( DMT[2] )
-		self.ST.AYO = (((self.ST.MAT[1] - 1) * -90) + ((self.ST.MAT[4] - 1) * -180) + ((self.ST.MAT[3] - 1) * -270))
-	elseif self.ST.MATSum == 2 then 
-		if self.ST.MAT[1] == self.ST.MAT[3] then
-			self:SetModel( DMT[3] )
-			self.ST.AYO = (self.ST.MAT[2] * 90)
-		elseif self.ST.MAT[1] == self.ST.MAT[2] || self.ST.MAT[2] == self.ST.MAT[3] then
-			self:SetModel( DMT[4] )
-			if self.ST.MAT[1] == 1 then
-				self.ST.AYO =  (self.ST.MAT[2] * -90) % 360
-			elseif self.ST.MAT[3] == 1 then
-				self.ST.AYO =  ((self.ST.MAT[4] * 90) + (self.ST.MAT[2] * 180)) % 360
+	elseif S == 1 then 
+		SetLiftModel( 5 )
+		self.ST.AYO = ((T[4] * 90) + (T[3] * 180) + (T[2] * 270) )
+	elseif S == 3 then 
+		SetLiftModel( 2 )
+		self.ST.AYO = (((T[1] - 1) * -90) + ((T[4] - 1) * -180) + ((T[3] - 1) * -270))
+	elseif S == 2 then 
+		if T[1] == T[3] then
+			SetLiftModel( 3 )
+			self.ST.AYO = (T[2] * 90)
+		elseif T[1] == T[2] || T[2] == T[3] then
+			SetLiftModel( 4 )
+			if T[1] == 1 then
+				self.ST.AYO =  (T[2] * -90) % 360
+			elseif T[3] == 1 then
+				self.ST.AYO =  ((T[4] * 90) + (T[2] * 180)) % 360
 			end
 		end
 	end

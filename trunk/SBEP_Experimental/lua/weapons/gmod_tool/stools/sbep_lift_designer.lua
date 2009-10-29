@@ -170,7 +170,7 @@ if CLIENT then
 			LDT.BButtons.up:SetImage( "sbep_icons/ArrowUp.vmt" )
 			LDT.BButtons.up.DoClick = function()
 													local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
-													pos = math.Clamp( pos + 1 , 1 , CL.LiftSystem:GetNetworkedInt( "SBEP_LiftPartCount" ) )
+													pos = math.Clamp( pos + 1 , 1 , CL.LiftSystem:GetNWInt( "SBEP_LiftPartCount" ) )
 													RCC( "sbep_lift_designer_activepart" , pos )
 													RCC( "SBEP_LiftGetCamHeight_ser" )
 											end
@@ -181,7 +181,7 @@ if CLIENT then
 			LDT.BButtons.down:SetImage( "sbep_icons/ArrowDown.vmt" )
 			LDT.BButtons.down.DoClick = function()
 													local pos = tonumber( GetConVarNumber( "sbep_lift_designer_activepart" ) )
-													pos = math.Clamp( pos - 1 , 1 , CL.LiftSystem:GetNetworkedInt( "SBEP_LiftPartCount" ) )
+													pos = math.Clamp( pos - 1 , 1 , CL.LiftSystem:GetNWInt( "SBEP_LiftPartCount" ) )
 													RCC( "sbep_lift_designer_activepart" , pos )
 													RCC( "SBEP_LiftGetCamHeight_ser" )
 											end
@@ -319,13 +319,13 @@ if CLIENT then
 			CL.SBEPLDDM.Frame.visible = true
 			CL.SBEPLDDM.Frame:SetVisible( true )
 
-			CL.StartPos 	= um:ReadVector() 
 			CL.LiftSystem 	= um:ReadEntity()
+			CL.StartPos 	= CL.LiftSystem:GetNWVector( "SBEPLiftDesigner_StartPos" )
 			CL.CVOffset 	= Vector(  246 ,  235 ,  143 )
 			CL.CHOffset		= 0
 			CL.PHOffset		= 0
 			
-			CL.PC = CL.LiftSystem:GetNetworkedInt( "SBEP_LiftPartCount" )
+			CL.PC = CL.LiftSystem:GetNWInt( "SBEP_LiftPartCount" )
 		
 			SetBaseViewAngles()
 		end
@@ -372,6 +372,8 @@ if CLIENT then
 			CL.MRAng = Angle( -1 * CL.MVPitch , CL.MVYaw , CL.MVPitch )
 			CL.MRVec:Rotate( CL.MRAng )
 			CL.MVOffset = CL.MVRange * CL.MRVec
+			
+			CL.StartPos 	= CL.LiftSystem:GetNWVector( "SBEPLiftDesigner_StartPos" )
 		end
 		usermessage.Hook("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", ReCalcViewAngles)
 		
@@ -379,10 +381,10 @@ if CLIENT then
 			CL = LocalPlayer()
 		end)
 
-		function SBEPSetStartPos( um )
+		--[[function SBEPSetStartPos( um )
 			CL.StartPos = um:ReadVector()
 		end
-		usermessage.Hook("SBEP_SetStartPosLiftDesignMenu_cl", SBEPSetStartPos)
+		usermessage.Hook("SBEP_SetStartPosLiftDesignMenu_cl", SBEPSetStartPos)]]
 
 		function SBEPSetPHOffset( um )
 			CL.PHOffset = um:ReadFloat()
@@ -392,6 +394,8 @@ if CLIENT then
 		function SBEP_LiftCalcView( ply, origin, angles, fov )
 			
 			if CL.SBEPLDDM && CL.SBEPLDDM.Frame && CL.SBEPLDDM.Frame.visible then
+				ply:GetActiveWeapon():GetViewModelPosition()
+			
 				local view = {}
 					CL.CVOffset.x = CL.CVOffset.x + math.Clamp( CL.MVOffset.x - CL.CVOffset.x , -0.02 * CL.MVOffset.x , 0.02 * CL.MVOffset.x )
 					CL.CVOffset.y = CL.CVOffset.y + math.Clamp( CL.MVOffset.y - CL.CVOffset.y , -0.02 * CL.MVOffset.y , 0.02 * CL.MVOffset.y )
@@ -411,6 +415,14 @@ if CLIENT then
 	 
 		hook.Add("CalcView", "SBEP_LiftDesigner_CalcView", SBEP_LiftCalcView)
 
+		function TOOL:GetViewModelPosition( pos , ang )
+			if self:GetClientNumber( "editing" ) == 1 then
+				return Vector(0, 0, -1000), ang
+			else
+				return pos, ang
+			end
+		end
+		
 end
 
 	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -544,12 +556,12 @@ function TOOL:LeftClick( trace )
 	if Editing == 0 then
 	
 		local startpos = trace.HitPos
-		local spawnoffset = Vector(0,0,4.65)
 		local ply = self:GetOwner()
 		local skin = self:GetClientNumber( "skin" )
 	
 		LiftSystem_SER = ents.Create( "sbep_elev_system" )
-			LiftSystem_SER:SetPos( startpos + spawnoffset)
+			LiftSystem_SER:SetPos( startpos + Vector(0,0,4.65))
+			LiftSystem_SER:SetNWVector( "SBEPLiftDesigner_StartPos" , startpos + Vector(0,0,65.1) )
 			LiftSystem_SER:SetAngles( Angle(0,-90,0) )
 			LiftSystem_SER:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" )
 			LiftSystem_SER.Skin = tonumber( skin )
@@ -562,11 +574,10 @@ function TOOL:LeftClick( trace )
 		end
 		
 		LiftSystem_SER:Spawn()
-		LiftSystem_SER.StartPos = startpos + Vector(0,0,65.1)
 
-		umsg.Start("SBEP_SetStartPosLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
+		--[[umsg.Start("SBEP_SetStartPosLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
 			umsg.Vector( LiftSystem_SER.StartPos )
-		umsg.End()
+		umsg.End()]]
 		
 		local hatchconvar = tonumber(self:GetClientNumber( "doors" ))
 		LiftSystem_SER.ST.UseHatches = hatchconvar == 2
@@ -587,7 +598,7 @@ function TOOL:LeftClick( trace )
 		RCC( "sbep_lift_designer_activepart" , 1 )
 	
 		umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
-			umsg.Vector( LiftSystem_SER.StartPos )
+			--umsg.Vector( LiftSystem_SER.StartPos )
 			umsg.Entity( LiftSystem_SER )
 		umsg.End()
 		
