@@ -6,7 +6,7 @@ local LMT = {}
 LMT.S = {
 		[ "B" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevb.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,0} } ,
 		[ "BE" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevbe.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "BEdh" ] = { model = "models/SmallBridge/Elevators,Small/sbselevbedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , IsDH = true } ,
+		[ "BEdh" ] = { model = "models/SmallBridge/Elevators,Small/sbselevbedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , SD = { IsDH = true } },
 		[ "BEdw" ] = { model = "models/SmallBridge/Elevators,Small/sbselevbedw.mdl" , ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
 		[ "BR" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevbr.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
 		[ "BT" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevbt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
@@ -14,7 +14,7 @@ LMT.S = {
 
 		[ "M" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,0} } ,
 		[ "ME" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "MEdh" ] = { model = "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , IsDH = true } ,
+		[ "MEdh" ] = { model = "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , SD = { IsDH = true } },
 		[ "MEdw" ] = { model = "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" , ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
 		[ "MR" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
 		[ "MT" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
@@ -22,51 +22,53 @@ LMT.S = {
 
 		[ "T" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,0} } ,
 		[ "TE" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevte.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "TEdh" ] = { model = "models/SmallBridge/Elevators,Small/sbselevtedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , IsDH = true } ,
+		[ "TEdh" ] = { model = "models/SmallBridge/Elevators,Small/sbselevtedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , SD = { IsDH = true } },
 		[ "TEdw" ] = { model = "models/SmallBridge/Elevators,Small/sbselevtedw.mdl" , ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
 		[ "TR" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevtr.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
 		[ "TT" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevtt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
 		[ "TX" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevtx.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
 
-		[ "S" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , IsShaft = true } ,
-		[ "S2" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevs2.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , IsShaft = true } ,
+		[ "S" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , SD = { IsShaft = true } },
+		[ "S2" 	 ] = { model = "models/SmallBridge/Elevators,Small/sbselevs2.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , SD = { IsShaft = true } },
 
-		[ "BV" 	 ] = { model = "models/SmallBridge/Station Parts/sbbridgevisorb.mdl", ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , IsVisor = true , IsSpecial = true } ,
-		[ "MV" 	 ] = { model = "models/SmallBridge/Station Parts/sbbridgevisorm.mdl", ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , IsVisor = true , IsSpecial = true } ,
-		[ "TV" 	 ] = { model = "models/SmallBridge/Station Parts/sbbridgevisort.mdl", ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , IsVisor = true , IsSpecial = true } ,
+		[ "BV" 	 ] = { model = "models/SmallBridge/Station Parts/sbbridgevisorb.mdl", ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , SD = { IsVisor = true , IsSpecial = true } },
+		[ "MV" 	 ] = { model = "models/SmallBridge/Station Parts/sbbridgevisorm.mdl", ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , SD = { IsVisor = true , IsSpecial = true } },
+		[ "TV" 	 ] = { model = "models/SmallBridge/Station Parts/sbbridgevisort.mdl", ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , SD = { IsVisor = true , IsSpecial = true } },
 
-		[ "H" 	 ] = { model = "models/SmallBridge/Station Parts/sbhuble.mdl" 		, ZUD = 195.3 	, ZDD = 195.3 	, AT = {0,0,0,0} , IsHub = true , IsSpecial = true , FO = { 0 , 130.2 , 260.4 } }
+		[ "H" 	 ] = { model = "models/SmallBridge/Station Parts/sbhuble.mdl" 		, ZUD = 195.3 	, ZDD = 195.3 	, AT = {0,0,0,0} , SD = { IsHub = true , IsSpecial = true , MFT = { 0 , 130.2 , 260.4 } } }
 			}
 
 LMT.L = {
 		[ "B" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevb.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,1} } ,
 		[ "BE" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevbe.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "BEdh" ] = { model = "models/SmallBridge/Elevators,Large/sblelevbedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , IsDH = true } ,
+		[ "BEdh" ] = { model = "models/SmallBridge/Elevators,Large/sblelevbedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , SD = { IsDH = true } },
 		[ "BR" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevbr.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
 		[ "BT" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevbt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
 		[ "BX" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevbx.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
 
 		[ "M" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevm.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,1} } ,
 		[ "ME" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevme.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "MEdh" ] = { model = "models/SmallBridge/Elevators,Large/sblelevmedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , IsDH = true } ,
+		[ "MEdh" ] = { model = "models/SmallBridge/Elevators,Large/sblelevmedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , SD = { IsDH = true } },
 		[ "MR" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevmr.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
 		[ "MT" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevmt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
 		[ "MX" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevmx.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
 
 		[ "T" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,1} } ,
 		[ "TE" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevte.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "TEdh" ] = { model = "models/SmallBridge/Elevators,Large/sblelevtedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , IsDH = true } ,
+		[ "TEdh" ] = { model = "models/SmallBridge/Elevators,Large/sblelevtedh.mdl" , ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} , SD = { IsDH = true } },
 		[ "TR" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevtr.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
 		[ "TT" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevtt.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
 		[ "TX" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevtx.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
 
-		[ "S" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevs.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , IsShaft = true } ,
-		[ "S2" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevs2.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , IsShaft = true } ,
+		[ "S" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevs.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , SD = { IsShaft = true } },
+		[ "S2" 	 ] = { model = "models/SmallBridge/Elevators,Large/sblelevs2.mdl" 	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} , SD = { IsShaft = true } }
 			}
 
 ENT.WireDebugName = "SBEP Elevator Housing"
 
 function ENT:Initialize()
+
+	self:SetUseType( SIMPLE_USE )
 	
 	self.PD 		= {} --Part Data
 	self.PD.HO		= 0
@@ -92,15 +94,14 @@ function ENT:PhysicsInitialize()
 end
 
 function ENT:MakeWire()
-
 	local wire = {}
-	if self.PD.IsMultiFloor then
+	if self.PD.SD.MFT then
 		self.PD.SBEPLiftWireInputs = {}
-		for k,v in ipairs( self.PD.FO ) do
+		for k,v in ipairs( self.PD.SD.MFT ) do
 			self.PD.SBEPLiftWireInputs[k] = "Call "..tostring( k )
 		end
 		wire = self.PD.SBEPLiftWireInputs
-	elseif !self.PD.IsShaft then
+	elseif !self.PD.SD.IsShaft then
 		wire = { "Call" }
 	end
 	self.Inputs = Wire_CreateInputs(self.Entity, wire )
@@ -108,35 +109,31 @@ function ENT:MakeWire()
 end
 
 function ENT:TriggerInput(k,v)
-	
 	if self.PD.SBEPLiftWireInputs then
 		for m,n in ipairs( self.PD.SBEPLiftWireInputs ) do
 			if k == n && v == 1 then
-				self.Cont:AddCallFloorNum( self.PD.FN[m] )
+				self:CallLift( m )
 			end
 		end
 	elseif k == "Call" && v == 1 then
-		self.Cont:AddCallFloorNum( self.PD.FN )
+		self:CallLift()
 	end
-
 end
 
 function ENT:SetPartType( type )
-
 	if self.PD.T == type then return end
 
 	local data = LMT[ self.Cont.Size[1] ][ type ]
 	if !data then return end
-
-	self.PD = table.Merge( self.PD , data )
-	self.PD.T = type
-	self.PD.TC = string.Left( type , 1)
-	self.PD.TF = string.sub( type , 2)
-	self.PD.AT = table.Copy( self.PD.AT )
-	self.PD.IsMultiFloor = self.PD.MFT && true
-	self.PD.Usable  = self.Cont.Usable && !self.PD.IsShaft && !self.PD.IsMultiFloor
-	
+	self.PD.SD 	= {}
+	self.PD 	= table.Merge( self.PD , data )
+	self.PD.T 	= type
+	self.PD.TC 	= string.Left( type , 1)
+	self.PD.TF 	= string.sub( type , 2)
+	self.PD.AT 	= table.Copy( self.PD.AT )
+	self.PD.Usable  = self.Cont.Usable && !self.PD.SD.IsShaft && !self.PD.SD.MFT
 	self:SetModel( self.PD.model )
+	self:CheckSkin( self.Cont.Skin )
 end
 
 function ENT:GetPartType()
@@ -150,6 +147,10 @@ function ENT:SetPartClass( class )
 	end
 end
 
+function ENT:GetPartClass()
+	return self.PD.TC
+end
+
 function ENT:SetPartForm( form )
 	local t = string.Left( self:GetPartType() , 1 )..form
 	if LMT[ self.Cont.Size[1] ][ t ] then
@@ -157,8 +158,11 @@ function ENT:SetPartForm( form )
 	end
 end
 
-function ENT:UpdateHeightOffsets()
+function ENT:GetPartForm()
+	return self.PD.TF
+end
 
+function ENT:UpdateHeightOffsets()
 	if self.PD.PN > 1 then
 		local P1 = self.Cont.PT[self.PD.PN - 1].PD
 		local P2 = self.PD
@@ -206,10 +210,18 @@ function ENT:CheckSkin( skin )
 	end
 end
 
+function ENT:CallLift( m )
+	if m then
+		self.Cont:AddCallFloorNum( self.PD.FN[m] )
+	else
+		self.Cont:AddCallFloorNum( self.PD.FN    )
+	end
+end
+
 function ENT:Use()
-	if self.PD.IsMultiFloor || !self.PD.Usable || !self.Cont || !self.Cont:IsValid() then return end
+	if self.PD.SD.MFT || !self.PD.Usable || !self.Cont || !self.Cont:IsValid() then return end
 	
-	self.Cont:AddCallFloorNum( self.PD.FN )
+	self:CallLift()
 end
 
 function ENT:PreEntityCopy()

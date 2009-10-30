@@ -15,7 +15,7 @@ local BMT = {
 			}
 
 local SMT = {
-	{ model = "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" , type = "VM"		} ,
+	{ model = "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" , type = "MV"		} ,
 	{ model = "models/SmallBridge/Station Parts/sbhuble.mdl" 		, type = "H"		}
 			}
 
@@ -130,7 +130,7 @@ if CLIENT then
 												end
 		
 		LDT.PButtons.Special.Part[1] = vgui.Create("DImageButton", LDT.SFrame )
-			LDT.PButtons.Special.Part[1]:SetImage( "sbep_icons/VM.vmt" )
+			LDT.PButtons.Special.Part[1]:SetImage( "sbep_icons/MV.vmt" )
 			LDT.PButtons.Special.Part[1]:SetPos( 5 , 5 )
 			LDT.PButtons.Special.Part[1]:SetSize( 75 , 75 )
 			LDT.PButtons.Special.Part[1].DoClick = function()
@@ -440,6 +440,7 @@ if SERVER then
 		
 		RCC( "sbep_lift_designer_type" , type )
 		LiftSystem_SER.PT[n]:SetPartType( type )
+		LiftSystem_SER:RefreshParts( n )
 		
 		RCC( "SBEP_LiftGetCamHeight_ser" )
 	end
@@ -478,8 +479,8 @@ if SERVER then
 		if n == C then
 			LiftSystem_SER.PT[ n ]:SetColor( 255 , 255 , 255 , 180 )
 		else
-			LiftSystem_SER.PT[ n ]:SetColor( 64 , 128 , 255 , 180 )
-			LiftSystem_SER.PT[ C ]:SetColor( 255 , 255 , 255 , 0 )
+			LiftSystem_SER.PT[ n ]:SetColor( 64  , 128 , 255 , 180 )
+			LiftSystem_SER.PT[ C ]:SetColor( 255 , 255 , 255 , 100 )
 		end
 		umsg.Start("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
 			umsg.Vector( LiftSystem_SER.PT[ n ]:OBBMaxs() )
@@ -493,7 +494,6 @@ if SERVER then
 	
 	function SBEP_LiftConstructPart( ply , cmd , args )
 		local type = GetConVarString( "sbep_lift_designer_type" )
-		print( type )
 		local n = tonumber( args[1] )
 		if n == 1 then return end
 		
@@ -520,9 +520,8 @@ if SERVER then
 	function SBEP_LiftDeletePart( ply , cmd , args )
 		local n = GetConVarNumber( "sbep_lift_designer_activepart" )
 		if n == 1 then return end
-		
-		LiftSystem_SER.PT[n]:Remove()
-		table.remove( LiftSystem_SER.PT , n )
+
+		LiftSystem_SER:RemovePartFromTable( n )
 		LiftSystem_SER:RefreshParts( 1 )
 		
 		local C = LiftSystem_SER:GetPartCount()
@@ -534,7 +533,7 @@ if SERVER then
 	concommand.Add( "SBEP_LiftDeletePart_ser" , SBEP_LiftDeletePart )
 	
 	--reset convars to defaults on load
-	for k,v in ipairs( ConVars ) do
+	for k,v in pairs( ConVars ) do
 	RCC( "sbep_lift_designer_"..k , v )
 	end
 end
@@ -557,11 +556,7 @@ function TOOL:LeftClick( trace )
 			LiftSystem_SER.Skin = skin
 			
 		LiftSystem_SER.Usable = GetConVarNumber( "sbep_lift_designer_enableuse" ) == 1
-		if GetConVarNumber( "sbep_lift_designer_size" ) == 2 then
-			LiftSystem_SER.Size = { "L" , "l" , "Large" }
-		else
-			LiftSystem_SER.Size = { "S" , "s" , "Small" }
-		end
+		LiftSystem_SER:SetSystemSize( GetConVarNumber( "sbep_lift_designer_size" ) )
 		
 		LiftSystem_SER:Spawn()
 		
