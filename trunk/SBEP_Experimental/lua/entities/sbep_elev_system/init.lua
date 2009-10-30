@@ -25,17 +25,16 @@ function ENT:Initialize()
 
 	self:SetModel( PMT[self.Size[1]][5] ) 
 
-	self.PT = {} --Part Table
-	self.ST = {} --System Table
+	self.PT  = {} --Part Table
+	self.ST  = {} --System Table
+	self.FT  = {} --Floor Table
+	self.HT  = {} --Hatch Table
+	self.FDT = {} --Door Table
 
-	self.OPTC  = 0 --Old Part Count (See Think())
-	self.ST.FC = 0 --Floor Count
 	self.Activated = false
 	
 	self.ST.MAT = {0,0,0,0} --Model Access Table
-	--self.ST.MAT = table.Copy({0,0,0,0}) --Model Access Table
-	
-	self.ST.FN = 1 --Floor Number
+
 	self.ST.CP = 1 --Current Part
 	self.ST.CF = 1 --Current Floor
 	
@@ -95,18 +94,21 @@ end
 function ENT:AddPartToTable( part , pos )
 	self.PT[ pos ] = part
 	part.PD.PN = pos
+	self:SetNWInt( "SBEP_LiftPartCount" , self:GetPartCount() )
 end
 
 function ENT:RemovePartFromTable( pos )
 	self.PT[ pos ]:Remove()
 	table.remove( self.PT , pos )
+	self:SetNWInt( "SBEP_LiftPartCount" , self:GetPartCount() )
 end
 
-function ENT:RefreshParts( n ) --Refreshes parts from the nth position upwards.
-	for k,V in ipairs( self.PT ) do		
-		if k >= n then
-			V:UpdateHeightOffsets()
-			V:RefreshAng()
+function ENT:RefreshParts( N ) --Refreshes parts from the nth position upwards.
+	for n,P in ipairs( self.PT ) do		
+		if n >= N then
+			P.PD.PN = n
+			P:UpdateHeightOffsets()
+			P:RefreshAng()
 		end
 	end
 end
@@ -130,6 +132,30 @@ function ENT:GetPartCount()
 	return #self.PT
 end
 
+function ENT:GetFloorCount()
+	return #self.FT
+end
+
+function ENT:GetDoorCount()
+	if self.FDT then
+		return #self.FDT
+	end
+end
+
+function ENT:GetHatchCount()
+	if self.HT then
+		return #self.HT
+	end
+end
+
+function ENT:SetSystemSize( size )
+	if size == 2 then
+		self.Size = { "L" , "l" , "Large" , 1 }
+	else
+		self.Size = { "S" , "s" , "Small" , 0 }
+	end
+end
+
 function ENT:CheckSkin()
 	if self:SkinCount() > 5 then
 		self:SetSkin( self.Skin * 2 )
@@ -144,21 +170,10 @@ function ENT:Think()
 		self.Entity:NextThink( CurTime() + 0.05 )
 		return true
 	end
-
 	self.Entity:NextThink( CurTime() + 0.01 )
 	
-	--[[if !self.printcount then
-		self.printcount = 0
-	elseif self.printcount > 100 then
-		PrintTable( self.CFT )
-		print( tostring( self.ATL ).."\n".."------------" )
-		self.printcount = 0
-	end
-	self.printcount = self.printcount + 1]]
-	
 	if self.CFT[1] then
-		self.ST.FN = self.CFT[1]
-		self.TO = self.ST.FT[self.CFT[1]]
+		self.TO = self.FT[self:GetFloorNum()]
 	end
 
 	self.ATL = ( math.Round(self.INC) == math.Round( self.TO ) )
@@ -175,10 +190,10 @@ function ENT:Think()
 	end
 	self.OldATL = self.ATL
 	
-	if self.IsHolding ~= self.OIH && self.ST.UseDoors then
+	if --[[self.IsHolding ~= self.OIH &&]] self.ST.UseDoors then
 		self:CheckDoorStatus()
 	end
-	self.OIH = self.IsHolding
+	--self.OIH = self.IsHolding
 	
 	if self.TAD > 0 && CurTime() > ( self.TAST + self.TAD ) && #self.CFT > 1 then
 		table.remove( self.CFT , 1 ) 
@@ -202,9 +217,9 @@ function ENT:Think()
 	self.INC = self.INC + math.Clamp( ( self.TO - self.INC) , -0.6 , 0.6 )
 	
 	local endloop = false
-	for k,v in ipairs( self.ST.FT ) do
-		if endloop || ( k == #self.ST.FT ) then break end
-		if math.abs(self.INC) < math.abs( ( v + self.ST.FT[k + 1] ) / 2 ) then
+	for k,v in ipairs( self.FT ) do
+		if endloop || ( k == #self.FT ) then break end
+		if math.abs(self.INC) < math.abs( ( v + self.FT[k + 1] ) / 2 ) then
 			self.ST.CF = k
 			endloop = true
 		else
@@ -259,23 +274,23 @@ function ENT:PhysicsSimulate( phys, deltatime )
 end
 
 function ENT:CheckHatchStatus()
-	if 	!self.ST.UseHatches 		||
+	if 	!self.ST.UseHatches 	||
 		!self.Activated 		||
-		self.ATL 	||
+		self.ATL 				||
 		!self.HT then return end
 
-	for k,v in ipairs( self.HT ) do
+	for k,V in ipairs( self.HT ) do
 		if self.Direction == "UP" then
-			if self.INC > ( v.HD.HO + 20 ) then
-				v.OpenTrigger = false
-			elseif self.INC > ( v.HD.HO - 110 ) then
-				v.OpenTrigger = true
+			if self.INC > ( V.HD.HO + 20 ) then
+				V.OpenTrigger = false
+			elseif self.INC > ( V.HD.HO - 110 ) then
+				V.OpenTrigger = true
 			end
 		elseif self.Direction == "DOWN" then
-			if self.INC < ( v.HD.HO - 80 ) then
-				v.OpenTrigger = false
-			elseif self.INC < ( v.HD.HO + 50 ) then
-				v.OpenTrigger = true
+			if self.INC < ( V.HD.HO - 80 ) then
+				V.OpenTrigger = false
+			elseif self.INC < ( V.HD.HO + 50 ) then
+				V.OpenTrigger = true
 			end
 		end
 	end
@@ -287,13 +302,13 @@ function ENT:CheckDoorStatus()
 		!self.FDT	then return end
 
 	if self.ATL then
-		for k,v in ipairs( self.FDT[ self.ST.FN ] ) do
-			v.OpenTrigger = true
+		for k,V in ipairs( self.PT[ self:FloorToPartNum( self:GetFloorNum() ) ].PD.FDT ) do
+			V.OpenTrigger = true
 		end
 	elseif !self.IsHolding then
-		for k,v in ipairs( self.FDT ) do
-			for m,n in ipairs( v ) do
-				n.OpenTrigger = false
+		for k,V in ipairs( self.PT ) do
+			for m,D in ipairs( V.PD.FDT ) do
+				D.OpenTrigger = false
 			end
 		end
 	end
@@ -301,67 +316,59 @@ end
 
 function ENT:FinishSystem()
 
-	self:RefreshParts( 1 )
-
-	self:RemovePartFromTable( self:GetPartCount() )
-	
+	self:RefreshParts( 1 ) --Refreshes all parts
+	self:RemovePartFromTable( self:GetPartCount() ) --Removes the top ghost entity
 	local C = self:GetPartCount()
-	
+
+	local P2 = self.PT[ C ] --Switches the top and bottom parts to have floors/ceilings
+		if P2.PD.Inv then
+			P2:SetPartClass( "B" )
+		else
+			P2:SetPartClass( "T" )
+		end	
 	local P1 = self.PT[ 1 ]
 		if P1.PD.Inv then
 			P1:SetPartClass( "T" )
 		else
 			P1:SetPartClass( "B" )
 		end
-	self:RefreshParts( 1 )
-	
-	local P2 = self.PT[ C ]
-		if P2.PD.Inv then
-			P2:SetPartClass( "B" )
-		else
-			P2:SetPartClass( "T" )
-		end
-	self:RefreshParts( C )
+	self:RefreshParts( 1 ) --Refreshes all parts
 
-	for k,v in ipairs( self.PT ) do
-		v:SetColor( 255 , 255 , 255 , 255 )
-		self:CalcPanelModel( k )
-		v:PhysicsInitialize()
+	for n,P in ipairs( self.PT ) do
+		P:SetColor( 255 , 255 , 255 , 255 ) --Makes sure everything is opaque again
+		self:CalcPanelModel( n ) --Works out what model the lift panel should be
+		P:PhysicsInitialize() --Calls physics for all the parts, which have all had models changed
 	end
-	self:PhysicsInitialize()
+	self:PhysicsInitialize() --Calls physics for self
 	
-	self:CheckSkin()
+	self:CheckSkin() --Sets skin of self
 	
 	self:StartMotionController()
 	
 	self.ST.model = self:GetModel()
 	
-	self:WeldSystem()
+	self:WeldSystem() --Welds and Nocollides the parts appropriately
 	
-	self.ST.FC = 0
-	self.ST.FT = {}
-	for k,v in ipairs( self.PT ) do
-		if !v.PD.IsShaft then
-			v:MakeWire()
-			if v.PD.IsMultiFloor then
-				v.PD.FN = {}
-				for m,n in ipairs( v.PD.FO ) do
-					self.ST.FC = self.ST.FC + 1
-					self.ST.FT[self.ST.FC] = v.PD.HO - v.PD.ZDD + n + 4.65
-					v.PD.FN[m] = self.ST.FC
+	for n,P in ipairs( self.PT ) do --Setting up the floors 
+		if !P.PD.SD.IsShaft then
+			P:MakeWire()
+			local C3 = math.Clamp( P.PD.Roll , 0 , 1 )
+			local C4 = math.abs( C3 - 1 )
+			if P.PD.SD.MFT then
+				P.PD.FO = {}
+				P.PD.FN = {}
+				for m,n in ipairs( P.PD.SD.MFT ) do
+					P.PD.FO[m] = P.PD.HO - C3*P.PD.ZUD - C4*P.PD.ZDD + 4.65 + n
+					table.insert( self.FT , P.PD.FO[m] )
+					P.PD.FN[m] = self:GetFloorCount()
 				end
 			else
-				self.ST.FC = self.ST.FC + 1
-				if v.PD.Inv then
-					self.ST.FT[self.ST.FC] = v.PD.HO - v.PD.ZUD + 4.65
-				else
-					self.ST.FT[self.ST.FC] = v.PD.HO - v.PD.ZDD + 4.65
-				end
-				v.PD.FN = self.ST.FC
+				P.PD.FO = P.PD.HO - C3*P.PD.ZUD - C4*P.PD.ZDD + 4.65 --Calculates floor offset, depending on part roll offset
+				table.insert( self.FT , P.PD.FO )
+				P.PD.FN = self:GetFloorCount()
 			end
 		end
 	end
-	self.ST.FC = #self.ST.FT
 	
 	if self.ST.UseHatches then
 		self:CreateHatches()
@@ -377,125 +384,79 @@ function ENT:FinishSystem()
 
 end
 
-function ENT:CreateHatches()
-	
-	self.HT = {}
-	local HI = 0
-	for k,v in ipairs(self.PT) do
-		if !(k == #self.PT) then
-			if not (v.PD.IsShaft && self.PT[k + 1].PD.IsShaft) then
-				HI = HI + 1
-				self.HT[HI] = ents.Create( "sbep_base_door" )
-				local NH = self.HT[HI]
-				NH:Spawn()
-				NH.HD = {} --Hatch Data
-				if self.Size[1] == "L" then
-					NH:SetDoorType( "Door_ElevHatch_L" )
-				else
-					NH:SetDoorType( "Door_ElevHatch" )
-				end
-				NH:SetAngles( v:GetAngles() )
-				
-				local weldpart = 0
-				if self.PT[k + 1].PD.IsShaft then
-					if v.PD.Inv then
-						NH.HD.PO = v.PD.ZDD - 4.65
-					else
-						NH.HD.PO = v.PD.ZUD - 4.65
-					end
-				else
-					if v.PD.Inv then
-						NH.HD.PO = v.PD.ZDD + 4.65
-					else
-						NH.HD.PO = v.PD.ZUD + 4.65
-					end
-					weldpart = 1
-				end
-				NH.HD.HO = v.PD.HO + NH.HD.PO
-				NH:SetPos( self:LocalToWorld( Vector(0,0,NH.HD.HO + 60.45 ) ) )
-				constraint.Weld( NH, self.PT[k + weldpart] , 0, 0, 0, true )
-				
-				if self.Skin then
-					NH:SetSkin( self.Skin )
-				end
+function ENT:CreateHatches()		--Creating Hatches. Each Hatch is paired with the part below it, so the top part has no hatch associated.
+	for k,V in ipairs(self.PT) do
+		local V1 = self.PT[k + 1]
+		if !(k == self:GetPartCount()) && !(V.PD.SD.IsShaft && V1.PD.SD.IsShaft) then
+			local NH = ents.Create( "sbep_base_door" )
+			NH:Spawn()
+			NH.HD = {} 	--Hatch Data
+			NH:SetDoorType( "Door_ElevHatch_"..self.Size[1] )
+			NH:SetAngles( V:GetAngles() )
+			
+			local C3 = math.Clamp( V.PD.Roll , 0 , 1 )
+			local C4 = math.abs( C3 - 1 )
+				local S = 1
+				if V1.PD.SD.IsShaft then S = -1 end
+			NH.HD.PO = C3*V.PD.ZDD + C4*V.PD.ZUD + S*4.65	--Offset from paired part
+			NH.HD.HO = V.PD.HO + NH.HD.PO					--Offset from system origin
+			NH:SetPos( V:LocalToWorld( Vector(0,0,NH.HD.PO) ) )
+			constraint.Weld( NH, self.PT[k + math.Clamp( S,0,1 )] , 0, 0, 0, true )
+			NH:SetSkin( self.Skin )
 
-				NH.OpenTrigger = false
-				self:DeleteOnRemove(NH)
-			end
+			NH.OpenTrigger = false
+			self:DeleteOnRemove(NH)
+			table.insert( self.HT , NH )
 		end
 	end
-	self.ST.HC = #self.HT
 end
 
-function ENT:CreateDoors()
+local DoorTypes = {
+	S = { "Door_Anim3"	, "Door_Anim3dh"	} ,
+	L = { "Door_DW"		, "Door_DWDH"		}
+				}
 
-	self.FDT = {}
-	local FDI = 0
-	for k,v in ipairs( self.PT ) do
-		if !v.PD.IsShaft then
-			FDI = FDI + 1
-			self.FDT[ FDI ] = {}
-			local inc = 0
-			for m,n in ipairs( v.PD.AT ) do
+function ENT:CreateDoors()
+	for k,V in ipairs( self.PT ) do
+		V.PD.FDT = {}
+		if !V.PD.SD.IsShaft then
+			for m,n in ipairs( V.PD.AT ) do
 				if n == 1 then
-					inc = inc + 1
-					self.FDT[ FDI ][ inc ] = ents.Create( "sbep_base_door" )
-					local vec = Vector(-60.45,0,0)
-					
-					if self.Size[1] == "L" then
-						if v.PD.IsDH then
-							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_DWDH" )
-						else
-							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_DW" )
-						end
-						vec = Vector(-176.7,0,0)
-					else
-						if v.PD.IsDH then
-							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_Anim3dh" )
-						else
-							self.FDT[ FDI ][ inc ]:SetDoorType( "Door_Anim3" )
-						end
-					end
-					
-					vec:Rotate( Angle(0, (-90) * m ,0) )
-					self.FDT[ FDI ][ inc ]:SetPos( v:GetPos() + vec )
-					self.FDT[ FDI ][ inc ]:SetAngles( Angle( 0 , 90 * m , 0 ) )
-					self.FDT[ FDI ][ inc ]:Spawn()
-					self.FDT[ FDI ][ inc ]:Activate()
-					
-					constraint.Weld( self.FDT[ FDI ][ inc ] , v , 0 , 0 , 0 , true )
-					self.FDT[ FDI ][ inc ]:GetPhysicsObject():EnableMotion( true )
-					
-					if self.Skin then
-						self.FDT[ FDI ][ inc ]:SetSkin( self.Skin )
-					end
-					
-					self:DeleteOnRemove( self.FDT[ FDI ][ inc ] )
+					local ND = ents.Create( "sbep_base_door" )
+						local vec = Vector(-60.45 - self.Size[4]*116.25,0,0)
+							vec:Rotate( Angle(0, (-90) * m ,0) )
+						local d = 1
+						if V.PD.SD.IsDH then d = 2 end
+						ND:SetDoorType( DoorTypes[ self.Size[1] ][ d ] )
+						ND:SetPos( V:GetPos() + vec )
+						ND:SetAngles( Angle( 0 , 90 * m , 0 ) )
+					ND:Spawn()
+					self:DeleteOnRemove( ND )
+					V:DeleteOnRemove( ND )
+					ND:SetSkin( self.Skin )
+					constraint.Weld( ND , V , 0 , 0 , 0 , true )
+					ND:GetPhysicsObject():EnableMotion( true )
+					table.insert( V.PD.FDT , ND )
 				end
 			end
 		end
 	end
-	self.ST.FDC = #self.FDT
-	self.DoorTrig = true
-
 end
 
 function ENT:WeldSystem() --Welds and nocollides the system once completed.
 	local C = self:GetPartCount()
 	if C > 1 then
-
-		for k,v in ipairs( self.PT ) do
-			if ValidEntity( v ) && ValidEntity(self.PT[k + 1]) then
-				constraint.Weld( v , self.PT[k + 1] , 0 , 0 , 0 , true )
+		for k,V in ipairs( self.PT ) do
+			if ValidEntity( V ) && ValidEntity(self.PT[k + 1]) then
+				constraint.Weld( V , self.PT[k + 1] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity( v ) && ValidEntity(self.PT[k + 2]) && (k/2 == math.floor(k/2)) then
-				constraint.Weld( v , self.PT[k + 2] , 0 , 0 , 0 , true )
+			if ValidEntity( V ) && ValidEntity(self.PT[k + 2]) && (k/2 == math.floor(k/2)) then
+				constraint.Weld( V , self.PT[k + 2] , 0 , 0 , 0 , true )
 			end
-			if ValidEntity( v ) && ValidEntity(self) then
-				constraint.NoCollide( v , self , 0 , 0 )
+			if ValidEntity( V ) && ValidEntity(self) then
+				constraint.NoCollide( V , self , 0 , 0 )
 			end
 		end
-
 		if ValidEntity(self.PT[1]) && ValidEntity(self.PT[ C ]) then
 			constraint.Weld( self.PT[1] , self.PT[ C ] , 0 , 0 , 0 , true )
 		end
@@ -568,7 +529,7 @@ end
 function ENT:MakeWire() --Adds the appropriate wire inputs.
 	self.SBEP_WireInputsTable = {}
 	self.SBEP_WireInputsTable[1] = "FloorNum"
-	for k,v in ipairs( self.ST.FT ) do
+	for k,v in ipairs( self.FT ) do
 		table.insert( self.SBEP_WireInputsTable , ( "Floor "..tostring(k) ) )
 	end
 	table.insert( self.SBEP_WireInputsTable , ( "Hold" ) )
@@ -583,7 +544,7 @@ function ENT:TriggerInput(k,v)
 		self:AddCallFloorNum( v )
 	end
 	
-	for i = 1, self.ST.FC do
+	for i = 1, self:GetFloorCount() do
 		if k == ("Floor "..tostring(i)) && v > 0 then
 			self:AddCallFloorNum( i )
 		end
@@ -594,13 +555,32 @@ function ENT:TriggerInput(k,v)
 	end
 end
 
-function ENT:AddCallFloorNum( num )
-
+function ENT:AddCallFloorNum( FN )
 	for k,v in ipairs( self.CFT ) do
-		if v == num then return end
+		if v == FN then return end
 	end
-	table.insert( self.CFT , num )
+	table.insert( self.CFT , FN )
+end
 
+function ENT:FloorToPartNum( fn )
+	for n,P in ipairs( self.PT ) do
+		if P.PD.SD.MFT then
+			for k,F in ipairs( P.PD.FN ) do
+				if F == fn then return P.PD.PN end
+			end
+		else
+			if P.PD.FN == fn then return P.PD.PN end
+		end
+	end
+	return nil
+end
+
+function ENT:PartToFloorNum( pn )
+	return self.PT[ pn ].FN
+end
+
+function ENT:GetFloorNum()
+	return self.CFT[1]
 end
 
 function ENT:PasteRefreshSystem()
@@ -692,7 +672,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	end
 	
 	self:PasteRefreshSystem()
-	self:AddCallFloorNum( self.ST.FN )
+	self:AddCallFloorNum( 1 )
 	
 	if(Ent.EntityMods && Ent.EntityMods.SBEPLiftSysDupeInfo.WireData) then
 		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLiftSysDupeInfo.WireData, function(id) return CreatedEntities[id] end)
