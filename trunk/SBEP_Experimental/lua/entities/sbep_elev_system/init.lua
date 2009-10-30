@@ -4,69 +4,6 @@ include( "shared.lua" )
 
 ENT.WireDebugName = "SBEP Elevator System"
 
-local LMT = {}
-LMT.S = {
-		[ "models/SmallBridge/Elevators,Small/sbselevb.mdl" 	]	= { LT = "B"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevbe.mdl" 	]	= { LT = "BE"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevbedh.mdl" 	]	= { LT = "BEdh"	, ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevbedw.mdl" 	]	= { LT = "BEdw"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevbr.mdl" 	]	= { LT = "BR"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevbt.mdl" 	]	= { LT = "BT"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevbx.mdl" 	]	= { LT = "BX"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
-
-		[ "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	]	= { LT = "M"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	]	= { LT = "ME"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	]	= { LT = "MEdh"	, ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	]	= { LT = "MEdw"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	]	= { LT = "MR"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	]	= { LT = "MT"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	]	= { LT = "MX"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
-
-		[ "models/SmallBridge/Elevators,Small/sbselevt.mdl" 	]	= { LT = "T"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevte.mdl" 	]	= { LT = "TE"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevtedh.mdl" 	]	= { LT = "TEdh"	, ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevtedw.mdl" 	]	= { LT = "TEdw"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevtr.mdl" 	]	= { LT = "TR"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevtt.mdl" 	]	= { LT = "TT"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevtx.mdl" 	]	= { LT = "TX"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
-
-		[ "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	]	= { LT = "S"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} } ,
-		[ "models/SmallBridge/Elevators,Small/sbselevs2.mdl" 	]	= { LT = "S2"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} } ,
-
-		[ "models/SmallBridge/Station Parts/sbbridgevisorb.mdl" ]	= { LT = "VB"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} } ,
-		[ "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" ]	= { LT = "VM"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} } ,
-		[ "models/SmallBridge/Station Parts/sbbridgevisort.mdl" ]	= { LT = "VT"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} } ,
-
-		[ "models/SmallBridge/Station Parts/sbhuble.mdl" 		]	= { LT = "H"	, ZUD = 195.3 	, ZDD = 195.3 	, AT = {0,0,0,0} , MFT = { 0 , 130.2 , 260.4 } }
-			}
-
-LMT.L = {
-		[ "models/SmallBridge/Elevators,Large/sblelevb.mdl" 	]	= { LT = "B"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevbe.mdl" 	]	= { LT = "BE"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevbedh.mdl" 	]	= { LT = "BEdh"	, ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevbr.mdl" 	]	= { LT = "BR"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevbt.mdl" 	]	= { LT = "BT"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevbx.mdl" 	]	= { LT = "BX"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
-		
-		[ "models/SmallBridge/Elevators,Large/sblelevm.mdl" 	]	= { LT = "M"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevme.mdl" 	]	= { LT = "ME"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevmedh.mdl" 	]	= { LT = "MEdh"	, ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevmr.mdl" 	]	= { LT = "MR"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevmt.mdl" 	]	= { LT = "MT"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevmx.mdl" 	]	= { LT = "MX"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
-		
-		[ "models/SmallBridge/Elevators,Large/sblelevt.mdl" 	]	= { LT = "T"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevte.mdl" 	]	= { LT = "TE"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevtedh.mdl" 	]	= { LT = "TEdh"	, ZUD = 195.3 	, ZDD =  65.1 	, AT = {0,1,0,1} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevtr.mdl" 	]	= { LT = "TR"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,0,0} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevtt.mdl" 	]	= { LT = "TT"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,0} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevtx.mdl" 	]	= { LT = "TX"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {1,1,1,1} } ,
-		
-		[ "models/SmallBridge/Elevators,Large/sblelevs.mdl" 	]	= { LT = "S"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} } ,
-		[ "models/SmallBridge/Elevators,Large/sblelevs2.mdl" 	]	= { LT = "S2"	, ZUD =  65.1 	, ZDD =  65.1 	, AT = {0,0,0,0} }
-
-			}
-
 local PMT = {}
 PMT.S = {
 		"models/SmallBridge/Elevators,Small/sbselevp0.mdl"	,
@@ -84,23 +21,14 @@ PMT.L = {
 		"models/SmallBridge/Elevators,Large/sblelevp3.mdl"
 			}
 
-local function CheckSkin( ent , skin )
-	if !skin || !ValidEntity( ent ) then return end
-	if ent:SkinCount() > 5 then
-		ent:SetSkin( skin * 2 )
-	else
-		ent:SetSkin( skin )
-	end
-end
-
 function ENT:Initialize()
 
 	self:SetModel( PMT[self.Size[1]][5] ) 
 
 	self.PT = {} --Part Table
 	self.ST = {} --System Table
-	
-	self.ST.PC = 0 --Part Count
+
+	self.OPTC  = 0 --Old Part Count (See Think())
 	self.ST.FC = 0 --Floor Count
 	self.Activated = false
 	
@@ -136,10 +64,8 @@ function ENT:Initialize()
 		self.ShadowParams.maxspeeddamp = 10000-- Maximal linear force/speed before  damping
 		self.ShadowParams.dampfactor = 0.8 -- The percentage it should damp the linear/angular force if it reachs it's max ammount
 		self.ShadowParams.teleportdistance = 100 -- If it's further away than this it'll teleport (Set to 0 to not teleport)
-		
-	--self.ST.ShadowParams = self.ShadowParams
 
-	CheckSkin( self.Entity , self.Skin )
+	self:CheckSkin()
 	
 	self:PhysicsInitialize()
 	
@@ -148,91 +74,74 @@ function ENT:Initialize()
 end
 
 function ENT:PhysicsInitialize()
-
 	self:PhysicsInit( SOLID_VPHYSICS )
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetSolid( SOLID_VPHYSICS )
-		
-		local phys = self:GetPhysicsObject()  	
-		if ValidEntity(phys) then  		
-			phys:Wake() 
-			phys:EnableGravity(false)
-		end
-
+	local phys = self:GetPhysicsObject()  	
+	if ValidEntity(phys) then  		
+		phys:Wake() 
+		phys:EnableGravity(false)
+	end
 end
 
-function ENT:CreatePart( n )
-
+function ENT:CreatePart()
 	local NP = ents.Create( "sbep_elev_housing" )
-	
-	self.PT[ n ] = NP
-	self.ST.PC = #self.PT
-	self:SetNWInt( "SBEP_LiftPartCount" , self.ST.PC )
-	
-	NP.Controller = self.Entity
-	NP:Spawn()
-	self.Entity:DeleteOnRemove( NP )
-	
+		NP.Cont = self.Entity
+		NP:Spawn()
+		self.Entity:DeleteOnRemove( NP )
 	return NP
 end
 
-local function IsSpecial( model , ent )
-	return ( ( string.Left( LMT[ent.Size[1]][ model ].LT , 1) == "V" ) || ( string.Left( LMT[ent.Size[1]][ model ].LT , 1) == "H" ) )
+function ENT:AddPartToTable( part , pos )
+	self.PT[ pos ] = part
+	part.PD.PN = pos
 end
 
-function ENT:RefreshPart( PartNum )
+function ENT:RemovePartFromTable( pos )
+	self.PT[ pos ]:Remove()
+	table.remove( self.PT , pos )
+end
 
-	local n = tonumber( PartNum )
-	local P = self.PT[ n ]
-
-	P:RefreshModel( self.Size , IsSpecial( P.PD.model , self ) )
-	--P.PD.model = "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elev"..string.sub( P.PD.model , 43 )
-	local DT = LMT[self.Size[1]][ P.PD.model ]
-	
-	CheckSkin( P , self.Skin )
-	
-	self.ST.PC = #self.PT
-	
-	P:UpdatePartData( DT , self , n )
-	
-	P:RefreshPos( self.Entity )
-	P:RefreshAng()
-	--P:SetPos( self:LocalToWorld( Vector(0,0, P.PD.HO + 60.45 ) ) )
-	--P:SetAngles( Angle( 0 , P.PD.Yaw , P.PD.Roll ) )
-
-	for k,v in ipairs( self.PT ) do		
-		if k > n then
-			P:RefreshPos( self.Entity )
+function ENT:RefreshParts( n ) --Refreshes parts from the nth position upwards.
+	for k,V in ipairs( self.PT ) do		
+		if k >= n then
+			V:UpdateHeightOffsets()
+			V:RefreshAng()
 		end
 	end
-	
-	return P
-
 end
 
 function ENT:AddArriveDelay( delay )
-
 	self.TAST = CurTime() --Timer Arrive Start Time
 	if delay > self.TAD then
 		self.TAD = delay
 	end
-
 end
 
 function ENT:AddHoldDelay( delay )
-
 	self.THST = CurTime() --Timer Hold Start Time
 	if delay > self.THD then
 		self.THD = delay
 	end
 	self.IsHolding = true
+end
 
+function ENT:GetPartCount()
+	return #self.PT
+end
+
+function ENT:CheckSkin()
+	if self:SkinCount() > 5 then
+		self:SetSkin( self.Skin * 2 )
+	else
+		self:SetSkin( self.Skin )
+	end
 end
 
 function ENT:Think()
 
-	if !self.Activated then 
-		self.Entity:NextThink( CurTime() + 0.1 )
+	if !self.Activated then	
+		self.Entity:NextThink( CurTime() + 0.05 )
 		return true
 	end
 
@@ -326,7 +235,7 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	if !self.Activated then return SIM_NOTHING end
 
 	local Pos1 = self.PT[1]:GetPos()
-	local Pos2 = self.PT[self.ST.PC]:GetPos()
+	local Pos2 = self.PT[self:GetPartCount()]:GetPos()
 	
 	self.ShaftDirectionVector = Pos2 - Pos1
 	self.ShaftDirectionVector:Normalize()
@@ -392,47 +301,27 @@ end
 
 function ENT:FinishSystem()
 
-	for k,v in ipairs( self.PT ) do
-		self:RefreshPart( k )
-	end
+	self:RefreshParts( 1 )
 
-	self.PT[ #self.PT ]:Remove()
-	self.PT[ #self.PT ] = nil
-	self.ST.PC = #self.PT
+	self:RemovePartFromTable( self:GetPartCount() )
+	
+	local C = self:GetPartCount()
 	
 	local P1 = self.PT[ 1 ]
-	
-	if P1.PD.IsVisor then
 		if P1.PD.Inv then
-			P1.PD.model = ( "models/SmallBridge/Station Parts/sbbridgevisort.mdl" )
+			P1:SetPartClass( "T" )
 		else
-			P1.PD.model = ( "models/SmallBridge/Station Parts/sbbridgevisorb.mdl" )
+			P1:SetPartClass( "B" )
 		end
-	else
-		if P1.PD.Inv then
-			P1.PD.model = ( "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elevt"..string.sub( P1.PD.model , 44 ) )
-		else
-			P1.PD.model = ( "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elevb"..string.sub( P1.PD.model , 44 ) )
-		end
-	end
-	self:RefreshPart( 1 )
+	self:RefreshParts( 1 )
 	
-	local P2 = self.PT[ self.ST.PC ]
-	
-	if P2.PD.IsVisor then
+	local P2 = self.PT[ C ]
 		if P2.PD.Inv then
-			P2.PD.model = ( "models/SmallBridge/Station Parts/sbbridgevisorb.mdl" )
+			P2:SetPartClass( "B" )
 		else
-			P2.PD.model = ( "models/SmallBridge/Station Parts/sbbridgevisort.mdl" )
+			P2:SetPartClass( "T" )
 		end
-	else
-		if P2.PD.Inv then
-			P2.PD.model = ( "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elevb"..string.sub( P2.PD.model , 44 ) )
-		else
-			P2.PD.model = ( "models/SmallBridge/Elevators,"..self.Size[3].."/sb"..self.Size[2].."elevt"..string.sub( P2.PD.model , 44 ) )
-		end
-	end
-	self:RefreshPart( self.ST.PC )
+	self:RefreshParts( C )
 
 	for k,v in ipairs( self.PT ) do
 		v:SetColor( 255 , 255 , 255 , 255 )
@@ -441,7 +330,7 @@ function ENT:FinishSystem()
 	end
 	self:PhysicsInitialize()
 	
-	CheckSkin( self.Entity , self.Skin )
+	self:CheckSkin()
 	
 	self:StartMotionController()
 	
@@ -592,8 +481,8 @@ function ENT:CreateDoors()
 end
 
 function ENT:WeldSystem() --Welds and nocollides the system once completed.
-	
-	if self.ST.PC > 1 then
+	local C = self:GetPartCount()
+	if C > 1 then
 
 		for k,v in ipairs( self.PT ) do
 			if ValidEntity( v ) && ValidEntity(self.PT[k + 1]) then
@@ -607,8 +496,8 @@ function ENT:WeldSystem() --Welds and nocollides the system once completed.
 			end
 		end
 
-		if ValidEntity(self.PT[1]) && ValidEntity(self.PT[self.ST.PC]) then
-			constraint.Weld( self.PT[1] , self.PT[self.ST.PC] , 0 , 0 , 0 , true )
+		if ValidEntity(self.PT[1]) && ValidEntity(self.PT[ C ]) then
+			constraint.Weld( self.PT[1] , self.PT[ C ] , 0 , 0 , 0 , true )
 		end
 	end
 end
@@ -617,7 +506,7 @@ function ENT:CalcPanelModel( PartNum )
 
 	local P = self.PT[ PartNum ]
 	
-	if P.PD.LTC == "R" && P.PD.Inv then
+	if P.PD.TC == "R" && P.PD.Inv then
 		P.PD.AT = {0,1,1,0}
 	end
 	
@@ -628,7 +517,7 @@ function ENT:CalcPanelModel( PartNum )
 		end
 	end
 	--Rotating the part access table.----------------
-	if P.PD.LTC ~= "X" then
+	if P.PD.TC ~= "X" then
 		RotateAT( P.PD.Yaw / 90 )
 	end
 	------------------------
@@ -717,8 +606,8 @@ end
 function ENT:PasteRefreshSystem()
 	
 	for n,P in ipairs( self.PT ) do
-		local DT = LMT[self.Size[1]][ P.PD.model ]
-		P:UpdatePartData( DT , self , n )
+		P:SetPartType( P.PD.T , self.Size[1] , self.Entity )
+		P:UpdateHeightOffsets( self.Entity , n )
 		P:MakeWire()
 	end
 	
@@ -778,9 +667,9 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	self.Usable		  = self.ST.Usable
 	
 	self.PT			= {}
-	for i = 1, self.ST.PC do
+	for i = 1, self:GetPartCount() do
 		self.PT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLiftSysDupeInfo.DT[i].Index]
-		self.PT[i].Controller 	= self.Entity
+		self.PT[i].Cont		 	= self.Entity
 		self.PT[i].PD			= Ent.EntityMods.SBEPLiftSysDupeInfo.DT[i].PD
 	end
 	
