@@ -40,8 +40,10 @@ function TOOL:LeftClick( trace )
 		E1.Following = false
 		E1:SetPos( E2:GetPos() )
 		E1:SetAngles( E2:LocalToWorldAngles( Angle(0,180,0) ) )
-
-		E1.SEO:SetPos( E1:LocalToWorld( -1 * E1.Offset ) )
+		
+		local EO = Vector( E1.Offset.x , E1.Offset.y , E1.Offset.z )
+		EO:Rotate( E1.Dir )
+		E1.SEO:SetPos( E1:LocalToWorld( -1 * EO ) )
 		E1.SEO:SetAngles( E1:LocalToWorldAngles( -1 * E1.Dir ) )
 		
 		local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , true )
@@ -88,7 +90,8 @@ function TOOL:Reload( trace )
 
 	self.ent1 = nil
 	self.ent2 = nil
-
+	
+	return true
 end
 
 if SERVER then
@@ -104,7 +107,7 @@ if SERVER then
 		local data = PAD[ model ]
 		if !data then return end
 
-		if ent.SPR && #ent.SPR == #data then return 
+		if ent.SPR --[[&& #ent.SPR == #data]] then return 
 		--[[elseif ent.SPR then
 			for k,v in pairs( ent.SPR ) do
 				if v && v:IsValid() then v:Remove() end
@@ -114,6 +117,7 @@ if SERVER then
 
 		if !ent.SPR then ent.SPR = {} end
 		for k,v in ipairs( data ) do
+			if ent:GetClass() == "sbep_elev_housing" && (v.type == "ESML" || v.type == "ELRG") then break end
 			local sprite = ents.Create( "sbep_base_sprite" )
 			sprite:Spawn()
 
@@ -142,7 +146,7 @@ if SERVER then
 		if self.SPE then
 			for k,v in pairs( self.SPE ) do
 				if v.SPR then
-					v.SPR = {}
+					v.SPR = nil
 				end
 			end
 		end

@@ -75,17 +75,17 @@ function ENT:Initialize()
 	self.PD.Yaw		= 0
 	self.PD.Roll	= 0
 
-	self:PhysicsInitialize()
+	self.Entity:PhysicsInitialize()
 
 end
 
 function ENT:PhysicsInitialize()
 
-	self:PhysicsInit( SOLID_VPHYSICS )
-	self:SetMoveType( MOVETYPE_VPHYSICS )
-	self:SetSolid( SOLID_VPHYSICS )
+	self.Entity:PhysicsInit( SOLID_VPHYSICS )
+	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
+	self.Entity:SetSolid( SOLID_VPHYSICS )
 		
-	local phys = self:GetPhysicsObject()  	
+	local phys = self.Entity:GetPhysicsObject()  	
 	if ValidEntity(phys) then
 		phys:EnableMotion( false )
 		phys:Wake() 
@@ -94,29 +94,27 @@ function ENT:PhysicsInitialize()
 end
 
 function ENT:MakeWire()
-	local wire = {}
 	if self.PD.SD.MFT then
-		self.PD.SBEPLiftWireInputs = {}
+		self.PD.WI = {} --Wire Inputs
 		for k,v in ipairs( self.PD.SD.MFT ) do
-			self.PD.SBEPLiftWireInputs[k] = "Call "..tostring( k )
+			self.PD.WI[k] = "Call "..tostring( k )
 		end
-		wire = self.PD.SBEPLiftWireInputs
 	elseif !self.PD.SD.IsShaft then
-		wire = { "Call" }
+		self.PD.WI = { "Call" }
 	end
-	self.Inputs = Wire_CreateInputs(self.Entity, wire )
+	self.Inputs = Wire_CreateInputs(self.Entity, self.PD.WI )
 	--self.Outputs = WireLib.CreateOutputs(self.Entity,{""})
 end
 
 function ENT:TriggerInput(k,v)
-	if self.PD.SBEPLiftWireInputs then
-		for m,n in ipairs( self.PD.SBEPLiftWireInputs ) do
+	if self.PD.WI then
+		for m,n in ipairs( self.PD.WI ) do
 			if k == n && v == 1 then
-				self:CallLift( m )
+				self.Entity:CallLift( m )
 			end
 		end
 	elseif k == "Call" && v == 1 then
-		self:CallLift()
+		self.Entity:CallLift()
 	end
 end
 
@@ -132,8 +130,8 @@ function ENT:SetPartType( type )
 	self.PD.TF 	= string.sub( type , 2)
 	self.PD.AT 	= table.Copy( self.PD.AT )
 	self.PD.Usable  = self.Cont.Usable && !self.PD.SD.IsShaft && !self.PD.SD.MFT
-	self:SetModel( self.PD.model )
-	self:CheckSkin( self.Cont.Skin )
+	self.Entity:SetModel( self.PD.model )
+	self.Entity:CheckSkin( self.Cont.Skin )
 end
 
 function ENT:GetPartType()
@@ -141,9 +139,9 @@ function ENT:GetPartType()
 end
 
 function ENT:SetPartClass( class )
-	local t = class..string.sub( self:GetPartType() , 2 )
+	local t = class..string.sub( self.Entity:GetPartType() , 2 )
 	if LMT[ self.Cont.Size[1] ][ t ] then
-		self:SetPartType( t )
+		self.Entity:SetPartType( t )
 	end
 end
 
@@ -154,7 +152,7 @@ end
 function ENT:SetPartForm( form )
 	local t = string.Left( self:GetPartType() , 1 )..form
 	if LMT[ self.Cont.Size[1] ][ t ] then
-		self:SetPartType( t )
+		self.Entity:SetPartType( t )
 	end
 end
 
@@ -165,26 +163,23 @@ end
 function ENT:UpdateHeightOffsets()
 	if self.PD.PN > 1 then
 		local P1 = self.Cont.PT[self.PD.PN - 1].PD
+			local C1 = math.Clamp( P1.Roll , 0 , 1 )
+			local C2 = math.abs( C1 - 1 )
 		local P2 = self.PD
-		local C1 = math.Clamp( P1.Roll , 0 , 1 )
-		local C2 = math.abs( C1 - 1 )
-		local C3 = math.Clamp( P2.Roll , 0 , 1 )
-		local C4 = math.abs( C3 - 1 )
-		
+			local C3 = math.Clamp( P2.Roll , 0 , 1 )
+			local C4 = math.abs( C3 - 1 )
 		P2.HO = P1.HO + (C1*P1.ZDD + C2*P1.ZUD) + (C3*P2.ZUD + C4*P2.ZDD)
 	else
 		local P2 = self.PD
-		local C3 = math.Clamp( P2.Roll , 0 , 1 )
-		local C4 = math.abs( C3 - 1 )
-		
+			local C3 = math.Clamp( P2.Roll , 0 , 1 )
+			local C4 = math.abs( C3 - 1 )
 		P2.HO = C3*( P2.ZUD - P2.ZDD )
 	end
-	
-	self:RefreshPos()	
+	self.Entity:RefreshPos()	
 end
 
 function ENT:RefreshPos()
-	self:SetPos( self.Cont:LocalToWorld( Vector(0,0, self.PD.HO + 60.45 ) ) )
+	self.Entity:SetPos( self.Cont:LocalToWorld( Vector(0,0, self.PD.HO + 60.45 ) ) )
 end
 
 function ENT:RefreshAng()
@@ -194,19 +189,19 @@ end
 
 function ENT:RotatePartYaw( yaw )
 	self.PD.Yaw = (self.PD.Yaw + yaw) % 360
-	self:RefreshAng()
+	self.Entity:RefreshAng()
 end
 
 function ENT:RotatePartRoll( roll )
 	self.PD.Roll = (self.PD.Roll + roll) % 360
-	self:RefreshAng()
+	self.Entity:RefreshAng()
 end
 
 function ENT:CheckSkin( skin )
-	if self:SkinCount() > 5 then
-		self:SetSkin( skin * 2 )
+	if self.Entity:SkinCount() > 5 then
+		self.Entity:SetSkin( skin * 2 )
 	else
-		self:SetSkin( skin )
+		self.Entity:SetSkin( skin )
 	end
 end
 
@@ -219,26 +214,25 @@ function ENT:CallLift( m )
 end
 
 function ENT:Use()
-	if self.PD.SD.MFT || !self.PD.Usable || !self.Cont || !self.Cont:IsValid() then return end
-	
-	self:CallLift()
+	if !self.PD.Usable || self.PD.SD.MFT || !self.Cont || !self.Cont:IsValid() then return end
+	self.Entity:CallLift()
 end
 
 function ENT:PreEntityCopy()
 	local dupeInfo = {}
-	
+		dupeInfo.PD		= self.PD
+		dupeInfo.Cont	= self.Cont:EntIndex()
 	if WireAddon then
 		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
 	end
-	
-	duplicator.StoreEntityModifier(self, "SBEPElevHousingDupeInfo", dupeInfo)
+	duplicator.StoreEntityModifier(self, "SBEPLP", dupeInfo)
 end
-duplicator.RegisterEntityModifier( "SBEPElevHousingDupeInfo" , function() end)
+duplicator.RegisterEntityModifier( "SBEPLP" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
-
-	if(Ent.EntityMods && Ent.EntityMods.SBEPElevHousingDupeInfo.WireData) then
-		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPElevHousingDupeInfo.WireData, function(id) return CreatedEntities[id] end)
+	self.PD		= Ent.EntityMods.SBEPLP.PD
+	self.Cont	= CreatedEntities[Ent.EntityMods.SBEPLP.Cont]
+	if(Ent.EntityMods && Ent.EntityMods.SBEPLP.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLP.WireData, function(id) return CreatedEntities[id] end)
 	end
-
 end

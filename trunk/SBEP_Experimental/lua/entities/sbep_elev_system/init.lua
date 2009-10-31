@@ -423,6 +423,7 @@ function ENT:CreateDoors()
 			for m,n in ipairs( V.PD.AT ) do
 				if n == 1 then
 					local ND = ents.Create( "sbep_base_door" )
+					ND:Spawn()
 						local vec = Vector(-60.45 - self.Size[4]*116.25,0,0)
 							vec:Rotate( Angle(0, (-90) * m ,0) )
 						local d = 1
@@ -430,12 +431,11 @@ function ENT:CreateDoors()
 						ND:SetDoorType( DoorTypes[ self.Size[1] ][ d ] )
 						ND:SetPos( V:GetPos() + vec )
 						ND:SetAngles( Angle( 0 , 90 * m , 0 ) )
-					ND:Spawn()
-					self:DeleteOnRemove( ND )
-					V:DeleteOnRemove( ND )
-					ND:SetSkin( self.Skin )
-					constraint.Weld( ND , V , 0 , 0 , 0 , true )
-					ND:GetPhysicsObject():EnableMotion( true )
+						self:DeleteOnRemove( ND )
+						V:DeleteOnRemove( ND )
+						ND:SetSkin( self.Skin )
+						constraint.Weld( ND , V , 0 , 0 , 0 , true )
+						ND:GetPhysicsObject():EnableMotion( true )
 					table.insert( V.PD.FDT , ND )
 				end
 			end
@@ -605,11 +605,9 @@ function ENT:PreEntityCopy()
 	dupeInfo.ST  = self.ST
 	dupeInfo.INC = self.INC
 	
-	dupeInfo.DT = {}
+	dupeInfo.PT = {}
 	for k,v in pairs( self.PT ) do
-		dupeInfo.DT[k] 		 = {}
-		dupeInfo.DT[k].Index = v:EntIndex()
-		dupeInfo.DT[k].PD 	 = v.PD
+		dupeInfo.PT[k] = v:EntIndex()
 	end
 	
 	if self.ST.UseHatches then
@@ -635,29 +633,27 @@ function ENT:PreEntityCopy()
 		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
 	end
 	
-	duplicator.StoreEntityModifier(self, "SBEPLiftSysDupeInfo", dupeInfo)
+	duplicator.StoreEntityModifier(self, "SBEPLS", dupeInfo)
 end
-duplicator.RegisterEntityModifier( "SBEPLiftSysDupeInfo" , function() end)
+duplicator.RegisterEntityModifier( "SBEPLS" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
-	self.ST			= Ent.EntityMods.SBEPLiftSysDupeInfo.ST
+	self.ST			= Ent.EntityMods.SBEPLS.ST
 	
 	self.Size		  = self.ST.Size
 	self.Usable		  = self.ST.Usable
 	
 	self.PT			= {}
 	for i = 1, self:GetPartCount() do
-		self.PT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLiftSysDupeInfo.DT[i].Index]
-		self.PT[i].Cont		 	= self.Entity
-		self.PT[i].PD			= Ent.EntityMods.SBEPLiftSysDupeInfo.DT[i].PD
+		self.PT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLS.DT[i].Index]
 	end
 	
 	if self.ST.UseHatches then
 		self.HT = {}
 		for i = 1, self.ST.HC do
-			self.HT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLiftSysDupeInfo.HDT[i].Index]
-			self.HT[i].HD			= Ent.EntityMods.SBEPLiftSysDupeInfo.HDT[i].HD
+			self.HT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLS.HDT[i].Index]
+			self.HT[i].HD			= Ent.EntityMods.SBEPLS.HDT[i].HD
 		end
 	end
 	
@@ -665,7 +661,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 		self.FDT = {}
 		for i = 1, self.ST.FDC do
 			self.FDT[i] = {}
-			for m,n in pairs( Ent.EntityMods.SBEPLiftSysDupeInfo.FDDT[i] ) do
+			for m,n in pairs( Ent.EntityMods.SBEPLS.FDDT[i] ) do
 				self.FDT[i][m] = CreatedEntities[ n ]
 			end
 		end
@@ -674,8 +670,8 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	self:PasteRefreshSystem()
 	self:AddCallFloorNum( 1 )
 	
-	if(Ent.EntityMods && Ent.EntityMods.SBEPLiftSysDupeInfo.WireData) then
-		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLiftSysDupeInfo.WireData, function(id) return CreatedEntities[id] end)
+	if(Ent.EntityMods && Ent.EntityMods.SBEPLS.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLS.WireData, function(id) return CreatedEntities[id] end)
 	end
 
 end

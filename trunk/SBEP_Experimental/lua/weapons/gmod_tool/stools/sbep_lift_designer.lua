@@ -4,19 +4,19 @@ TOOL.Command		= nil
 TOOL.ConfigName 	= ""
 
 local BMT = {
-	{ model = "models/SmallBridge/Elevators,Small/sbselevm.mdl" 	, type = "M"		} ,
-	{ model = "models/SmallBridge/Elevators,Small/sbselevme.mdl" 	, type = "ME"		} ,
-	{ model = "models/SmallBridge/Elevators,Small/sbselevmedh.mdl" 	, type = "MEdh"	 	} ,
-	{ model = "models/SmallBridge/Elevators,Small/sbselevmedw.mdl" 	, type = "MEdw"	 	} ,
-	{ model = "models/SmallBridge/Elevators,Small/sbselevmr.mdl" 	, type = "MR"		} ,
-	{ model = "models/SmallBridge/Elevators,Small/sbselevmt.mdl" 	, type = "MT"		} ,
-	{ model = "models/SmallBridge/Elevators,Small/sbselevmx.mdl" 	, type = "MX"		} ,
-	{ model = "models/SmallBridge/Elevators,Small/sbselevs.mdl" 	, type = "S"		}
+	{ type = "M"		} ,
+	{ type = "ME"		} ,
+	{ type = "MEdh"	 	} ,
+	{ type = "MEdw"	 	} ,
+	{ type = "MR"		} ,
+	{ type = "MT"		} ,
+	{ type = "MX"		} ,
+	{ type = "S"		}
 			}
 
 local SMT = {
-	{ model = "models/SmallBridge/Station Parts/sbbridgevisorm.mdl" , type = "MV"		} ,
-	{ model = "models/SmallBridge/Station Parts/sbhuble.mdl" 		, type = "H"		}
+	{ type = "MV"		} ,
+	{ type = "H"		}
 			}
 
 if CLIENT then
@@ -28,9 +28,6 @@ end
 
 local ConVars = {
 		editing 		= 0,
-		model			= "models/SmallBridge/Elevators,Small/sbselevm.mdl",
-		yaw				= 0,
-		roll			= 0,
 		activepart		= 1,
 		skin			= 0,
 		enableuse		= 0,
@@ -43,10 +40,10 @@ for k,v in pairs(ConVars) do
 end
 
 local function RCC( com , arg )
-	
 	RunConsoleCommand( com , arg )
-	
 end
+
+local LiftSystem_SER = nil
 
 if CLIENT then
 
@@ -230,8 +227,12 @@ if CLIENT then
 			LDT.CButtons.up:SetPos( 205 , 348 )   
 			LDT.CButtons.up:SetSize( 75 , 35 )   
 			LDT.CButtons.up:SetImage( "sbep_icons/ArrowUp.vmt" )
+			LDT.CButtons.up.Hold = true
+			LDT.CButtons.up.OnMousePressed  = function() LDT.CButtons.up.Pressed = true  end
+			LDT.CButtons.up.OnMouseReleased = function() LDT.CButtons.up.Pressed = false end
 			LDT.CButtons.up.DoClick = function()
-												CL.MVPitch = CL.MVPitch + 2
+												CL.MVPitch = math.Clamp( CL.MVPitch + 0.1 , -89 , 89 )
+												CL.CVPitch = CL.MVPitch
 												ReCalcViewAngles()
 											end
 		
@@ -239,8 +240,12 @@ if CLIENT then
 			LDT.CButtons.down:SetPos( 205 , 468 )   
 			LDT.CButtons.down:SetSize( 75 , 35 )   
 			LDT.CButtons.down:SetImage( "sbep_icons/ArrowDown.vmt" )
+			LDT.CButtons.down.Hold = true
+			LDT.CButtons.down.OnMousePressed  = function() LDT.CButtons.down.Pressed = true  end
+			LDT.CButtons.down.OnMouseReleased = function() LDT.CButtons.down.Pressed = false end
 			LDT.CButtons.down.DoClick = function()
-													CL.MVPitch = CL.MVPitch - 2
+													CL.MVPitch = math.Clamp( CL.MVPitch - 0.1 , -89 , 89 )
+													CL.CVPitch = CL.MVPitch
 													ReCalcViewAngles()
 											end
 		
@@ -248,8 +253,12 @@ if CLIENT then
 			LDT.CButtons.left:SetPos( 165 , 388 )   
 			LDT.CButtons.left:SetSize( 35 , 75 )
 			LDT.CButtons.left:SetImage( "sbep_icons/ArrowLeft.vmt" )
+			LDT.CButtons.left.Hold = true
+			LDT.CButtons.left.OnMousePressed  = function() LDT.CButtons.left.Pressed = true  end
+			LDT.CButtons.left.OnMouseReleased = function() LDT.CButtons.left.Pressed = false end
 			LDT.CButtons.left.DoClick = function()
-													CL.MVYaw = CL.MVYaw - 2
+													CL.MVYaw = CL.MVYaw - 0.1
+													CL.CVYaw = CL.MVYaw
 													ReCalcViewAngles()
 											end
 		
@@ -257,8 +266,12 @@ if CLIENT then
 			LDT.CButtons.right:SetPos( 285 , 388 )   
 			LDT.CButtons.right:SetSize( 35 , 75 )
 			LDT.CButtons.right:SetImage( "sbep_icons/ArrowRight.vmt" )
+			LDT.CButtons.right.Hold = true
+			LDT.CButtons.right.OnMousePressed  = function() LDT.CButtons.right.Pressed = true  end
+			LDT.CButtons.right.OnMouseReleased = function() LDT.CButtons.right.Pressed = false end
 			LDT.CButtons.right.DoClick = function()
-													CL.MVYaw = CL.MVYaw + 2
+													CL.MVYaw = CL.MVYaw + 0.1
+													CL.CVYaw = CL.MVYaw
 													ReCalcViewAngles()
 											end
 
@@ -274,8 +287,12 @@ if CLIENT then
 			LDT.CButtons.Zplus:SetPos( 285 , 348 )   
 			LDT.CButtons.Zplus:SetSize( 35 , 35 )
 			LDT.CButtons.Zplus:SetImage( "sbep_icons/ZoomIn.vmt" )
+			LDT.CButtons.Zplus.Hold = true
+			LDT.CButtons.Zplus.OnMousePressed  = function() LDT.CButtons.Zplus.Pressed = true  end
+			LDT.CButtons.Zplus.OnMouseReleased = function() LDT.CButtons.Zplus.Pressed = false end
 			LDT.CButtons.Zplus.DoClick = function()
-													CL.MVRange = CL.MVRange - 0.1
+													CL.MVRange = CL.MVRange - 0.007
+													CL.CVRange = CL.MVRange
 													ReCalcViewAngles()
 											end
 		
@@ -283,8 +300,12 @@ if CLIENT then
 			LDT.CButtons.Zminus:SetPos( 165 , 348 )   
 			LDT.CButtons.Zminus:SetSize( 35 , 35 )
 			LDT.CButtons.Zminus:SetImage( "sbep_icons/ZoomOut.vmt" )
+			LDT.CButtons.Zminus.Hold = true
+			LDT.CButtons.Zminus.OnMousePressed  = function() LDT.CButtons.Zminus.Pressed = true  end
+			LDT.CButtons.Zminus.OnMouseReleased = function() LDT.CButtons.Zminus.Pressed = false end
 			LDT.CButtons.Zminus.DoClick = function()
-													CL.MVRange = CL.MVRange + 0.1
+													CL.MVRange = CL.MVRange + 0.007
+													CL.CVRange = CL.MVRange
 													ReCalcViewAngles()
 											end
 		
@@ -309,7 +330,7 @@ if CLIENT then
 		return LDT
 	
 	end
-		
+
 		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		//					CLIENT FUNCTIONS
 		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -322,7 +343,12 @@ if CLIENT then
 
 			CL.LiftSystem 	= um:ReadEntity()
 			CL.StartPos 	= CL.LiftSystem:GetNWVector( "SBEPLiftDesigner_StartPos" )
-			CL.CVOffset 	= Vector(  246 ,  235 ,  143 )
+			SetBaseViewAngles()
+			CL.CVYaw   		= CL.MVYaw
+			CL.CVPitch 		= CL.MVPitch
+			CL.CVRange 		= CL.MVRange
+			CL.CBRange 		= 168.15
+			CL.MBRange 		= 168.15
 			CL.CHOffset		= 0
 			CL.PHOffset		= 0
 			
@@ -357,25 +383,17 @@ if CLIENT then
 		usermessage.Hook("SBEPDisableButtons_cl", SBEPDisableButtons)
 		
 		function SetBaseViewAngles()
-				CL.MVYaw = 0
-				CL.MVPitch = 0
-				CL.MVRange = 2.2
-
-				ReCalcViewAngles( nil )
+			CL.MVYaw = 45
+			CL.MVPitch = 20
+			CL.MVRange = 2.35
+			ReCalcViewAngles()
 		end
 
 		function ReCalcViewAngles( um )
 			if um then
-				CL.MBVec = um:ReadVector()
-			else
-				CL.MBVec = CL.MBVec || Vector(  246 ,  235 ,  143 )
+				CL.MBRange = um:ReadFloat()
 			end
-			CL.MRVec = Vector( CL.MBVec.x , CL.MBVec.y , CL.MBVec.z )
-			CL.MRAng = Angle( -1 * CL.MVPitch , CL.MVYaw , CL.MVPitch )
-			CL.MRVec:Rotate( CL.MRAng )
-			CL.MVOffset = CL.MVRange * CL.MRVec
-			
-			CL.StartPos 	= CL.LiftSystem:GetNWVector( "SBEPLiftDesigner_StartPos" )
+			CL.StartPos = CL.LiftSystem:GetNWVector( "SBEPLiftDesigner_StartPos" )
 		end
 		usermessage.Hook("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", ReCalcViewAngles)
 		
@@ -383,48 +401,58 @@ if CLIENT then
 			CL = LocalPlayer()
 		end)
 
-		--[[function SBEPSetStartPos( um )
-			CL.StartPos = um:ReadVector()
-		end
-		usermessage.Hook("SBEP_SetStartPosLiftDesignMenu_cl", SBEPSetStartPos)]]
-
 		function SBEPSetPHOffset( um )
 			CL.PHOffset = um:ReadFloat()
 		end
 		usermessage.Hook("SBEP_SetPHOffsetLiftDesignMenu_cl", SBEPSetPHOffset)
 		
 		function SBEP_LiftCalcView( ply, origin, angles, fov )
-			
 			if CL.SBEPLDDM && CL.SBEPLDDM.Frame && CL.SBEPLDDM.Frame.visible then
-				ply:GetActiveWeapon():GetViewModelPosition()
-			
 				local view = {}
-					CL.CVOffset.x = CL.CVOffset.x + math.Clamp( CL.MVOffset.x - CL.CVOffset.x , -0.02 * CL.MVOffset.x , 0.02 * CL.MVOffset.x )
-					CL.CVOffset.y = CL.CVOffset.y + math.Clamp( CL.MVOffset.y - CL.CVOffset.y , -0.02 * CL.MVOffset.y , 0.02 * CL.MVOffset.y )
-					CL.CVOffset.z = CL.CVOffset.z + math.Clamp( CL.MVOffset.z - CL.CVOffset.z , -0.02 * CL.MVOffset.z , 0.02 * CL.MVOffset.z )
+					CL.CVYaw   	= CL.CVYaw   	+ math.Clamp( CL.MVYaw   	- CL.CVYaw   	, -0.1  , 0.1  	)
+					CL.CVPitch 	= CL.CVPitch 	+ math.Clamp( CL.MVPitch 	- CL.CVPitch 	, -0.1  , 0.1  	)
+					CL.CVRange 	= CL.CVRange 	+ math.Clamp( CL.MVRange 	- CL.CVRange 	, -0.007, 0.007 )
+					CL.CBRange 	= CL.CBRange 	+ math.Clamp( CL.MBRange 	- CL.CBRange 	, -0.5  , 0.5 	)
+					CL.CHOffset = CL.CHOffset 	+ math.Clamp( CL.PHOffset 	- CL.CHOffset 	, -1 	, 1 	)
 					
-					CL.CHOffset = CL.CHOffset + math.Clamp( CL.PHOffset - CL.CHOffset , -2 , 2 )
+					CL.CRVec = Vector( 1 , 0 , 0 )
+						CL.CRAng = Angle( -1 * CL.CVPitch , CL.CVYaw , CL.CVPitch )
+						CL.CRVec:Rotate( CL.CRAng )
+					CL.MVOffset = CL.CVRange * CL.CRVec * CL.CBRange
 
-					view.origin = CL.StartPos + CL.CVOffset + Vector( 0 , 0 , CL.CHOffset )
-					view.angles = (-1 * CL.CVOffset):Angle()
-
+					view.origin = CL.StartPos + CL.MVOffset + Vector( 0 , 0 , CL.CHOffset )
+					view.angles = (-1 * CL.MVOffset):Angle()
 				return view
 			else
 				return GAMEMODE:CalcView(ply,origin,angles,fov)
 			end
-	 
 		end
-	 
 		hook.Add("CalcView", "SBEP_LiftDesigner_CalcView", SBEP_LiftCalcView)
 
 		function TOOL:GetViewModelPosition( pos , ang )
-			if self:GetClientNumber( "editing" ) == 1 then
+			if GetConVarNumber( "sbep_lift_designer_editing" ) == 1 then
 				return Vector(0, 0, -1000), ang
 			else
 				return pos, ang
 			end
 		end
 		
+end
+
+function TOOL:Think()
+	if CLIENT then
+		if CL.SBEPLDDM then
+			for n,B in pairs( CL.SBEPLDDM.CButtons ) do
+				if B.Hold && B.Pressed then
+					B:DoClick()
+				end
+			end
+			--self:NextThink( CurTime() + 0.05 )
+		else
+			--self:NextThink( CurTime() + 0.2 )
+		end
+		--return true
+	end	
 end
 
 	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -483,7 +511,7 @@ if SERVER then
 			LiftSystem_SER.PT[ C ]:SetColor( 255 , 255 , 255 , 100 )
 		end
 		umsg.Start("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
-			umsg.Vector( LiftSystem_SER.PT[ n ]:OBBMaxs() )
+			umsg.Float( LiftSystem_SER.PT[ n ]:OBBMaxs():Length() )
 		umsg.End()
 		umsg.Start("SBEPDisableButtons_cl", RecipientFilter():AddPlayer( ply ) )
 			umsg.Short( n )
@@ -540,20 +568,19 @@ end
 
 function TOOL:LeftClick( trace )
 
-	local Editing = self:GetClientNumber( "editing" )
+	local Editing = GetConVarNumber( "sbep_lift_designer_editing" )
 	
 	if Editing == 0 then
 	
 		local startpos = trace.HitPos
 		local ply = self:GetOwner()
-		local skin = GetConVarNumber( "sbep_lift_designer_skin" )
 	
 		LiftSystem_SER = ents.Create( "sbep_elev_system" )
 			LiftSystem_SER:SetPos( startpos + Vector(0,0,4.65))
 			LiftSystem_SER:SetNWVector( "SBEPLiftDesigner_StartPos" , startpos + Vector(0,0,65.1) )
 			LiftSystem_SER:SetAngles( Angle(0,-90,0) )
 			LiftSystem_SER:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" )
-			LiftSystem_SER.Skin = skin
+			LiftSystem_SER.Skin = GetConVarNumber( "sbep_lift_designer_skin" )
 			
 		LiftSystem_SER.Usable = GetConVarNumber( "sbep_lift_designer_enableuse" ) == 1
 		LiftSystem_SER:SetSystemSize( GetConVarNumber( "sbep_lift_designer_size" ) )
