@@ -23,8 +23,8 @@ function TOOL:LeftClick( trace )
 				SkinInt = 0
 			end
 			
-			local SkinNumber  = self:GetClientNumber( "skin" )
-			local GlassNumber = self:GetClientNumber( "glass" )
+			local SkinNumber  = GetConVarNumber( "sbep_smb_skin_selector_skin" )
+			local GlassNumber = GetConVarNumber( "sbep_smb_skin_selector_glass" )
 			
 			local Skin = 1
 			if SkinInt == 1 then
@@ -69,10 +69,6 @@ function TOOL.BuildCPanel( panel )
 		ModelDisp.Entity:SetSkin( skin )
 	end
 
-	local SkinMenu = vgui.Create("DButton")
-	SkinMenu:SetText( "Skin" )
-	SkinMenu:SetSize( 100, 50 )
-
 	local SkinTable = {
 			"Scrappers"  ,
 			"Advanced"   ,
@@ -81,34 +77,38 @@ function TOOL.BuildCPanel( panel )
 			"Jaanus"
 				}
 
-	SkinMenu.DoClick = function ( btn )
-			local SkinMenuOptions = DermaMenu()
-			for i = 1, #SkinTable do
-				SkinMenuOptions:AddOption( SkinTable[i] , function() 
-															RunConsoleCommand( "sbep_smb_skin_selector_skin", (i - 1) )
-															SBEP_SMBSkinTool_Skin( (i - 1) , GetConVarNumber( "sbep_smb_skin_selector_glass" ) )
-														end )
-			end
-			SkinMenuOptions:Open()
-						end
-	panel:AddItem( SkinMenu )
-	
-	local GlassButton = vgui.Create("DButton")
-	GlassButton:SetText( "Glass" )
-	GlassButton:SetSize( 100, 25 )
+	local SLV = vgui.Create("DListView")
+		SLV:SetSize(100, 101)
+		SLV:SetMultiSelect(false)
+		SLV:AddColumn("Skin")
+		SLV.OnClickLine = function(parent, line, isselected)
+												parent:ClearSelection()
+												line:SetSelected( true )
+												SBEP_SMBSkinTool_Skin( line:GetID() - 1 , GetConVarNumber( "sbep_smb_skin_selector_glass" ) )
+												RunConsoleCommand( "sbep_smb_skin_selector_skin", line:GetID() - 1 )
+										end
+		 
+		for k,v in ipairs( SkinTable ) do
+			SLV:AddLine(v)
+		end
+	panel:AddItem( SLV )
 
 	local GlassTable = { "No Glass" , "Glass" }
 
-	GlassButton.DoClick = function ( btn )
-			local GlassButtonOptions = DermaMenu()
-			for k,v in ipairs( GlassTable ) do
-				GlassButtonOptions:AddOption( v , function() 
-													RunConsoleCommand( "sbep_smb_skin_selector_glass", (k - 1) )
-													SBEP_SMBSkinTool_Skin( GetConVarNumber( "sbep_smb_skin_selector_skin" ) , (k - 1) )
-												end )
-			end
-			GlassButtonOptions:Open()
-						end
-	panel:AddItem( GlassButton )
+	local SiLV = vgui.Create("DListView")
+		SiLV:SetSize(100, 50)
+		SiLV:SetMultiSelect(false)
+		SiLV:AddColumn("Size")
+		SiLV.OnClickLine = function(parent, line, isselected)
+												parent:ClearSelection()
+												line:SetSelected( true )
+												SBEP_SMBSkinTool_Skin( GetConVarNumber( "sbep_smb_skin_selector_skin" ) , line:GetID() - 1 )
+												RunConsoleCommand( "sbep_smb_skin_selector_glass", line:GetID() - 1 )
+										end
+		 
+		for k,v in ipairs( GlassTable ) do
+			SiLV:AddLine(v)
+		end
+	panel:AddItem( SiLV )
 	
  end  
