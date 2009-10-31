@@ -35,7 +35,6 @@ function ENT:Initialize()
 	
 	self.ST.MAT = {0,0,0,0} --Model Access Table
 
-	self.ST.CP = 1 --Current Part
 	self.ST.CF = 1 --Current Floor
 	
 	self.CFT = {} --Call Floor Table (for queuing)
@@ -216,26 +215,26 @@ function ENT:Think()
 	
 	self.INC = self.INC + math.Clamp( ( self.TO - self.INC) , -0.6 , 0.6 )
 	
-	local endloop = false
-	for k,v in ipairs( self.FT ) do
-		if endloop || ( k == #self.FT ) then break end
-		if math.abs(self.INC) < math.abs( ( v + self.FT[k + 1] ) / 2 ) then
-			self.ST.CF = k
-			endloop = true
-		else
-			self.ST.CF = k + 1
+	local D = 100000
+	local F = 0
+	for n,H in ipairs( self.FT ) do
+		local d = math.abs(H - self.INC)
+		if d < D then
+			D = d
+			F = n
 		end
 	end
-	
-	if self.ST.CF ~= self.OldCF then
+
+	if F ~= self.OldCF then
+		self.ST.CF = F
 		WireLib.TriggerOutput( self , "Floor" , self.ST.CF )
 	end
 	self.OldCF = self.ST.CF
 	
 	if self.TO > self.INC then
-		self.Direction = "UP"
+		self.Direction = 1
 	else
-		self.Direction = "DOWN"
+		self.Direction = -1
 	end
 	
 	if self.ST.UseHatches then
@@ -280,13 +279,13 @@ function ENT:CheckHatchStatus()
 		!self.HT then return end
 
 	for k,V in ipairs( self.HT ) do
-		if self.Direction == "UP" then
+		if self.Direction == 1 then
 			if self.INC > ( V.HD.HO + 20 ) then
 				V.OpenTrigger = false
 			elseif self.INC > ( V.HD.HO - 110 ) then
 				V.OpenTrigger = true
 			end
-		elseif self.Direction == "DOWN" then
+		elseif self.Direction == -1 then
 			if self.INC < ( V.HD.HO - 80 ) then
 				V.OpenTrigger = false
 			elseif self.INC < ( V.HD.HO + 50 ) then

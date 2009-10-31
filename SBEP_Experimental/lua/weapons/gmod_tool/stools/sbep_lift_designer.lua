@@ -57,6 +57,7 @@ if CLIENT then
 			LDT.Frame:SetTitle( "SBEP Lift System Designer" )
 			LDT.Frame:SetVisible( false )
 			LDT.Frame:SetDraggable( false )
+			LDT.Frame:SetMouseInputEnabled( true )
 			LDT.Frame:ShowCloseButton( false )
 			LDT.Frame:MakePopup()
 		
@@ -67,6 +68,7 @@ if CLIENT then
 			LDT.SFrame:SetBackgroundBlur( true )
 			LDT.SFrame:SetVisible( false )
 			LDT.SFrame:SetDraggable( false )
+			LDT.SFrame:SetMouseInputEnabled( true )
 			LDT.SFrame:ShowCloseButton( false )
 			LDT.SFrame:MakePopup()
 		
@@ -631,10 +633,6 @@ function TOOL.BuildCPanel(panel)
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	local SkinMenu = vgui.Create("DButton")
-	SkinMenu:SetText( "Skin" )
-	SkinMenu:SetSize( 100, 40 )
-
 	local SkinTable = {
 			"Scrappers"  ,
 			"Advanced"   ,
@@ -642,22 +640,24 @@ function TOOL.BuildCPanel(panel)
 			"MedBridge2" ,
 			"Jaanus"
 				}
-
-	SkinMenu.DoClick = function ( btn )
-			local SkinMenuOptions = DermaMenu()
-			for i = 1, #SkinTable do
-				SkinMenuOptions:AddOption( SkinTable[i] , function() RCC( "sbep_lift_designer_skin", (i - 1) ) end )
-			end
-			SkinMenuOptions:Open()
-						end
-	panel:AddItem( SkinMenu )
+	
+	local SLV = vgui.Create("DListView")
+		SLV:SetSize(100, 101)
+		SLV:SetMultiSelect(false)
+		SLV:AddColumn("Skin")
+		SLV.OnClickLine = function(parent, line, isselected)
+												parent:ClearSelection()
+												line:SetSelected( true )
+												RCC( "sbep_lift_designer_skin", line:GetID() - 1 )
+										end
+		 
+		for k,v in ipairs( SkinTable ) do
+			SLV:AddLine(v)
+		end
+	panel:AddItem( SLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	local DoorMenu = vgui.Create("DButton")
-	DoorMenu:SetText( "Doors" )
-	DoorMenu:SetSize( 100, 40 )
 
 	local DoorTable = {
 			"None"  			,
@@ -665,35 +665,43 @@ function TOOL.BuildCPanel(panel)
 			"Floor Doors"  		
 				}
 
-	DoorMenu.DoClick = function ( btn )
-			local DoorMenuOptions = DermaMenu()
-			for i = 1, #DoorTable do
-				DoorMenuOptions:AddOption( DoorTable[i] , function() RCC( "sbep_lift_designer_doors", i ) end )
-			end
-			DoorMenuOptions:Open()
-						end
-	panel:AddItem( DoorMenu )
+	local DLV = vgui.Create("DListView")
+		DLV:SetSize(100, 67)
+		DLV:SetMultiSelect(false)
+		DLV:AddColumn("Doors and Hatches")
+		DLV.OnClickLine = function(parent, line, isselected)
+												parent:ClearSelection()
+												line:SetSelected( true )
+												RCC( "sbep_lift_designer_doors", line:GetID() )
+										end
+		 
+		for k,v in ipairs( DoorTable ) do
+			DLV:AddLine(v)
+		end
+	panel:AddItem( DLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	local SizeMenu = vgui.Create("DButton")
-	SizeMenu:SetText( "Size" )
-	SizeMenu:SetSize( 100, 40 )
 
 	local SizeTable = {
 				"Small"  	,
 				"Large"   		
 				}
 
-	SizeMenu.DoClick = function ( btn )
-			local SizeMenuOptions = DermaMenu()
-			for i = 1, #SizeTable do
-				SizeMenuOptions:AddOption( SizeTable[i] , function() RCC( "sbep_lift_designer_size", i ) end )
-			end
-			SizeMenuOptions:Open()
-						end
-	panel:AddItem( SizeMenu )
+	local SiLV = vgui.Create("DListView")
+		SiLV:SetSize(100, 50)
+		SiLV:SetMultiSelect(false)
+		SiLV:AddColumn("Size")
+		SiLV.OnClickLine = function(parent, line, isselected)
+												parent:ClearSelection()
+												line:SetSelected( true )
+												RCC( "sbep_lift_designer_size", line:GetID() )
+										end
+		 
+		for k,v in ipairs( SizeTable ) do
+			SiLV:AddLine(v)
+		end
+	panel:AddItem( SiLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
