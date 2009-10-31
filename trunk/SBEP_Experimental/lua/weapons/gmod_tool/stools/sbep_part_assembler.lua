@@ -151,6 +151,9 @@ if SERVER then
 			end
 		end
 		
+		self.ent1 = nil
+		self.ent2 = nil
+		
 		return true
 	end
 end
