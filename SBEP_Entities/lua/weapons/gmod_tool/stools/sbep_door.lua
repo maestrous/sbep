@@ -85,42 +85,27 @@ function TOOL.BuildCPanel( panel )
 
 		panel:SetSpacing( 10 )
 		panel:SetName( "SBEP Door" )
-
-	local SkinMenu = vgui.Create("DButton")
-	SkinMenu:SetText( "Skin" )
-	SkinMenu:SetSize( 100, 20 )
-
-	local SkinTable = {
-			"Scrappers"  ,
-			"Advanced"   ,
-			"SlyBridge"  ,
-			"MedBridge2" ,
-			"Jaanus"
-				}
-
-	SkinMenu.DoClick = function ( btn )
-			local SkinMenuOptions = DermaMenu()
-			for i = 1, #SkinTable do
-				SkinMenuOptions:AddOption( SkinTable[i] , function() RunConsoleCommand( "sbep_door_skin", (i - 1) ) end )
-			end
-			SkinMenuOptions:Open()
-						end
-	panel:AddItem( SkinMenu )
 	
-		local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
-			WireCheckBox:SetText( "Create Wire Inputs" )
-			WireCheckBox:SetConVar( "sbep_door_wire" )
-			WireCheckBox:SetValue( 1 )
-			WireCheckBox:SizeToContents()
-		panel:AddItem( WireCheckBox )
+	local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
+		WireCheckBox:SetText( "Create Wire Inputs" )
+		WireCheckBox:SetConVar( "sbep_door_wire" )
+		WireCheckBox:SetValue( 1 )
+		WireCheckBox:SizeToContents()
+	panel:AddItem( WireCheckBox )
 		
-		local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
-			UseCheckBox:SetText( "Enable Use Key" )
-			UseCheckBox:SetConVar( "sbep_door_enableuse" )
-			UseCheckBox:SetValue( 1 )
-			UseCheckBox:SizeToContents()
-		panel:AddItem( UseCheckBox )
+	local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
+		UseCheckBox:SetText( "Enable Use Key" )
+		UseCheckBox:SetConVar( "sbep_door_enableuse" )
+		UseCheckBox:SetValue( 1 )
+		UseCheckBox:SizeToContents()
+	panel:AddItem( UseCheckBox )
 
+	--[[local MCC = vgui.Create( "SBEPMultiPropSelect" )
+		for k,v in ipairs( CategoryTable ) do
+			MCC:AddMCategory( v.name , v.cat , MST , "sbep_door" )
+		end
+	panel:AddItem( MCC )]]
+		
 	local MCC = {}
 	
 	for k,v in pairs(CategoryTable) do
