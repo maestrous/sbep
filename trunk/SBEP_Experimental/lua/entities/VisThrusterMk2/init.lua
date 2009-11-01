@@ -5,14 +5,14 @@ include( 'shared.lua' )
 
 function ENT:Initialize()
 
-	self.Entity:SetModel( "models/Items/AR2_Grenade.mdl" )
+	self.Entity:SetModel( "models/Slyfo/finfunnel.mdl" )
 	self.Entity:SetName("Thruster")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	self.Entity:SetUseType( 3 )
 	--self.Entity:SetMaterial("models/props_combine/combinethumper002")
-	self.Inputs = Wire_CreateInputs( self.Entity, { "Active", "Skin" } )
+	self.Inputs = Wire_CreateInputs( self.Entity, { "Active", "Size", "Length" } )
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -25,12 +25,13 @@ function ENT:Initialize()
     --self.Entity:SetKeyValue("rendercolor", "0 0 0")
 	self.PhysObj = self.Entity:GetPhysicsObject()
 	self.CAng = self.Entity:GetAngles()
+	self.Entity:SetSize(1)
 	
 	self.NFire = 0
 	self.MCD = 0
 	self.CSpeed = 0
-	self.Skin = 1
-	self.Entity:SetSkin(self.Skin)
+	self.Size = 1
+	self.Length = 1
 end
 
 function ENT:TriggerInput(iname, value)		
@@ -43,20 +44,27 @@ function ENT:TriggerInput(iname, value)
 			self.NBT = CurTime() + 1
 			self.Entity:SetActive(false)
 		end
+	elseif (iname == "Size") then
+		self.Size = math.Clamp(value,0.1,100)
 	
-	elseif (iname == "Skin") then
-		self.Skin = math.Clamp(value,0,5)
-	end	
+	elseif (iname == "Length") then
+		self.Length = math.Clamp(value,0.1,100)
+		
+	end
 end
 
 function ENT:Think()
 	
-	self.Entity:SetSkin(self.Skin)
+	--self.Entity:SetSpeed(math.Clamp(self.CSpeed,0,1000))
 
 	if self:GetParent():IsValid() then
-		self.Entity:SetLocalPos(Vector(0,0,0))
-		self.Entity:SetLocalAngles(Angle(0,0,0))
+		--self.Entity:SetLocalPos(Vector(0,0,0))
+		--self.Entity:SetLocalAngles(Angle(0,0,0))
 	end
+	--self.Size = 1
+	--self.Length = 1
+	self.Entity:SetLength(self.Length)
+	self.Entity:SetSize(self.Size)
 	
 	--self.Entity:NextThink(CurTime() + 0.01)
 	
@@ -69,7 +77,7 @@ function ENT:SpawnFunction( ply, tr )
 	
 	local SpawnPos = tr.HitPos + tr.HitNormal * 16
 	
-	local ent = ents.Create( "VisThruster" )
+	local ent = ents.Create( "VisThrusterMk2" )
 	ent:SetPos( SpawnPos )
 	ent:Spawn()
 	ent:Initialize()
@@ -80,18 +88,10 @@ function ENT:SpawnFunction( ply, tr )
 	
 end
 
-function ENT:Use( ply, caller )
-	if ply:KeyDown( IN_SPEED ) then
-		self.Skin = self.Skin + 1
-		if self.Skin > 5 then
-			self.Skin = 1
-		end
-		print(self.Skin)
+function ENT:Use( activator, caller )
+	if self.Entity:GetActive() then
+		self.Entity:SetActive(false)
 	else
-		if self.Entity:GetActive() then
-			self.Entity:SetActive(false)
-		else
-			self.Entity:SetActive(true)
-		end
+		self.Entity:SetActive(true)
 	end
 end

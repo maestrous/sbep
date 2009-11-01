@@ -17,17 +17,30 @@ function ENT:GetActive()
 	return self.Entity:GetNetworkedBool("ClActive")
 end
 
-function ENT:SetSkin( val )
+function ENT:SetSize( val )
+	if CurTime() > self.NVT then
+		local CVal = self.Entity:GetSize() or 0
+		if val != CVal then
+			self.Entity:SetNetworkedInt("ClSize",val,true)
+			self.NVT = CurTime() + 1
+		end
+	end
+end
+
+function ENT:GetSize()
+	return self.Entity:GetNetworkedInt("ClSize")
+end
+
+function ENT:SetLength( val )
 	if CurTime() > self.NVT then
 		local CVal = self.Entity:GetLength() or 0
 		if val != CVal then
 			self.Entity:SetNetworkedInt("ClLength",val,true)
 			self.NVT = CurTime() + 1
-			print("Setting")
 		end
 	end
 end
 
-function ENT:GetSkin()
+function ENT:GetLength()
 	return self.Entity:GetNetworkedInt("ClLength")
 end
