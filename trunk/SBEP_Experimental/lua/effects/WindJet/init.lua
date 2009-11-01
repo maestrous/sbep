@@ -35,7 +35,7 @@
 		end
 	end
 		
-	MasterPresEmitter:Finish()
+	LocalPlayer().MasterPresEmitter:Finish()
 	
  	self.Entity:SetModel( "models/Combine_Helicopter/helicopter_bomb01.mdl" ) 
  	self.Entity:SetPos( self.vOffset )  
