@@ -148,10 +148,18 @@ function ENT:GetHatchCount()
 end
 
 function ENT:SetSystemSize( size )
-	if size == 2 then
-		self.Size = { "L" , "l" , "Large" , 1 }
+	if type( size ) == "string" then
+		if size == "L" then
+			self.Size = { "L" , "l" , "Large" , 1 }
+		else
+			self.Size = { "S" , "s" , "Small" , 0 }
+		end
 	else
-		self.Size = { "S" , "s" , "Small" , 0 }
+		if size == 2 then
+			self.Size = { "L" , "l" , "Large" , 1 }
+		else
+			self.Size = { "S" , "s" , "Small" , 0 }
+		end
 	end
 end
 
@@ -584,16 +592,7 @@ end
 
 function ENT:PasteRefreshSystem()
 	
-	for n,P in ipairs( self.PT ) do
-		P:SetPartType( P.PD.T , self.Size[1] , self.Entity )
-		P:UpdateHeightOffsets( self.Entity , n )
-		P:MakeWire()
-	end
-	
-	self:SetModel( self.ST.model )
-	self:PhysicsInitialize()
-	self:StartMotionController()
-	self:MakeWire()
+	self:RefreshParts( 1 )
 	self.Activated = true
 
 end

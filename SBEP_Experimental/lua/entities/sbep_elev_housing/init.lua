@@ -66,6 +66,12 @@ LMT.L = {
 
 ENT.WireDebugName = "SBEP Elevator Housing"
 
+for s,M in pairs( LMT ) do
+	for t,D in pairs( M ) do
+		list.Set( "SBEP_LiftHousingModels" , string.lower( D.model ) , { t , s } )
+	end
+end
+
 function ENT:Initialize()
 
 	self:SetUseType( SIMPLE_USE )
