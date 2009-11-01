@@ -79,6 +79,7 @@ function ENT:PhysicsInitialize()
 	if ValidEntity(phys) then  		
 		phys:Wake() 
 		phys:EnableGravity(false)
+		phys:EnableMotion(false)
 	end
 end
 
@@ -91,8 +92,10 @@ function ENT:CreatePart()
 end
 
 function ENT:AddPartToTable( part , pos )
-	self.PT[ pos ] = part
-	part.PD.PN = pos
+	table.insert( self.PT , pos , part )
+	part.PD.PN = pos || self:GetPartCount()
+	local ang = self.Entity:GetAngles()
+	part.PD.Pitch, part.PD.Yaw, part.PD.Roll = ang.p, ang.y, ang.r
 	self:SetNWInt( "SBEP_LiftPartCount" , self:GetPartCount() )
 end
 
@@ -148,18 +151,10 @@ function ENT:GetHatchCount()
 end
 
 function ENT:SetSystemSize( size )
-	if type( size ) == "string" then
-		if size == "L" then
-			self.Size = { "L" , "l" , "Large" , 1 }
-		else
-			self.Size = { "S" , "s" , "Small" , 0 }
-		end
+	if size == "L" || size == 2 then
+		self.Size = { "L" , "l" , "Large" , 1 }
 	else
-		if size == 2 then
-			self.Size = { "L" , "l" , "Large" , 1 }
-		else
-			self.Size = { "S" , "s" , "Small" , 0 }
-		end
+		self.Size = { "S" , "s" , "Small" , 0 }
 	end
 end
 
@@ -355,6 +350,8 @@ function ENT:FinishSystem()
 	self.ST.model = self:GetModel()
 	
 	self:WeldSystem() --Welds and Nocollides the parts appropriately
+	
+	self.Entity:GetPhysicsObject():EnableMotion( true )
 	
 	for n,P in ipairs( self.PT ) do --Setting up the floors 
 		if !P.PD.SD.IsShaft then

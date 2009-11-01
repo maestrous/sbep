@@ -78,6 +78,7 @@ function ENT:Initialize()
 	
 	self.PD 		= {} --Part Data
 	self.PD.HO		= 0
+	self.PD.Pitch	= 0
 	self.PD.Yaw		= 0
 	self.PD.Roll	= 0
 
@@ -189,8 +190,12 @@ function ENT:RefreshPos()
 end
 
 function ENT:RefreshAng()
-	self.Entity:SetAngles( Angle( 0 , self.PD.Yaw , self.PD.Roll ) )
-	self.PD.Inv = self.PD.Roll ~= 0
+	self.Entity:SetAngles( Angle( self.PD.Pitch , self.PD.Yaw , self.PD.Roll ) )
+end
+
+function ENT:RotatePartPitch( pitch )
+	self.PD.Pitch = (self.PD.Pitch + pitch) % 360
+	self.Entity:RefreshAng()
 end
 
 function ENT:RotatePartYaw( yaw )
@@ -200,6 +205,12 @@ end
 
 function ENT:RotatePartRoll( roll )
 	self.PD.Roll = (self.PD.Roll + roll) % 360
+	self.Entity:RefreshAng()
+end
+
+function ENT:Invert()
+	self.PD.Roll = (self.PD.Roll + 180) % 360
+	self.PD.Inv = !self.PD.Inv
 	self.Entity:RefreshAng()
 end
 
