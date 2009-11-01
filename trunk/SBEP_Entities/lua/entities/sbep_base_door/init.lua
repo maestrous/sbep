@@ -238,6 +238,11 @@ function ENT:Think()
 		if self.Entity:GetSkin() != self.Cont.Skin then
 			self.Entity:SetSkin( self.Cont.Skin )
 		end
+		--[[local pos1 = self.Cont:GetPos()
+		local pos2 = self.Entity:GetPos()
+		if (math.abs(pos1.x - pos2.x) > 20) || (math.abs(pos1.y - pos2.y) > 20) || (math.abs(pos1.z - pos2.z) > 20) then
+			self.Entity:SetPos( pos1 )
+		end]]
 	end
 	self.Entity:NextThink( CurTime() + 0.05 )
 	return true
