@@ -7,8 +7,16 @@ local SRT = {
 	SWDH = false ,
 	DWSH = false ,
 	DWDH = false ,
+	
 	ESML = true  ,
 	ELRG = true  ,
+	
+	LRC1 = false ,
+	LRC2 = false ,
+	LRC3 = false ,
+	LRC4 = false ,
+	LRC5 = false ,
+	LRC6 = false
 			}
 
 function ENT:Initialize()
@@ -65,7 +73,7 @@ function ENT:Think()
 end
 
 function ENT:SetSpriteType( type )
-	if !SRT[type] then return false end
+	if SRT[type]==nil then return false end
 	self:SetNWString( "SBEPSpriteType" , type )
 	self.RotMode = SRT[type]
 end

@@ -5,8 +5,16 @@ local MatTab = {
 	SWDH = { Material( "sprites/SWDHgreen"		) , { 21 , 30 } } ,
 	DWSH = { Material( "sprites/DWSHred"		) , { 42 , 15 } } ,
 	DWDH = { Material( "sprites/DWDHyellow"		) , { 42 , 30 } } ,
+	
 	ESML = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
-	ELRG = { Material( "sprites/ELRG"			) , { 35 , 35 } }
+	ELRG = { Material( "sprites/ELRG"			) , { 35 , 35 } } ,
+	
+	LRC1 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
+	LRC2 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
+	LRC3 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
+	LRC4 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
+	LRC5 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
+	LRC6 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
 			}
 
 ENT.Mat = MatTab.SWSH[1]
