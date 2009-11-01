@@ -10,6 +10,23 @@ TOOL.RotMode = false
 
 local PAD = list.Get( "SBEP_PartAssemblyData" )
 
+local SPD = {
+	SWSH = "SWSH" ,
+	SWDH = "SWDH" ,
+	DWSH = "DWSH" ,
+	DWDH = "DWDH" ,
+	
+	ESML = "ESML" ,
+	ELRG = "ELRG" ,
+	
+	LRC1 = "LRC2" ,
+	LRC2 = "LRC1" ,
+	LRC3 = "LRC4" ,
+	LRC4 = "LRC3" ,
+	LRC5 = "LRC6" ,
+	LRC6 = "LRC5"
+			}
+
 if CLIENT then
 	language.Add( "Tool_sbep_part_assembler_name" , "SBEP Part Assembly Tool" 								)
 	language.Add( "Tool_sbep_part_assembler_desc" , "Easily assemble SBEP parts." 							)
@@ -18,7 +35,6 @@ if CLIENT then
 	language.Add( "Tool_sbep_part_assembler_2"	  , "Right-click to rotate, and left click to finish."		)
 	language.Add( "undone_SBEP Part Assembly"	  , "Undone SBEP Part Assembly"								)
 end
-
 
 function TOOL:LeftClick( trace ) 
 
@@ -45,7 +61,7 @@ function TOOL:LeftClick( trace )
 	
 	if self.E1 && self.E1:IsValid() then
 	
-		if self.E1:GetSpriteType() ~= ent:GetSpriteType() then return end
+		if self.E1:GetSpriteType() ~= SPD[ ent:GetSpriteType() ] then return end
 		
 		local pos = self.E1.SEO:GetPos()
 		local ang = self.E1.SEO:GetAngles()
@@ -138,6 +154,7 @@ function TOOL:Reload( trace )
 
 	self.E1 = nil
 	self.E2 = nil
+	self:SetStage(0)
 	
 	return true
 end
