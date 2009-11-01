@@ -62,14 +62,31 @@ function TOOL:LeftClick( trace )
 			undo.AddFunction( MoveUndo, self.ent1.SEO , pos , ang )
 		undo.Finish()
 		
-		E1.SEO.SPR = nil
-		E2.SEO.SPR = nil
+		--E1.SEO.SPR = nil
+		--E2.SEO.SPR = nil
 		
-		for k,v in pairs( self.SPR ) do
-			if v && v:IsValid() then
-				v:Remove()
-			end
-		end
+		--[[if !E1.SEO.SBEPPAD && !E2.SEO.SBEPPAD then
+			E1.SEO.ConstraintSystem:Remove()
+		
+			local System = ents.Create("phys_constraintsystem")
+                System:SetKeyValue( "additionaliterations", 1 )
+			System:Spawn()
+			System:Activate()
+
+			System.ARGHHHHH = true
+			System.UsedEntities = { E1.SEO , E2.SEO }
+			E1.SEO.ConstraintSystem = System
+			E2.SEO.ConstraintSystem = System
+			weld:SetEntity( "Constraint System Manager" , System )
+		end]]
+		
+		--if !E1.SEO.SBEPPAD then E1.SEO.SBEPPAD = {} end
+		--if !E2.SEO.SBEPPAD then E2.SEO.SBEPPAD = {} end
+		--table.insert( E1.SEO.SBEPPAD , weld )
+		--table.insert( E2.SEO.SBEPPAD , weld )
+		
+		E1:Remove()
+		E2:Remove()
 		
 		self.ent1 = nil
 		self.ent2 = nil

@@ -19,6 +19,8 @@ local SMT = {
 	{ type = "H"		}
 			}
 
+local LHMT = list.Get( "SBEP_LiftHousingModels" )
+			
 if CLIENT then
 	language.Add( "Tool_sbep_lift_designer_name", "SBEP Lift System Designer" 		)
 	language.Add( "Tool_sbep_lift_designer_desc", "Create a lift system." 			)
@@ -619,9 +621,69 @@ end
 
 function TOOL:RightClick( trace )
 
+	local Editing = GetConVarNumber( "sbep_lift_designer_editing" )
+	
+	if Editing == 0 then
+		local startent = trace.Entity
+			if !startent || !(startent:IsValid()) then return end
+		local ply = self:GetOwner()
+		local model = startent:GetModel()
+			if !LHMT[ model ] then return end
+		local type = LHMT[model][1]
+		print( type )
+		local size = LHMT[model][2]
+		print( size )
+		local pos  = startent:GetPos()
+		local ang  = startent:GetAngles()
+		local skin = startent:GetSkin()
+		if startent:SkinCount() > 5 then
+			if math.fmod( skin / 2 ) ~= 0 then skin = skin - 1 end
+			skin = skin / 2
+		end
+	
+		LiftSystem_SER = ents.Create( "sbep_elev_system" )
+			LiftSystem_SER:SetPos( pos - Vector(0,0,60.45))
+			LiftSystem_SER:SetNWVector( "SBEPLiftDesigner_StartPos" , pos )
+			LiftSystem_SER:SetAngles( ang + Angle(0,-90,0) )
+			LiftSystem_SER:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" )
+			LiftSystem_SER.Skin = skin
+			LiftSystem_SER.Usable = GetConVarNumber( "sbep_lift_designer_enableuse" ) == 1
+			LiftSystem_SER:SetSystemSize( size )
+		LiftSystem_SER:Spawn()
+		
+		local hatchconvar = GetConVarNumber( "sbep_lift_designer_doors" )
+		LiftSystem_SER.ST.UseHatches = hatchconvar == 2
+		LiftSystem_SER.ST.UseDoors   = hatchconvar == 3	
+		
+		undo.Create( "SBEP Lift System" )
+			undo.AddEntity( LiftSystem_SER )
+			undo.SetPlayer( ply )
+		undo.Finish()
+		
+		startent:Remove()
+		
+		local NP = LiftSystem_SER:CreatePart()
+			LiftSystem_SER:AddPartToTable( NP , 1 )
+			NP:SetPartType( type )
+		LiftSystem_SER:RefreshParts( 1 )
+
+		RCC( "sbep_lift_designer_activepart" , 1 )
+	
+		umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
+			umsg.Entity( LiftSystem_SER )
+		umsg.End()
+		
+		RCC( "SBEP_LiftGetCamHeight_ser" )
+	
+		RCC( "sbep_lift_designer_editing" , 1 )
+	
+		return true
+	end
 end
 
 function TOOL:Reload( trace )
+
+	PrintTable( LHMT )
 
 end
 
