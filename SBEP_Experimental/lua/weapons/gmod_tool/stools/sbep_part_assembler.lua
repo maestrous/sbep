@@ -6,32 +6,53 @@ TOOL.ConfigName 	= ""
 TOOL.ClientConVar[ "skin"  	] = 0
 TOOL.SPR = {}
 TOOL.SPE = {}
+TOOL.RotMode = false
 
 local PAD = list.Get( "SBEP_PartAssemblyData" )
 
 if CLIENT then
 	language.Add( "Tool_sbep_part_assembler_name" , "SBEP Part Assembly Tool" 								)
 	language.Add( "Tool_sbep_part_assembler_desc" , "Easily assemble SBEP parts." 							)
-	language.Add( "Tool_sbep_part_assembler_0"	  , "Left click." 											)
+	language.Add( "Tool_sbep_part_assembler_0"	  , "Left-click an attachment point."						)
+	language.Add( "Tool_sbep_part_assembler_1"	  , "Left-click another attachement point to connect to."	)
+	language.Add( "Tool_sbep_part_assembler_2"	  , "Right-click to rotate, and left click to finish."		)
 	language.Add( "undone_SBEP Part Assembly"	  , "Undone SBEP Part Assembly"								)
 end
 
 
 function TOOL:LeftClick( trace ) 
 
+	local ply = self:GetOwner()
+
+	if self.RotMode && self:GetStage() == 2 then
+		self.E1.SEO:SetColor( 255,255,255,255 )
+		local weld = constraint.Weld( self.E1.SEO , self.E2.SEO , 0 , 0 , 0 , true )	
+		undo.Create( "SBEP Part Assembly Weld" )
+			undo.AddEntity( weld )
+			undo.SetPlayer( ply )
+		undo.Finish()
+		self.E1:Remove()
+			self.E1 = nil
+		self.E2:Remove()
+			self.E2 = nil
+		self:SetStage( 0 )
+		self.RotMode = false
+		return true
+	end
+	
 	local ent = trace.Entity
 	if !ent || !ent:IsValid() || ent:GetClass() ~= "sbep_base_sprite" then return end
 	
-	if self.ent1 && self.ent1:IsValid() then
+	if self.E1 && self.E1:IsValid() then
 	
-		if self.ent1:GetSpriteType() ~= ent:GetSpriteType() then return end
+		if self.E1:GetSpriteType() ~= ent:GetSpriteType() then return end
 		
-		local pos = self.ent1.SEO:GetPos()
-		local ang = self.ent1.SEO:GetAngles()
+		local pos = self.E1.SEO:GetPos()
+		local ang = self.E1.SEO:GetAngles()
 		
-		self.ent2 = ent
-		local E1 = self.ent1
-		local E2 = self.ent2
+		self.E2 = ent
+		local E1 = self.E1
+		local E2 = self.E2
 		local ENTS = { E1 , E2 , E1.SEO , E2.SEO }
 		for k,v in ipairs( ENTS ) do
 			v:GetPhysicsObject():EnableMotion( false )
@@ -42,71 +63,81 @@ function TOOL:LeftClick( trace )
 		E1:SetAngles( E2:LocalToWorldAngles( Angle(0,180,0) ) )
 		
 		local EO = Vector( E1.Offset.x , E1.Offset.y , E1.Offset.z )
-		EO:Rotate( E1.Dir )
+		EO:Rotate( Angle( -1 * E1.Dir.p , E1.Dir.y , E1.Dir.r ) )
 		E1.SEO:SetPos( E1:LocalToWorld( -1 * EO ) )
 		E1.SEO:SetAngles( E1:LocalToWorldAngles( -1 * E1.Dir ) )
 		
-		local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , true )
-		
-		local function MoveUndo( Undo, Entity, pos , ang )
-					if Entity:IsValid() then
-						Entity:SetAngles( ang )
-						Entity:SetPos( pos )
+		if E1.RotMode then
+			self.RotMode = true
+			E1:SetNoDraw( true )
+			E2:SetNoDraw( true )
+			E1.SEO:SetColor( 255,255,255,180 )
+			self:SetStage( 2 )
+			return true
+		else
+			local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , true )
+			
+			local function WeldUndo( Undo, Entity, pos , ang )
+						if Entity:IsValid() then
+							Entity:SetAngles( ang )
+							Entity:SetPos( pos )
+						end
 					end
-				end
-		
-		undo.Create( "SBEP Part Assembly" )
-			undo.AddEntity( LiftSystem_SER )
-			undo.AddEntity( weld )
-			undo.SetPlayer( self:GetOwner() )
-			undo.AddFunction( MoveUndo, self.ent1.SEO , pos , ang )
-		undo.Finish()
-		
-		--E1.SEO.SPR = nil
-		--E2.SEO.SPR = nil
-		
-		--[[if !E1.SEO.SBEPPAD && !E2.SEO.SBEPPAD then
-			E1.SEO.ConstraintSystem:Remove()
-		
-			local System = ents.Create("phys_constraintsystem")
-                System:SetKeyValue( "additionaliterations", 1 )
-			System:Spawn()
-			System:Activate()
+			
+			undo.Create( "SBEP Part Assembly Weld" )
+				undo.AddEntity( weld )
+				undo.SetPlayer( self:GetOwner() )
+				undo.AddFunction( WeldUndo, self.E1.SEO , pos , ang )
+			undo.Finish()
+			
+			--E1.SEO.SPR = nil
+			--E2.SEO.SPR = nil
+			
+			--[[if !E1.SEO.SBEPPAD && !E2.SEO.SBEPPAD then
+				E1.SEO.ConstraintSystem:Remove()
+			
+				local System = ents.Create("phys_constraintsystem")
+					System:SetKeyValue( "additionaliterations", 1 )
+				System:Spawn()
+				System:Activate()
 
-			System.ARGHHHHH = true
-			System.UsedEntities = { E1.SEO , E2.SEO }
-			E1.SEO.ConstraintSystem = System
-			E2.SEO.ConstraintSystem = System
-			weld:SetEntity( "Constraint System Manager" , System )
-		end]]
-		
-		--if !E1.SEO.SBEPPAD then E1.SEO.SBEPPAD = {} end
-		--if !E2.SEO.SBEPPAD then E2.SEO.SBEPPAD = {} end
-		--table.insert( E1.SEO.SBEPPAD , weld )
-		--table.insert( E2.SEO.SBEPPAD , weld )
-		
-		E1:Remove()
-		E2:Remove()
-		
-		self.ent1 = nil
-		self.ent2 = nil
+				System.ARGHHHHH = true
+				System.UsedEntities = { E1.SEO , E2.SEO }
+				E1.SEO.ConstraintSystem = System
+				E2.SEO.ConstraintSystem = System
+				weld:SetEntity( "Constraint System Manager" , System )
+			end]]
+			
+			--if !E1.SEO.SBEPPAD then E1.SEO.SBEPPAD = {} end
+			--if !E2.SEO.SBEPPAD then E2.SEO.SBEPPAD = {} end
+			--table.insert( E1.SEO.SBEPPAD , weld )
+			--table.insert( E2.SEO.SBEPPAD , weld )
+			
+			E1:Remove()
+				self.E1 = nil
+			E2:Remove()
+				self.E2 = nil
+			self:SetStage( 0 )
+		end
 	else
-		self.ent1 = ent
+		self.E1 = ent
+		self:SetStage( 1 )
 	end
 	
 	return true
 end 
 
 function TOOL:RightClick( trace ) 
-
-	
-
+	if self.RotMode && self:GetStage() == 2 then
+		self.E1:SetAngles( self.E1:GetAngles() + Angle(0,0,90) )
+		self.E1.SEO:SetAngles( self.E1:LocalToWorldAngles( -1 * self.E1.Dir ) )
+	end
 end
 
 function TOOL:Reload( trace ) 
 
-	self.ent1 = nil
-	self.ent2 = nil
+	self.E1 = nil
+	self.E2 = nil
 	
 	return true
 end
@@ -168,8 +199,8 @@ if SERVER then
 			end
 		end
 		
-		self.ent1 = nil
-		self.ent2 = nil
+		self.E1 = nil
+		self.E2 = nil
 		
 		return true
 	end

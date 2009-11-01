@@ -2,6 +2,15 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 
+local SRT = {
+	SWSH = false ,
+	SWDH = false ,
+	DWSH = false ,
+	DWDH = false ,
+	ESML = true  ,
+	ELRG = true  ,
+			}
+
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Combine_Helicopter/helicopter_bomb01.mdl" )
@@ -56,13 +65,11 @@ function ENT:Think()
 end
 
 function ENT:SetSpriteType( type )
-
+	if !SRT[type] then return false end
 	self:SetNWString( "SBEPSpriteType" , type )
-
+	self.RotMode = SRT[type]
 end
 
 function ENT:GetSpriteType()
-
 	return self:GetNWString( "SBEPSpriteType" )
-
 end
