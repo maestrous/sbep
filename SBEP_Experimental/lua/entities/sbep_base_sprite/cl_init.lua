@@ -9,12 +9,12 @@ local MatTab = {
 	ESML = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
 	ELRG = { Material( "sprites/ELRG"			) , { 35 , 35 } } ,
 	
-	LRC1 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
-	LRC2 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
-	LRC3 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
-	LRC4 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
-	LRC5 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
-	LRC6 = { Material( "sprites/ESML"			) , { 35 , 35 } } ,
+	LRC1 = { Material( "sprites/LRC1"			) , { 42 , 30 } } ,
+	LRC2 = { Material( "sprites/LRC1"			) , { 42 , 30 } } ,
+	LRC3 = { Material( "sprites/LRC3"			) , { 42 , 30 } } ,
+	LRC4 = { Material( "sprites/LRC3"			) , { 42 , 30 } } ,
+	LRC5 = { Material( "sprites/LRC5"			) , { 21 , 30 } } ,
+	LRC6 = { Material( "sprites/LRC5"			) , { 21 , 30 } } ,
 			}
 
 ENT.Mat = MatTab.SWSH[1]
