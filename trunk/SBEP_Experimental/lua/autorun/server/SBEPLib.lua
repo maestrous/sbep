@@ -4,6 +4,10 @@
 
 SBEP = {} --Global Compatibility Check
 
+function SBEP.T()
+	return player.GetByID(1):GetEyeTrace()
+end
+
 function SBEP.TE()
 	return player.GetByID(1):GetEyeTrace().Entity
 end

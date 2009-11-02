@@ -6,7 +6,6 @@ TOOL.ConfigName 	= ""
 TOOL.ClientConVar[ "skin"  	] = 0
 TOOL.SPR = {}
 TOOL.SPE = {}
-TOOL.RotMode = false
 
 local PAD = list.Get( "SBEP_PartAssemblyData" )
 
@@ -36,11 +35,14 @@ if CLIENT then
 	language.Add( "undone_SBEP Part Assembly"	  , "Undone SBEP Part Assembly"								)
 end
 
+TOOL.ClientConVar[ 	 "mode" 	] = 1
+TOOL.ClientConVar[  "nocollide" ] = 0
+
 function TOOL:LeftClick( trace ) 
 
 	local ply = self:GetOwner()
 
-	if self.RotMode && self:GetStage() == 2 then
+	if self:GetStage() == 2 then
 		self.E1.SEO:SetColor( 255,255,255,255 )
 		local weld = constraint.Weld( self.E1.SEO , self.E2.SEO , 0 , 0 , 0 , true )	
 		undo.Create( "SBEP Part Assembly Weld" )
@@ -52,23 +54,21 @@ function TOOL:LeftClick( trace )
 		self.E2:Remove()
 			self.E2 = nil
 		self:SetStage( 0 )
-		self.RotMode = false
 		return true
 	end
 	
 	local ent = trace.Entity
 	if !ent || !ent:IsValid() || ent:GetClass() ~= "sbep_base_sprite" then return end
 	
-	if self.E1 && self.E1:IsValid() then
-	
+	if self.E1 && self.E1:IsValid() && self:GetStage() == 1 then
 		if self.E1:GetSpriteType() ~= SPD[ ent:GetSpriteType() ] then return end
 		
 		local pos = self.E1.SEO:GetPos()
 		local ang = self.E1.SEO:GetAngles()
 		
 		self.E2 = ent
-		local E1 = self.E1
-		local E2 = self.E2
+			local E1 = self.E1
+			local E2 = self.E2
 		local ENTS = { E1 , E2 , E1.SEO , E2.SEO }
 		for k,v in ipairs( ENTS ) do
 			v:GetPhysicsObject():EnableMotion( false )
@@ -79,17 +79,15 @@ function TOOL:LeftClick( trace )
 		E1:SetAngles( E2:LocalToWorldAngles( Angle(0,180,0) ) )
 		
 		local EO = Vector( E1.Offset.x , E1.Offset.y , E1.Offset.z )
-		EO:Rotate( Angle( -1 * E1.Dir.p , E1.Dir.y , E1.Dir.r ) )
+		EO:Rotate( Angle( -1 * E1.Dir.p , -1 * E1.Dir.y , E1.Dir.r ) )
 		E1.SEO:SetPos( E1:LocalToWorld( -1 * EO ) )
 		E1.SEO:SetAngles( E1:LocalToWorldAngles( -1 * E1.Dir ) )
 		
 		if E1.RotMode then
-			self.RotMode = true
 			E1:SetNoDraw( true )
 			E2:SetNoDraw( true )
 			E1.SEO:SetColor( 255,255,255,180 )
 			self:SetStage( 2 )
-			return true
 		else
 			local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , true )
 			
@@ -106,56 +104,32 @@ function TOOL:LeftClick( trace )
 				undo.AddFunction( WeldUndo, self.E1.SEO , pos , ang )
 			undo.Finish()
 			
-			--E1.SEO.SPR = nil
-			--E2.SEO.SPR = nil
-			
-			--[[if !E1.SEO.SBEPPAD && !E2.SEO.SBEPPAD then
-				E1.SEO.ConstraintSystem:Remove()
-			
-				local System = ents.Create("phys_constraintsystem")
-					System:SetKeyValue( "additionaliterations", 1 )
-				System:Spawn()
-				System:Activate()
-
-				System.ARGHHHHH = true
-				System.UsedEntities = { E1.SEO , E2.SEO }
-				E1.SEO.ConstraintSystem = System
-				E2.SEO.ConstraintSystem = System
-				weld:SetEntity( "Constraint System Manager" , System )
-			end]]
-			
-			--if !E1.SEO.SBEPPAD then E1.SEO.SBEPPAD = {} end
-			--if !E2.SEO.SBEPPAD then E2.SEO.SBEPPAD = {} end
-			--table.insert( E1.SEO.SBEPPAD , weld )
-			--table.insert( E2.SEO.SBEPPAD , weld )
-			
 			E1:Remove()
 				self.E1 = nil
 			E2:Remove()
 				self.E2 = nil
 			self:SetStage( 0 )
 		end
-	else
+		return true
+	elseif self:GetStage() == 0 then
 		self.E1 = ent
 		self:SetStage( 1 )
+		return true
 	end
-	
-	return true
 end 
 
 function TOOL:RightClick( trace ) 
-	if self.RotMode && self:GetStage() == 2 then
+	if self:GetStage() == 2 then
 		self.E1:SetAngles( self.E1:GetAngles() + Angle(0,0,90) )
 		self.E1.SEO:SetAngles( self.E1:LocalToWorldAngles( -1 * self.E1.Dir ) )
+		return true
 	end
 end
 
 function TOOL:Reload( trace ) 
-
 	self.E1 = nil
 	self.E2 = nil
 	self:SetStage(0)
-	
 	return true
 end
 
@@ -172,13 +146,7 @@ if SERVER then
 		local data = PAD[ model ]
 		if !data then return end
 
-		if ent.SPR --[[&& #ent.SPR == #data]] then return 
-		--[[elseif ent.SPR then
-			for k,v in pairs( ent.SPR ) do
-				if v && v:IsValid() then v:Remove() end
-			end
-			ent.SPR = {}]]
-		end
+		if ent.SPR then return end
 
 		if !ent.SPR then ent.SPR = {} end
 		for k,v in ipairs( data ) do
@@ -198,6 +166,9 @@ if SERVER then
 			table.insert( self.SPE , ent )
 		end
 	end
+	
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	function TOOL:Holster( wep )
 		if self.SPR then
@@ -219,6 +190,8 @@ if SERVER then
 		self.E1 = nil
 		self.E2 = nil
 		
+		self:SetStage(0)
+		
 		return true
 	end
 end
@@ -227,5 +200,38 @@ function TOOL.BuildCPanel( panel )
 	
 	panel:SetSpacing( 10 )
 	panel:SetName( "SBEP Part Assembler" )
+	
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	local ModeTable = {
+			"1. Move first part to second"  			,
+			"2. Move first part to second and weld"   		
+				}
+
+	local MLV = vgui.Create("DListView")
+		MLV:SetSize(100, 50)
+		MLV:SetMultiSelect(false)
+		MLV:AddColumn("Mode")
+		MLV.OnClickLine = function(parent, line, isselected)
+												parent:ClearSelection()
+												line:SetSelected( true )
+												RCC( "sbep_part_assembler_mode", line:GetID() )
+										end
+		 
+		for k,v in ipairs( ModeTable ) do
+			MLV:AddLine(v)
+		end
+	panel:AddItem( MLV )
+	
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	local UseCheckBox = vgui.Create( "DCheckBoxLabel" )
+		UseCheckBox:SetText( "NoCollide Parts" )
+		UseCheckBox:SetConVar( "sbep_part_assembler_nocollide" )
+		UseCheckBox:SetValue( 0 )
+		UseCheckBox:SizeToContents()
+	panel:AddItem( UseCheckBox )
 	
  end  
