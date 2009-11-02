@@ -13,7 +13,8 @@ if ( CLIENT ) then
 end
 
 
-function TOOL:LeftClick( trace ) 
+function TOOL:LeftClick( trace )
+	if CLIENT then return end
 	if trace.Entity:IsValid() then
 		if string.find( string.lower( trace.Entity:GetModel() ), "smallbridge" ) then
 			local SkinInt = 0

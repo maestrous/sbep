@@ -39,6 +39,8 @@ TOOL.ClientConVar[ "hab_mod"	] = 0
 
 function TOOL:LeftClick( trace )
 
+	if CLIENT then return end
+
 	local model 	= self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
 	local hab 		= self:GetClientNumber( "hab_mod" )
 	local skin 		= self:GetClientNumber( "skin" )
@@ -79,16 +81,10 @@ end
 
 function TOOL:RightClick( trace )
 
-	
-
-	//return true
 end
 
 function TOOL:Reload( trace )
 
-	
-
-	//return true
 end
 
 function TOOL.BuildCPanel( panel )
