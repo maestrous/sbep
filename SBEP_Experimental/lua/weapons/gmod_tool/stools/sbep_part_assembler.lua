@@ -40,11 +40,13 @@ TOOL.ClientConVar[  "nocollide" ] = 0
 
 function TOOL:LeftClick( trace ) 
 
+	if CLIENT then return end
+
 	local ply = self:GetOwner()
 
 	if self:GetStage() == 2 then
 		self.E1.SEO:SetColor( 255,255,255,255 )
-		local weld = constraint.Weld( self.E1.SEO , self.E2.SEO , 0 , 0 , 0 , true )	
+		local weld = constraint.Weld( self.E1.SEO , self.E2.SEO , 0 , 0 , 0 , self:ShouldNoCollide() )	
 		undo.Create( "SBEP Part Assembly Weld" )
 			undo.AddEntity( weld )
 			undo.SetPlayer( ply )
@@ -79,7 +81,7 @@ function TOOL:LeftClick( trace )
 		E1:SetAngles( E2:LocalToWorldAngles( Angle(0,180,0) ) )
 		
 		local EO = Vector( E1.Offset.x , E1.Offset.y , E1.Offset.z )
-		EO:Rotate( Angle( -1 * E1.Dir.p , -1 * E1.Dir.y , E1.Dir.r ) )
+		EO:Rotate( -1 * E1.Dir )
 		E1.SEO:SetPos( E1:LocalToWorld( -1 * EO ) )
 		E1.SEO:SetAngles( E1:LocalToWorldAngles( -1 * E1.Dir ) )
 		
@@ -89,20 +91,32 @@ function TOOL:LeftClick( trace )
 			E1.SEO:SetColor( 255,255,255,180 )
 			self:SetStage( 2 )
 		else
-			local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , true )
-			
-			local function WeldUndo( Undo, Entity, pos , ang )
+			local function MoveUndo( Undo, Entity, pos , ang )
 						if Entity:IsValid() then
 							Entity:SetAngles( ang )
 							Entity:SetPos( pos )
 						end
 					end
 			
-			undo.Create( "SBEP Part Assembly Weld" )
+			undo.Create( "SBEP Part Assembly Move" )
 				undo.AddEntity( weld )
 				undo.SetPlayer( self:GetOwner() )
-				undo.AddFunction( WeldUndo, self.E1.SEO , pos , ang )
+				undo.AddFunction( MoveUndo, self.E1.SEO , pos , ang )
 			undo.Finish()
+
+			if GetConVarNumber( "sbep_part_assembler_mode" ) == 2 then
+				local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , self:ShouldNoCollide() )
+				undo.Create( "SBEP Part Assembly Weld" )
+					undo.AddEntity( weld )
+					undo.SetPlayer( self:GetOwner() )
+				undo.Finish()
+			elseif self:ShouldNoCollide() then
+				local nocollide = constraint.NoCollide( E1.SEO , E2.SEO , 0 , 0 )
+				undo.Create( "SBEP Part Assembly NoCollide" )
+					undo.AddEntity( nocollide )
+					undo.SetPlayer( self:GetOwner() )
+				undo.Finish()
+			end
 			
 			E1:Remove()
 				self.E1 = nil
@@ -119,6 +133,7 @@ function TOOL:LeftClick( trace )
 end 
 
 function TOOL:RightClick( trace ) 
+	if CLIENT then return end
 	if self:GetStage() == 2 then
 		self.E1:SetAngles( self.E1:GetAngles() + Angle(0,0,90) )
 		self.E1.SEO:SetAngles( self.E1:LocalToWorldAngles( -1 * self.E1.Dir ) )
@@ -127,10 +142,15 @@ function TOOL:RightClick( trace )
 end
 
 function TOOL:Reload( trace ) 
+	if CLIENT then return end
 	self.E1 = nil
 	self.E2 = nil
 	self:SetStage(0)
 	return true
+end
+
+function TOOL:ShouldNoCollide()
+	return GetConVarNumber( "sbep_part_assembler_nocollide" ) == 1
 end
 
 if SERVER then
@@ -216,7 +236,7 @@ function TOOL.BuildCPanel( panel )
 		MLV.OnClickLine = function(parent, line, isselected)
 												parent:ClearSelection()
 												line:SetSelected( true )
-												RCC( "sbep_part_assembler_mode", line:GetID() )
+												RunConsoleCommand( "sbep_part_assembler_mode", line:GetID() )
 										end
 		 
 		for k,v in ipairs( ModeTable ) do
