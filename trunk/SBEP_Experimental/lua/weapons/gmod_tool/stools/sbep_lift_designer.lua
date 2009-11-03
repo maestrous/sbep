@@ -47,7 +47,7 @@ local function RCC( com , arg )
 	RunConsoleCommand( com , arg )
 end
 
-local LiftSystem_SER = nil
+local LiftSystem_SER
 
 if CLIENT then
 
@@ -354,7 +354,11 @@ if CLIENT then
 			CL.LiftDes.SBEPLDDM.Frame:SetVisible( true )
 
 			CL.LiftDes.LiftSystem 	= um:ReadEntity()
-			CL.LiftDes.StartPos 	= CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()
+			if CL.LiftSystem then
+				CL.LiftDes.StartPos 	= (CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()) || Vector(0,0,0)
+			else
+				CL.LiftDes.StartPos 	= Vector(0,0,0)
+			end
 			SetBaseViewAngles()
 			CL.LiftDes.CVYaw   		= CL.LiftDes.MVYaw
 			CL.LiftDes.CVPitch 		= CL.LiftDes.MVPitch
@@ -409,7 +413,11 @@ if CLIENT then
 			if um then
 				CL.LiftDes.MBRange = um:ReadFloat()
 			end
-			CL.LiftDes.StartPos = CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()
+			if CL.LiftSystem then
+				CL.LiftDes.StartPos 	= (CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()) || Vector(0,0,0)
+			else
+				CL.LiftDes.StartPos 	= Vector(0,0,0)
+			end
 		end
 		usermessage.Hook("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", ReCalcViewAngles)
 		
@@ -436,8 +444,12 @@ if CLIENT then
 						CL.LiftDes.CRAng = Angle( -1 * CL.LiftDes.CVPitch , CL.LiftDes.CVYaw , CL.LiftDes.CVPitch )
 						CL.LiftDes.CRVec:Rotate( CL.LiftDes.CRAng )
 					CL.LiftDes.MVOffset = CL.LiftDes.CVRange * CL.LiftDes.CRVec * CL.LiftDes.CBRange
-
-					view.origin = CL.LiftDes.StartPos + CL.LiftDes.MVOffset + CL.LiftDes.LiftSystem:GetUp()*CL.LiftDes.CHOffset
+					
+					if CL.LiftDes.LiftSystem then
+						view.origin = CL.LiftDes.StartPos + CL.LiftDes.MVOffset + CL.LiftDes.LiftSystem:GetUp()*CL.LiftDes.CHOffset
+					else
+						view.origin = CL.LiftDes.StartPos + CL.LiftDes.MVOffset + Vector(0,0,1)*CL.LiftDes.CHOffset
+					end
 					view.angles = (-1 * CL.LiftDes.MVOffset):Angle()
 				return view
 			else
@@ -604,6 +616,7 @@ end
 
 function TOOL:LeftClick( trace )
 
+	if CLIENT then return end
 	local Editing = GetConVarNumber( "sbep_lift_designer_editing" )
 	
 	if Editing == 0 then
@@ -637,6 +650,8 @@ function TOOL:LeftClick( trace )
 		LiftSystem_SER:RefreshParts( 1 )
 
 		RCC( "sbep_lift_designer_activepart" , 1 )
+		
+		PrintTable( LiftSystem_Ser:GetTable() )
 	
 		umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
 			umsg.Entity( LiftSystem_SER )
@@ -651,6 +666,8 @@ function TOOL:LeftClick( trace )
 end
 
 function TOOL:RightClick( trace )
+
+	if CLIENT then return end
 
 	local Editing = GetConVarNumber( "sbep_lift_designer_editing" )
 	
