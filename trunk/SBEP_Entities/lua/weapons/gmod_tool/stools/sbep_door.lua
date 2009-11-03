@@ -36,6 +36,8 @@ TOOL.ClientConVar[ "enableuse"	] = 1
 
 function TOOL:LeftClick( trace )
 
+	if CLIENT then return end
+
 	if tonumber(self:GetClientNumber( "wire" )) == 0 and self:GetClientNumber( "enableuse" ) == 0 then
 		RunConsoleCommand( "SBEPDoorToolError_cl" , "Cannot be both unusable and unwireable." , 1 , 4)
 		return

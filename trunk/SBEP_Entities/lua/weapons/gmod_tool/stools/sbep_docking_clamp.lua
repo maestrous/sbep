@@ -46,9 +46,11 @@ for k,v in ipairs( CategoryTable ) do
 	TOOL.ClientConVar[ "model_"..tostring(k) ] = v[3]
 end
 TOOL.ClientConVar[ "activecat"  ] = 1
+TOOL.ClientConVar[ "allowuse"   ] = 1
 
 function TOOL:LeftClick( trace )
 
+	if CLIENT then return end
 	local model = self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
 	local DataTable = ModelSelectTable[ model ]
 	
@@ -64,6 +66,7 @@ function TOOL:LeftClick( trace )
 		DockEnt:SetName( DataTable.ALType )
 		
 		DockEnt.CompatibleLocks = DataTable.Compatible
+		DockEnt.Usable = GetConVarNumber( "sbep_docking_clamp" ) == 1
 		--DataTable.EfPoints = table.Copy( DataTable.EfPoints )
 
 		DockEnt:Spawn()
@@ -103,16 +106,10 @@ end
 
 function TOOL:RightClick( trace )
 
-	
-
-	//return true
 end
 
 function TOOL:Reload( trace )
 
-	
-
-	//return true
 end
 
 function TOOL.BuildCPanel( panel )

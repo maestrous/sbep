@@ -47,6 +47,7 @@ end
 
 function TOOL:LeftClick( tr )
 
+	if CLIENT then return end
 	local model = self:GetClientInfo( "model" )
 	if self:CheckBadModel( model ) then return true end
 	
@@ -86,6 +87,7 @@ end
 
 function TOOL:RightClick( tr )
 
+	if CLIENT then return end
 	if ( !tr.Hit || !tr.Entity || !tr.Entity:IsValid() ) then return end
 	
 	local PlModel = tr.Entity:GetModel()
@@ -109,11 +111,11 @@ function TOOL:RightClick( tr )
 	umsg.End()
 	
 	return true
-
 end
 
 function TOOL:Reload( tr )
 
+	if CLIENT then return end
 	if !tr.Hit || !tr.Entity || !tr.Entity:IsValid() then return end
 
 	local model = tr.Entity:GetModel()

@@ -23,6 +23,7 @@ TOOL.ClientConVar[ "activecat"  ] = 1
 
 function TOOL:LeftClick( trace )
 
+	if CLIENT then return end
 	local model = self:GetClientInfo( "model_"..tostring( self:GetClientNumber( "activecat" ) ) )
 	local DataTable = table.Copy( ModelSelectTable[ model ]	)
 	local pos = trace.HitPos
@@ -46,16 +47,10 @@ end
 
 function TOOL:RightClick( trace )
 
-	
-
-	//return true
 end
 
 function TOOL:Reload( trace )
 
-	
-
-	//return true
 end
 
 function TOOL.BuildCPanel( panel )
