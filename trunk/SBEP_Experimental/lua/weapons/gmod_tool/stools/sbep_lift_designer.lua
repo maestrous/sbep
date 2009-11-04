@@ -452,9 +452,8 @@ if CLIENT then
 					end
 					view.angles = (-1 * CL.LiftDes.MVOffset):Angle()
 				return view
-			else
-				return GAMEMODE:CalcView(ply,origin,angles,fov)
 			end
+			return GAMEMODE:CalcView(ply,origin,angles,fov)
 		end
 		hook.Add("CalcView", "SBEP_LiftDesigner_CalcView", SBEP_LiftCalcView)
 
