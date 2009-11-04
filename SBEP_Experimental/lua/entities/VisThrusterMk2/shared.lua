@@ -1,6 +1,6 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
-ENT.PrintName		= "VisThruster"
+ENT.PrintName		= "Jet Thruster"
 ENT.Author			= "Paradukes"
 ENT.Category		= "SBEP - Other"
 
