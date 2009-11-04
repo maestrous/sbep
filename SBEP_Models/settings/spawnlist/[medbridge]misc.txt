@@ -38,7 +38,7 @@
 		"29"		"models/Slyfo/forklift.mdl"
 		"30"		"models/Slyfo/forkrobot.mdl"
 		"31"		"models/Spacebuild/Nova/drop_pod.mdl"
-		"33"		"models/Slyfo/probe1.mdl"
-		"34"		"models/Slyfo/probe2.mdl"
+		"32"		"models/Slyfo/probe1.mdl"
+		"33"		"models/Slyfo/probe2.mdl"
 	}
 }
