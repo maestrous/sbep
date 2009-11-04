@@ -452,8 +452,9 @@ if CLIENT then
 					end
 					view.angles = (-1 * CL.LiftDes.MVOffset):Angle()
 				return view
+			else
+				--return GAMEMODE:CalcView(ply,origin,angles,fov)
 			end
-			return GAMEMODE:CalcView(ply,origin,angles,fov)
 		end
 		hook.Add("CalcView", "SBEP_LiftDesigner_CalcView", SBEP_LiftCalcView)
 
@@ -650,7 +651,7 @@ function TOOL:LeftClick( trace )
 
 		RCC( "sbep_lift_designer_activepart" , 1 )
 		
-		PrintTable( LiftSystem_Ser:GetTable() )
+		PrintTable( LiftSystem_SER:GetTable() )
 	
 		umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
 			umsg.Entity( LiftSystem_SER )

@@ -26,7 +26,7 @@ SWEP.ViewModel			= "models/Spacebuild/Nova/dronegun1.mdl"
 SWEP.WorldModel			= "models/Spacebuild/Nova/dronegun1.mdl"
 
 SWEP.Primary.ClipSize		= 20
-SWEP.Primary.DefaultClip	= 90
+SWEP.Primary.DefaultClip	= 30
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
