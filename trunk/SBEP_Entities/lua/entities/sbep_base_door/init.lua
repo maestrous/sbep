@@ -147,7 +147,9 @@ function ENT:Attach( ent , vecoff , angoff )
 end
 
 function ENT:SetController( cont , sysnum )
-	self.Cont = cont
+	if cont && cont:IsValid() then
+		self.Cont = cont
+	end
 	if sysnum then
 		self.D.SDN = sysnum
 	end
@@ -273,13 +275,16 @@ end
 function ENT:PreEntityCopy()
 	local dupeInfo = {}
 	dupeInfo.type 	= self.type
-	dupeInfo.Cont 	= self.Cont:EntIndex()
+	if self.Cont then
+		dupeInfo.Cont 	= self.Cont:EntIndex()
+	end
 	dupeInfo.D 		= self.D
 	duplicator.StoreEntityModifier(self, "SBEPD", dupeInfo)
 end
 duplicator.RegisterEntityModifier( "SBEPD" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	self.type 	= Ent.EntityMods.SBEPD.type
 	self.D 		= Ent.EntityMods.SBEPD.D
 	self.Entity:SetController( CreatedEntities[Ent.EntityMods.SBEPD.Cont] )
 	self.Entity:PhysicsInitialize()
