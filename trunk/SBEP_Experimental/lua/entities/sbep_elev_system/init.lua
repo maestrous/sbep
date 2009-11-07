@@ -20,17 +20,23 @@ PMT.L = {
 		"models/SmallBridge/Elevators,Large/sblelevp2r.mdl"	,
 		"models/SmallBridge/Elevators,Large/sblelevp3.mdl"
 			}
+			
+local DD = list.Get( "SBEP_DoorControllerModels" )
 
 function ENT:Initialize()
-
-	self:SetModel( PMT[self.Size[1]][5] ) 
 
 	self.PT  = {} --Part Table
 	self.ST  = {} --System Table
 	self.FT  = {} --Floor Table
 	self.HT  = {} --Hatch Table
-	self.FDT = {} --Door Table
+	
+	self.Usable = self.Usable || true
+	self:SetSystemSize( "S" )
+	self.ST.Usable = self.Usable
+	self.ST.Skin   = self.Skin
 
+	self:SetModel( PMT[self.Size[1]][5] ) 
+	
 	self.Activated = false
 	
 	self.ST.MAT = {0,0,0,0} --Model Access Table
@@ -44,9 +50,7 @@ function ENT:Initialize()
 	self.THD = 0 -- Timer Delay
 	self.THST = CurTime() -- Timer Start Time
 	
-	self.ST.Usable = self.Usable
-	self.ST.Size   = self.Size
-	self.ST.Skin   = self.Skin
+	
 	
 	self.Index = tostring( self:EntIndex() )
 	
@@ -95,7 +99,7 @@ function ENT:AddPartToTable( part , pos )
 	table.insert( self.PT , pos , part )
 	part.PD.PN = pos || self:GetPartCount()
 	local ang = self.Entity:GetAngles()
-	part.PD.Pitch, part.PD.Yaw, part.PD.Roll = ang.p, ang.y, ang.r
+	part.PD.Pitch, part.PD.Yaw, part.PD.Roll = ang.p, (ang.y + 90), ang.r
 	self:SetNWInt( "SBEP_LiftPartCount" , self:GetPartCount() )
 end
 
@@ -138,23 +142,19 @@ function ENT:GetFloorCount()
 	return #self.FT
 end
 
-function ENT:GetDoorCount()
-	if self.FDT then
-		return #self.FDT
-	end
-end
-
-function ENT:GetHatchCount()
-	if self.HT then
-		return #self.HT
-	end
-end
-
 function ENT:SetSystemSize( size )
 	if size == "L" || size == 2 then
 		self.Size = { "L" , "l" , "Large" , 1 }
+		self.ST.Size = self.Size
 	else
 		self.Size = { "S" , "s" , "Small" , 0 }
+		self.ST.Size = self.Size
+	end
+end
+
+function ENT:GetSystemSize()
+	if self.Size then
+		return self.Size[1]
 	end
 end
 
@@ -299,9 +299,7 @@ function ENT:CheckHatchStatus()
 end
 
 function ENT:CheckDoorStatus()
-	if  !self.ST.UseDoors	||
-		!self.Activated		||
-		!self.FDT	then return end
+	if (!self.ST.UseDoors) || (!self.Activated) then return end
 
 	if self.ATL then
 		for k,V in ipairs( self.PT[ self:FloorToPartNum( self:GetFloorNum() ) ].PD.FDT ) do
@@ -415,32 +413,20 @@ function ENT:CreateHatches()		--Creating Hatches. Each Hatch is paired with the 
 	end
 end
 
-local DoorTypes = {
-	S = { "Door_Anim3"	, "Door_Anim3dh"	} ,
-	L = { "Door_DW"		, "Door_DWDH"		}
-				}
-
 function ENT:CreateDoors()
 	for k,V in ipairs( self.PT ) do
 		V.PD.FDT = {}
-		if !V.PD.SD.IsShaft then
-			for m,n in ipairs( V.PD.AT ) do
-				if n == 1 then
+		local data = DD[ V.PD.model ]
+		if data && data.doors then
+			for n,I in pairs( data.doors ) do
+				if !(I[1] == "Door_ElevHatch_S" || I[1] == "Door_ElevHatch_L") then
 					local ND = ents.Create( "sbep_base_door" )
-					ND:Spawn()
-						local vec = Vector(-60.45 - self.Size[4]*116.25,0,0)
-							vec:Rotate( Angle(0, (-90) * m ,0) )
-						local d = 1
-						if V.PD.SD.IsDH then d = 2 end
-						ND:SetDoorType( DoorTypes[ self.Size[1] ][ d ] )
-						ND:SetPos( V:GetPos() + vec )
-						ND:SetAngles( Angle( 0 , 90 * m , 0 ) )
-						self:DeleteOnRemove( ND )
-						V:DeleteOnRemove( ND )
-						ND:SetSkin( self.Skin )
-						constraint.Weld( ND , V , 0 , 0 , 0 , true )
-						ND:GetPhysicsObject():EnableMotion( true )
+						ND:Spawn()
+						ND:Initialize()
+						ND:SetDoorType( I[1] )
+						ND:Attach( V, I[2], I[3] )
 					table.insert( V.PD.FDT , ND )
+					self.Entity:DeleteOnRemove( ND )
 				end
 			end
 		end
@@ -560,10 +546,10 @@ function ENT:TriggerInput(k,v)
 end
 
 function ENT:AddCallFloorNum( FN )
-	for k,v in ipairs( self.CFT ) do
-		if v == FN then return end
+	if !self.CFT then self.CFT = {} end
+	if !table.HasValue( self.CFT , FN ) then
+		table.insert( self.CFT , FN )
 	end
-	table.insert( self.CFT , FN )
 end
 
 function ENT:FloorToPartNum( fn )
@@ -596,38 +582,24 @@ end
 
 function ENT:PreEntityCopy()
 	local dupeInfo = {}
-
-	dupeInfo.ST  = self.ST
-	dupeInfo.INC = self.INC
-	
-	dupeInfo.PT = {}
-	for k,v in pairs( self.PT ) do
-		dupeInfo.PT[k] = v:EntIndex()
-	end
-	
-	if self.ST.UseHatches then
-		dupeInfo.HDT = {}
-		for k,v in pairs( self.HT ) do
-			dupeInfo.HDT[k]		  = {}
-			dupeInfo.HDT[k].Index = v:EntIndex()
-			dupeInfo.HDT[k].HD 	  = v.HD
-		end
-	end
-	
-	if self.ST.UseDoors then
-		dupeInfo.FDDT = {}
-		for k,v in pairs( self.FDT ) do
-			dupeInfo.FDDT[k] = {}
-			for m,n in pairs( v ) do
-				dupeInfo.FDDT[k][m] = n:EntIndex()
+		dupeInfo.ST  = self.ST
+		dupeInfo.FT  = self.FT
+		dupeInfo.INC = self.INC
+		dupeInfo.PT = {}
+			for k,v in pairs( self.PT ) do
+				dupeInfo.PT[k] = v:EntIndex()
+			end
+		if self.ST.UseHatches then
+			dupeInfo.HDT = {}
+			for k,v in pairs( self.HT ) do
+				dupeInfo.HDT[k]		  = {}
+				dupeInfo.HDT[k].Index = v:EntIndex()
+				dupeInfo.HDT[k].HD 	  = v.HD
 			end
 		end
-	end
-	
 	if WireAddon then
 		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
 	end
-	
 	duplicator.StoreEntityModifier(self, "SBEPLS", dupeInfo)
 end
 duplicator.RegisterEntityModifier( "SBEPLS" , function() end)
@@ -635,11 +607,9 @@ duplicator.RegisterEntityModifier( "SBEPLS" , function() end)
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
 	self.ST			= Ent.EntityMods.SBEPLS.ST
-	
-	self.Size		  = self.ST.Size
-	self.Usable		  = self.ST.Usable
-	
-	self.PT			= {}
+	self.FT			= Ent.EntityMods.SBEPLS.FT
+	self.INC		= Ent.EntityMods.SBEPLS.INC
+
 	for i = 1, self:GetPartCount() do
 		self.PT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLS.DT[i].Index]
 	end
@@ -649,16 +619,6 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 		for i = 1, self.ST.HC do
 			self.HT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLS.HDT[i].Index]
 			self.HT[i].HD			= Ent.EntityMods.SBEPLS.HDT[i].HD
-		end
-	end
-	
-	if self.ST.UseDoors then
-		self.FDT = {}
-		for i = 1, self.ST.FDC do
-			self.FDT[i] = {}
-			for m,n in pairs( Ent.EntityMods.SBEPLS.FDDT[i] ) do
-				self.FDT[i][m] = CreatedEntities[ n ]
-			end
 		end
 	end
 	

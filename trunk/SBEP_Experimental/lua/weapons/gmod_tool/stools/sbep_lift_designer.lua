@@ -48,6 +48,7 @@ local function RCC( com , arg )
 end
 
 local LiftSystem_SER
+local LD = {}
 
 if CLIENT then
 
@@ -243,7 +244,7 @@ if CLIENT then
 			LDT.CButtons.up.DoClick = function()
 												CL.LiftDes.MVPitch = math.Clamp( CL.LiftDes.MVPitch + 0.1 , -89 , 89 )
 												CL.LiftDes.CVPitch = CL.LiftDes.MVPitch
-												ReCalcViewAngles()
+												LD.ReCalcViewAngles()
 											end
 		
 		LDT.CButtons.down = vgui.Create("DImageButton", LDT.Frame )
@@ -254,9 +255,9 @@ if CLIENT then
 			LDT.CButtons.down.OnMousePressed  = function() LDT.CButtons.down.Pressed = true  end
 			LDT.CButtons.down.OnMouseReleased = function() LDT.CButtons.down.Pressed = false end
 			LDT.CButtons.down.DoClick = function()
-													CL.LiftDes.MVPitch = math.Clamp( CL.LiftDes.MVPitch - 0.1 , -89 , 89 )
-													CL.LiftDes.CVPitch = CL.LiftDes.MVPitch
-													ReCalcViewAngles()
+												CL.LiftDes.MVPitch = math.Clamp( CL.LiftDes.MVPitch - 0.1 , -89 , 89 )
+												CL.LiftDes.CVPitch = CL.LiftDes.MVPitch
+												LD.ReCalcViewAngles()
 											end
 		
 		LDT.CButtons.left = vgui.Create("DImageButton", LDT.Frame )
@@ -267,9 +268,9 @@ if CLIENT then
 			LDT.CButtons.left.OnMousePressed  = function() LDT.CButtons.left.Pressed = true  end
 			LDT.CButtons.left.OnMouseReleased = function() LDT.CButtons.left.Pressed = false end
 			LDT.CButtons.left.DoClick = function()
-													CL.LiftDes.MVYaw = CL.LiftDes.MVYaw - 0.1
-													CL.LiftDes.CVYaw = CL.LiftDes.MVYaw
-													ReCalcViewAngles()
+												CL.LiftDes.MVYaw = CL.LiftDes.MVYaw - 0.1
+												CL.LiftDes.CVYaw = CL.LiftDes.MVYaw
+												LD.ReCalcViewAngles()
 											end
 		
 		LDT.CButtons.right = vgui.Create("DImageButton", LDT.Frame )
@@ -280,9 +281,9 @@ if CLIENT then
 			LDT.CButtons.right.OnMousePressed  = function() LDT.CButtons.right.Pressed = true  end
 			LDT.CButtons.right.OnMouseReleased = function() LDT.CButtons.right.Pressed = false end
 			LDT.CButtons.right.DoClick = function()
-													CL.LiftDes.MVYaw = CL.LiftDes.MVYaw + 0.1
-													CL.LiftDes.CVYaw = CL.LiftDes.MVYaw
-													ReCalcViewAngles()
+												CL.LiftDes.MVYaw = CL.LiftDes.MVYaw + 0.1
+												CL.LiftDes.CVYaw = CL.LiftDes.MVYaw
+												LD.ReCalcViewAngles()
 											end
 
 		LDT.CButtons.default = vgui.Create("DImageButton", LDT.Frame )
@@ -290,7 +291,7 @@ if CLIENT then
 			LDT.CButtons.default:SetSize( 75 , 75 ) 
 			LDT.CButtons.default:SetImage( "sbep_icons/Camera.vmt" )		
 			LDT.CButtons.default.DoClick = function()
-												SetBaseViewAngles()
+												LD.SetBaseViewAngles()
 											end
 		
 		LDT.CButtons.Zplus = vgui.Create("DImageButton", LDT.Frame )
@@ -301,9 +302,9 @@ if CLIENT then
 			LDT.CButtons.Zplus.OnMousePressed  = function() LDT.CButtons.Zplus.Pressed = true  end
 			LDT.CButtons.Zplus.OnMouseReleased = function() LDT.CButtons.Zplus.Pressed = false end
 			LDT.CButtons.Zplus.DoClick = function()
-													CL.LiftDes.MVRange = CL.LiftDes.MVRange - 0.007
-													CL.LiftDes.CVRange = CL.LiftDes.MVRange
-													ReCalcViewAngles()
+												CL.LiftDes.MVRange = CL.LiftDes.MVRange - 0.007
+												CL.LiftDes.CVRange = CL.LiftDes.MVRange
+												LD.ReCalcViewAngles()
 											end
 		
 		LDT.CButtons.Zminus = vgui.Create("DImageButton", LDT.Frame )
@@ -314,9 +315,9 @@ if CLIENT then
 			LDT.CButtons.Zminus.OnMousePressed  = function() LDT.CButtons.Zminus.Pressed = true  end
 			LDT.CButtons.Zminus.OnMouseReleased = function() LDT.CButtons.Zminus.Pressed = false end
 			LDT.CButtons.Zminus.DoClick = function()
-													CL.LiftDes.MVRange = CL.LiftDes.MVRange + 0.007
-													CL.LiftDes.CVRange = CL.LiftDes.MVRange
-													ReCalcViewAngles()
+												CL.LiftDes.MVRange = CL.LiftDes.MVRange + 0.007
+												CL.LiftDes.CVRange = CL.LiftDes.MVRange
+												LD.ReCalcViewAngles()
 											end
 		
 		LDT.CButtons.RotC = vgui.Create("DImageButton", LDT.Frame )
@@ -324,18 +325,18 @@ if CLIENT then
 			LDT.CButtons.RotC:SetSize( 35 , 35 )
 			LDT.CButtons.RotC:SetImage( "sbep_icons/RotC.vmt" )
 			LDT.CButtons.RotC.DoClick = function()
-													CL.LiftDes.MVYaw = CL.LiftDes.MVYaw - 90
-													ReCalcViewAngles()
-												end
+												CL.LiftDes.MVYaw = CL.LiftDes.MVYaw - 90
+												LD.ReCalcViewAngles()
+											end
 		
 		LDT.CButtons.RotAC = vgui.Create("DImageButton", LDT.Frame )
 			LDT.CButtons.RotAC:SetPos( 285 , 468 )   
 			LDT.CButtons.RotAC:SetSize( 35 , 35 )
 			LDT.CButtons.RotAC:SetImage( "sbep_icons/RotAC.vmt" )
 			LDT.CButtons.RotAC.DoClick = function()
-													CL.LiftDes.MVYaw = CL.LiftDes.MVYaw + 90
-													ReCalcViewAngles()
-												end
+												CL.LiftDes.MVYaw = CL.LiftDes.MVYaw + 90
+												LD.ReCalcViewAngles()
+											end
 	
 		return LDT
 	
@@ -345,21 +346,18 @@ if CLIENT then
 		//					CLIENT FUNCTIONS
 		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		
-		function SBEP_OpenLiftDesignMenu( um )
+		function LD.SBEP_OpenLiftDesignMenu( um )
+			CL.LiftDes = {}
 			CL.LiftDes.SBEPLDDM = CreateSBEPLiftDesignerMenu()
-			CL.LiftDes = CL.LiftDes or {}
 			CL.LiftDes.DIR = "UP"
 			
 			CL.LiftDes.SBEPLDDM.Frame.visible = true
 			CL.LiftDes.SBEPLDDM.Frame:SetVisible( true )
 
 			CL.LiftDes.LiftSystem 	= um:ReadEntity()
-			if CL.LiftSystem then
-				CL.LiftDes.StartPos 	= (CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()) || Vector(0,0,0)
-			else
-				CL.LiftDes.StartPos 	= Vector(0,0,0)
-			end
-			SetBaseViewAngles()
+			CL.LiftDes.StartPos 	= (CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()) || Vector(0,0,0)
+			
+			LD.SetBaseViewAngles()
 			CL.LiftDes.CVYaw   		= CL.LiftDes.MVYaw
 			CL.LiftDes.CVPitch 		= CL.LiftDes.MVPitch
 			CL.LiftDes.CVRange 		= CL.LiftDes.MVRange
@@ -370,18 +368,18 @@ if CLIENT then
 			
 			CL.LiftDes.PC = CL.LiftDes.LiftSystem:GetNWInt( "SBEP_LiftPartCount" )
 		
-			SetBaseViewAngles()
+			LD.SetBaseViewAngles()
 		end
-		usermessage.Hook("SBEP_OpenLiftDesignMenu_cl", SBEP_OpenLiftDesignMenu)
+		usermessage.Hook("SBEP_OpenLiftDesignMenu_cl", LD.SBEP_OpenLiftDesignMenu)
 		
-		function SBEP_CloseLiftDesignMenu( um )
+		function LD.SBEP_CloseLiftDesignMenu( um )
 			CL.LiftDes.SBEPLDDM.SFrame:Remove()
 			CL.LiftDes.SBEPLDDM.Frame:Remove()
 			CL.LiftDes.SBEPLDDM = nil
 		end
-		usermessage.Hook("SBEP_CloseLiftDesignMenu_cl", SBEP_CloseLiftDesignMenu)
+		usermessage.Hook("SBEP_CloseLiftDesignMenu_cl", LD.SBEP_CloseLiftDesignMenu)
 		
-		function SBEPDisableButtons( um )
+		function LD.SBEPDisableButtons( um )
 			local size	= GetConVarNumber( "sbep_lift_designer_size" )
 			local pos	= um:ReadShort()
 			CL.LiftDes.PC		= um:ReadShort()
@@ -400,38 +398,34 @@ if CLIENT then
 			CL.LiftDes.SBEPLDDM.BButtons.Construct:SetDisabled( pos ~= CL.LiftDes.PC )
 			CL.LiftDes.SBEPLDDM.SButtons.finish:SetDisabled( (CL.LiftDes.PC < 3) || BEM[type1] || BEM[typeC] )
 		end
-		usermessage.Hook("SBEPDisableButtons_cl", SBEPDisableButtons)
+		usermessage.Hook("SBEPDisableButtons_cl", LD.SBEPDisableButtons)
 		
-		function SetBaseViewAngles()
+		function LD.SetBaseViewAngles()
 			CL.LiftDes.MVYaw = 45
 			CL.LiftDes.MVPitch = 20
 			CL.LiftDes.MVRange = 2.35
-			ReCalcViewAngles()
+			LD.ReCalcViewAngles()
 		end
 
-		function ReCalcViewAngles( um )
+		function LD.ReCalcViewAngles( um )
 			if um then
 				CL.LiftDes.MBRange = um:ReadFloat()
 			end
-			if CL.LiftSystem then
-				CL.LiftDes.StartPos 	= (CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()) || Vector(0,0,0)
-			else
-				CL.LiftDes.StartPos 	= Vector(0,0,0)
-			end
+			CL.LiftDes.StartPos 	= (CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()) || Vector(0,0,0)
 		end
-		usermessage.Hook("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", ReCalcViewAngles)
+		usermessage.Hook("SBEP_ReCalcViewAngles_LiftDesignMenu_cl", LD.ReCalcViewAngles)
 		
 		hook.Add("InitPostEntity", "GetSBEPLocalPlayer", function()
 			CL = LocalPlayer()
 			CL.LiftDes = {}
 		end)
 
-		function SBEPSetPHOffset( um )
+		function LD.SBEPSetPHOffset( um )
 			CL.LiftDes.PHOffset = um:ReadFloat()
 		end
-		usermessage.Hook("SBEP_SetPHOffsetLiftDesignMenu_cl", SBEPSetPHOffset)
+		usermessage.Hook("SBEP_SetPHOffsetLiftDesignMenu_cl", LD.SBEPSetPHOffset)
 		
-		function SBEP_LiftCalcView( ply, origin, angles, fov )
+		local function SBEP_LiftCalcView( ply, origin, angles, fov )
 			if CL.LiftDes.SBEPLDDM && CL.LiftDes.SBEPLDDM.Frame && CL.LiftDes.SBEPLDDM.Frame.visible then
 				local view = {}
 					CL.LiftDes.CVYaw   	= CL.LiftDes.CVYaw   	+ math.Clamp( CL.LiftDes.MVYaw   	- CL.LiftDes.CVYaw   	, -0.1  , 0.1  	)
@@ -445,26 +439,20 @@ if CLIENT then
 						CL.LiftDes.CRVec:Rotate( CL.LiftDes.CRAng )
 					CL.LiftDes.MVOffset = CL.LiftDes.CVRange * CL.LiftDes.CRVec * CL.LiftDes.CBRange
 					
-					if CL.LiftDes.LiftSystem then
-						view.origin = CL.LiftDes.StartPos + CL.LiftDes.MVOffset + CL.LiftDes.LiftSystem:GetUp()*CL.LiftDes.CHOffset
-					else
-						view.origin = CL.LiftDes.StartPos + CL.LiftDes.MVOffset + Vector(0,0,1)*CL.LiftDes.CHOffset
-					end
+					view.origin = CL.LiftDes.StartPos + CL.LiftDes.MVOffset + Vector(0,0,1)*CL.LiftDes.CHOffset
 					view.angles = (-1 * CL.LiftDes.MVOffset):Angle()
 				return view
-			--else
-				--return GAMEMODE:CalcView(ply,origin,angles,fov)
 			end
 		end
 		hook.Add("CalcView", "SBEP_LiftDesigner_CalcView", SBEP_LiftCalcView)
 
-		function TOOL:GetViewModelPosition( pos , ang )
+		--[[function TOOL:GetViewModelPosition( pos , ang )
 			if GetConVarNumber( "sbep_lift_designer_editing" ) == 1 then
 				return Vector(0, 0, -1000), ang
 			else
 				return pos, ang
 			end
-		end
+		end]]
 end
 
 function TOOL:Think()
@@ -475,11 +463,7 @@ function TOOL:Think()
 					B:DoClick()
 				end
 			end
-			--self:NextThink( CurTime() + 0.05 )
-		else
-			--self:NextThink( CurTime() + 0.2 )
 		end
-		--return true
 	end	
 end
 
@@ -631,9 +615,10 @@ function TOOL:LeftClick( trace )
 			LiftSystem_SER.Skin = GetConVarNumber( "sbep_lift_designer_skin" )
 			
 		LiftSystem_SER.Usable = GetConVarNumber( "sbep_lift_designer_enableuse" ) == 1
-		LiftSystem_SER:SetSystemSize( GetConVarNumber( "sbep_lift_designer_size" ) )
 		
 		LiftSystem_SER:Spawn()
+		
+		LiftSystem_SER:SetSystemSize( GetConVarNumber( "sbep_lift_designer_size" ) )
 		
 		local hatchconvar = GetConVarNumber( "sbep_lift_designer_doors" )
 		LiftSystem_SER.ST.UseHatches = hatchconvar == 2
@@ -650,16 +635,15 @@ function TOOL:LeftClick( trace )
 		LiftSystem_SER:RefreshParts( 1 )
 
 		RCC( "sbep_lift_designer_activepart" , 1 )
-		
-		--PrintTable( LiftSystem_SER:GetTable() )
-	
-		umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
-			umsg.Entity( LiftSystem_SER )
-		umsg.End()
-		
-		RCC( "SBEP_LiftGetCamHeight_ser" )
-	
 		RCC( "sbep_lift_designer_editing" , 1 )
+		
+		timer.Simple(0.1, function()
+							umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
+								umsg.Entity( LiftSystem_SER )
+							umsg.End()
+							
+							RCC( "SBEP_LiftGetCamHeight_ser" )
+						end)
 	
 		return true
 	end
@@ -762,6 +746,8 @@ function TOOL.BuildCPanel(panel)
 		for k,v in ipairs( SkinTable ) do
 			SLV:AddLine(v)
 		end
+		SLV:GetLine( 1 ):SetSelected( true )
+		RCC( "sbep_lift_designer_skin", 0 )
 	panel:AddItem( SLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -786,6 +772,8 @@ function TOOL.BuildCPanel(panel)
 		for k,v in ipairs( DoorTable ) do
 			DLV:AddLine(v)
 		end
+		DLV:GetLine( 1 ):SetSelected( true )
+		RCC( "sbep_lift_designer_doors", 1 )
 	panel:AddItem( DLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -809,6 +797,8 @@ function TOOL.BuildCPanel(panel)
 		for k,v in ipairs( SizeTable ) do
 			SiLV:AddLine(v)
 		end
+		SiLV:GetLine( 1 ):SetSelected( true )
+		RCC( "sbep_lift_designer_size", 1 )
 	panel:AddItem( SiLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
