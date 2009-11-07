@@ -88,7 +88,8 @@ local DCT = {}
 																											{ "Door_Anim3"	   , Vector( 0,60.45,0) , Angle(0, 90,0) 	} ,
 																											{ "Door_Anim3"	   , Vector(0,-60.45,0) , Angle(0,-90,0) 	}} }
 
-			DCT[ "models/SmallBridge/Elevators,Small/sbselevt.mdl" 		] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch_S" , Vector(0,0,-60.45) 					}} }
+			DCT[ "models/SmallBridge/Elevators,Small/sbselevt.mdl" 		] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch_S" , Vector(0,0,-60.45) 					} ,
+																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} } }
 			DCT[ "models/SmallBridge/Elevators,Small/sbselevte.mdl" 	] = { cat = "Hatch_T"	, doors = {	{ "Door_ElevHatch_S" , Vector(0,0,-60.45) 					} ,
 																											{ "Door_Anim3"	   , Vector( 60.45,0,0) 					} ,
 																											{ "Door_Anim3"	   , Vector(-60.45,0,0) , Angle(0,180,0) 	}} }
