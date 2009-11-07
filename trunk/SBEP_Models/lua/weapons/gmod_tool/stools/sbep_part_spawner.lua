@@ -77,6 +77,7 @@ function TOOL:LeftClick( trace )
 		undo.SetPlayer( self:GetOwner() )
 	undo.Finish()
 
+	return true
 end
 
 function TOOL:RightClick( trace )
@@ -139,7 +140,7 @@ function TOOL.BuildCPanel( panel )
 		GlassCheckBox:SizeToContents()
 	SmallBridgeTab:AddItem( GlassCheckBox )
 	
-	if CAF && CAF.GetAddon("Spacebuild").GetStatus() then
+	if CAF && CAF.GetAddon("Spacebuild") && CAF.GetAddon("Spacebuild").GetStatus() then
 		local HabCheckBox = vgui.Create( "DCheckBoxLabel" )
 			HabCheckBox:SetText( "Habitable Module" )
 			HabCheckBox:SetConVar( "sbep_part_spawner_hab_mod" )
