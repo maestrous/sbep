@@ -90,21 +90,21 @@ function SWEP:Reload()
 end
 
 function SWEP:PReload()
-	--if !self.PReloading && !self.SReloading then
+	if !self.PReloading && !self.SReloading then
 		self:SetNetworkedFloat( "PRTime", CurTime(), true )
 		self.PReloading = true
 		self.PRTime = CurTime()
 		--print("PRel")
-	--end
+	end
 end
 
 function SWEP:SReload()
-	--if !self.PReloading && !self.SReloading then
+	if !self.PReloading && !self.SReloading then
 		self:SetNetworkedFloat( "SRTime", CurTime(), true )
 		self.SReloading = true
 		self.SRTime = CurTime()
 		--print("SRel")
-	--end
+	end
 end
 
 /*---------------------------------------------------------
@@ -225,12 +225,12 @@ function SWEP:Think()
 		if self.Owner.CSlot > 0 then
 			if self.Owner.Slots.Primary[self.Owner.CSlot] > 0 then
 				if type(self.PData.CustomThink) == "function" then
-					self.PData.CustomThink(self,self.Owner,true)
+					self.PData.CustomThink(self,self.Owner,true,self.PData)
 				end
 			end
 			if self.Owner.Slots.Secondary[self.Owner.CSlot] > 0 then
 				if type(self.SData.CustomThink) == "function" then
-					self.SData.CustomThink(self,self.Owner,false)
+					self.SData.CustomThink(self,self.Owner,false,self.SData)
 				end
 			end
 		end
@@ -345,7 +345,7 @@ function SWEP:PrimaryAttack()
 	if self.Owner.CSlot > 0 then
 		if self.Owner.Slots.Primary[self.Owner.CSlot] > 0 then
 			if type(self.PData.CustomPrimary) == "function" then
-				self.PData.CustomPrimary(self,self.Owner,true)
+				self.PData.CustomPrimary(self,self.Owner,true,self.PData)
 			else
 				if self:Clip1() != 0 && !self.PReloading then
 					
@@ -395,7 +395,7 @@ function SWEP:PrimaryAttack()
 			end
 		else
 			if type(self.SData.CustomSecondary) == "function" then
-				self.SData.CustomSecondary(self,self.Owner,false)
+				self.SData.CustomSecondary(self,self.Owner,false,self.SData)
 			end
 		end
 	end
@@ -413,7 +413,7 @@ function SWEP:SecondaryAttack()
 	if self.Owner.CSlot > 0 then
 		if self.Owner.Slots.Secondary[self.Owner.CSlot] > 0 then
 			if type(self.SData.CustomPrimary) == "function" then
-				self.SData.CustomPrimary(self,self.Owner,false)
+				self.SData.CustomPrimary(self,self.Owner,false,self.SData)
 			else
 				if self:Clip2() > 0 && !self.SReloading then
 					self:EmitSound(self.SData.Sound)
@@ -462,14 +462,14 @@ function SWEP:SecondaryAttack()
 			end
 		else
 			if type(self.PData.CustomSecondary) == "function" then
-				self.PData.CustomSecondary(self,self.Owner,true)
+				self.PData.CustomSecondary(self,self.Owner,true,self.PData)
 			end
 		end
 	end
 	
 	return true
 end
-
+--The next chunk of functions are just defined here because I can't be arsed to keep defining them in the SWep list.
 function SWEP:StandardMuzzleFlash(Prime)
 	local ply = self.Owner
 	local Data = nil
@@ -493,6 +493,30 @@ function SWEP:StandardMuzzleFlash(Prime)
 	effectdata:SetAngle(ply:EyeAngles())
 	effectdata:SetScale( 2 )
 	util.Effect( "MuzzleEffect", effectdata )
+end
+
+function SWEP:FireCheck(Prime)
+	if !((self.PReloading || self:Clip1() == 0) && Prime) && !((self.SReloading || self:Clip2() == 0) && !Prime) then
+		return true
+	else
+		return false
+	end
+end
+
+function SWEP:ConsumeAmmo(Prime, Ammo)
+	if Prime then
+		self:TakePrimaryAmmo( Ammo )
+	else
+		self:TakeSecondaryAmmo( Ammo )
+	end
+end
+
+function SWEP:ReloadCheck(Prime)
+	if Prime then
+		self:PReload()
+	else
+		self:SReload()
+	end
 end
 
 function SWEP:ShouldDropOnDie()
@@ -1038,8 +1062,10 @@ if CLIENT then
 					Ang.Yaw = gui.MouseX()-- Ang.Yaw + 1
 					--local X = (math.cos(math.rad( -Ang.Yaw )) * DVec.x) + (math.sin(math.rad( Ang.Yaw )) * DVec.y)
 					--local Y = (math.sin(math.rad( -Ang.Yaw )) * DVec.x) + (math.cos(math.rad( Ang.Yaw )) * DVec.y)
-					local Y = (math.cos(math.rad( -Ang.Yaw )) * DVec.x) + (math.sin(math.rad( Ang.Yaw )) * DVec.y)
-					local X = (math.sin(math.rad( -Ang.Yaw )) * DVec.x) + (math.cos(math.rad( Ang.Yaw )) * DVec.y)
+					--local Y = (math.cos(math.rad( -Ang.Yaw )) * DVec.x) + (math.sin(math.rad( Ang.Yaw )) * DVec.y)
+					--local X = (math.sin(math.rad( -Ang.Yaw )) * DVec.x) + (math.cos(math.rad( Ang.Yaw )) * DVec.y)
+					local X = (math.sin(math.rad(Ang.Yaw)) * DVec.y) + (math.cos(math.rad(Ang.Yaw)) * DVec.x)
+					local Y = (math.cos(math.rad(Ang.Yaw)) * -DVec.y) + (math.sin(math.rad(Ang.Yaw)) * DVec.x)
 					--print(X,Y)
 					ModelDisp.Entity:SetAngles(Ang)
 					ModelDisp:SetCamPos( Vector(X,Y,DVec.z) )
