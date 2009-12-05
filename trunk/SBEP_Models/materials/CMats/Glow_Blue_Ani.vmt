@@ -1,0 +1,15 @@
+"UnlitGeneric"
+{
+	"$basetexture" "CMats/Glow_Blue_Ani"
+	"$selfillum" 1
+	"$translucent" 1
+	"Proxies"
+   {
+      "AnimatedTexture"
+      {
+         "animatedtexturevar" "$basetexture"
+         "animatedtextureframenumvar" "$frame"
+         "animatedtextureframerate" 25
+      }
+   }
+}
