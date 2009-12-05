@@ -35,6 +35,8 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
+SWEP.DTime					= 0
+SWEP.DeployLength			= 0.75
 SWEP.RTime					= 0
 SWEP.ReloadLength			= 2
 SWEP.NBurst					= 0
@@ -191,10 +193,17 @@ if (CLIENT) then
 	function SWEP:GetViewModelPosition( pos, ang )
 		local NAng = 0
 		local RTime = self:GetNetworkedFloat( "RTime" ) or 0
+		local DTime = self:GetNetworkedFloat( "DTime" ) or 0
 		--print(RTime)
 		if RTime + self.ReloadLength > CurTime() then
 			local Prg = (( RTime + self.ReloadLength ) - CurTime()) / self.ReloadLength
 			NAng = math.sin(math.rad(Prg * 180))
+			--print(NAng * 45)
+			--print("Reloading")
+		end
+		if DTime + self.DeployLength > CurTime() then
+			local Prg = (( DTime + self.DeployLength ) - CurTime()) / self.DeployLength
+			NAng = math.sin(math.rad(Prg * 90))
 			--print(NAng * 45)
 			--print("Reloading")
 		end
@@ -206,4 +215,14 @@ if (CLIENT) then
 		return pos, ang
  
 	end
+end
+
+function SWEP:DrawWorldModel()
+     self.Weapon:DrawModel()
+end
+
+function SWEP:Deploy()
+	self.DTime = CurTime()
+	self:SetNetworkedFloat( "DTime", CurTime(), true )
+    return true
 end
