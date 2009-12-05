@@ -90,4 +90,6 @@ function SBEP.ItemSpread()
 	SBEP.Item("Bianchi FA-6")
 	SBEP.Item("Shuko K-80")
 	SBEP.Item("Ganz HMG")
+	SBEP.Item("TB-15 Plasma Accelerator")
+	SBEP.Item("Blast Rifle")
 end
