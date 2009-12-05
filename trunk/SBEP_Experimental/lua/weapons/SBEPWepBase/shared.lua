@@ -1059,7 +1059,7 @@ if CLIENT then
 					local DVec = InfoData.IVec or Vector(0,20,0)
 					local Ang = ModelDisp.Entity:GetAngles() or Angle(0,0,0)
 					--print(Ang)
-					Ang.Yaw = gui.MouseX()-- Ang.Yaw + 1
+					Ang.Yaw = Ang.Yaw + 3
 					--local X = (math.cos(math.rad( -Ang.Yaw )) * DVec.x) + (math.sin(math.rad( Ang.Yaw )) * DVec.y)
 					--local Y = (math.sin(math.rad( -Ang.Yaw )) * DVec.x) + (math.cos(math.rad( Ang.Yaw )) * DVec.y)
 					--local Y = (math.cos(math.rad( -Ang.Yaw )) * DVec.x) + (math.sin(math.rad( Ang.Yaw )) * DVec.y)
@@ -1068,7 +1068,10 @@ if CLIENT then
 					local Y = (math.cos(math.rad(Ang.Yaw)) * -DVec.y) + (math.sin(math.rad(Ang.Yaw)) * DVec.x)
 					--print(X,Y)
 					ModelDisp.Entity:SetAngles(Ang)
-					ModelDisp:SetCamPos( Vector(X,Y,DVec.z) )
+					ModelDisp:SetCamPos( DVec + (ModelDisp.Entity:GetRight() * Y) + (ModelDisp.Entity:GetForward() * X)  )
+					--ModelDisp.Entity:SetPos( Vector(X,Y,DVec.z) )
+					--ModelDisp.Entity:SetPos( -DVec + (ModelDisp.Entity:GetRight() * Y) + (ModelDisp.Entity:GetForward() * X) )
+					--ModelDisp:SetCamPos( DVec )
 					ModelDisp:SetLookAt( DVec + Vector(0,-1,0) )
 				end
 			end
