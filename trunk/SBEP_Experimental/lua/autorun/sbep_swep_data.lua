@@ -550,7 +550,7 @@ local SBEP_SWeps = {
 					end
 				end
 				},
-	[ "TB-15 Plasma Accelerator"	] = {
+	[ "TB-15 Plasma Accelerator" ] = {
 				Model = "models/Cerus/Weapons/plas_cannon.mdl", 
 				LVec = Vector(0,0,0), 
 				RVec = Vector(11,-10,-10), 
