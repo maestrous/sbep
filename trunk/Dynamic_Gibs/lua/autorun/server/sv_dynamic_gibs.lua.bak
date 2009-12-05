@@ -4,7 +4,7 @@ AddCSLuaFile("autorun/client/cl_dynamic_gibs.lua")
 local blacklist = {"ragdoll","player","npc","wreckedstuff"}
 
 local function GibEntityRemove( ent )
-	if (ent.GibTime and ent.GibTime >= CurTime()) and ent:IsValid() and (ent:Health() <= 0) and (ent:GetModel() ~= "") and (not IsPartiallyInTable(blacklist,ent:GetModel())) and (not IsPartiallyInTable(blacklist,ent:GetClass())) then	
+	if (ent.GibTime and ent.GibTime >= CurTime()) and ((not ent.GComGib) or ent.GComGib + 1 < CurTime()) and ent:IsValid() and (ent:Health() <= 0) and (ent:GetModel() ~= "") and (not IsPartiallyInTable(blacklist,ent:GetModel())) and (not IsPartiallyInTable(blacklist,ent:GetClass())) then	
 		for k,v in pairs(player.GetAll()) do
 			if v:GetInfo("cl_Dynamic_gibs") and v:GetInfo("cl_Dynamic_gibs") == "1" then
 				DynamicGibEnt(ent,ply)
@@ -45,6 +45,16 @@ function IsPartiallyInTable(tbl,str)
 	return false
 end
 
+local function RemoveValeFromTable(tbl,val)
+	local ret = table.Copy(tbl)
+	for k,v in ipairs(tbl) do
+		if string.lower(v) == string.lower(val) then
+			ret[k] = nil
+		end
+	end
+	return ret
+end
+
 function SaveBlacklistToFile()
 	file.Write("DynamicGibBlacklist.txt",glon.encode(blacklist))
 end
@@ -60,6 +70,18 @@ function AddItemToBlacklist(ply,cmd,arg)
 	end
 end
 concommand.Add("sv_dynamic_gibs_addtoblacklist",AddItemToBlacklist)
+
+function RemoveItemFromBlacklist(ply,cmd,arg)
+	if ply:IsAdmin() then
+		if type(arg) == "table" then
+			RemoveValeFromTable(blacklist,table.concat(arg," "))
+		elseif type(arg) == "string" then
+			RemoveValeFromTable(blacklist,arg)
+		end
+		SaveBlacklistToFile()
+	end
+end
+concommand.Add("sv_dynamic_gibs_removefromblacklist",RemoveItemFromBlacklist)
 
 concommand.Add("sv_dynamic_gibs_printblacklist",function(ply,cmd,arg) 
 	if ply:IsAdmin() then
@@ -81,20 +103,24 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 	local lastEntCalled = nil
 	local lastCallTS = 0
 	local TSTolerance = 0.1
-	function gcombat.devhit(e,d,p)
-		OldDevFunc(e,d,p)
+	function gcombat.devhit(e,d,p) --override the core hit functions
 		lastEntCalled = e
 		lastCallTS = CurTime()
+		e.GibTime = 0
+		e.GComGib = CurTime()
+		return OldDevFunc(e,d,p)
 	end
 	function cbt_dealdevhit(e,d,p)
-		OldDevFunc(e,d,p)
 		lastEntCalled = e
 		lastCallTS = CurTime()
+		e.GibTime = 0
+		e.GComGib = CurTime()
+		return OldDevFunc(e,d,p)
 	end
 	
 	local Entity = FindMetaTable("Entity")
 	Entity.OldPreGCSetModel = Entity.SetModel
-	function Entity:SetModel(str) --this is a fix for gcombat gibs not inheriting the parent's skin.
+	function Entity:SetModel(str) --this is a fix for gcombat gibs not inheriting the parent's skin, it should work 99% of the time, unless someone's doing some wierd shit.
 		if self:GetClass() == "wreckedstuff" and lastEntCalled and lastEntCalled:IsValid() and lastCallTS <= (CurTime() + TSTolerance) then
 			if string.lower(str) == string.lower(lastEntCalled:GetModel()) then
 				self:SetSkin(lastEntCalled:GetSkin())
@@ -105,7 +131,7 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 	
 	require("scripted_ents")
 	
-	local ENT = scripted_ents.Get("wreckedstuff")
+	local ENT = scripted_ents.Get("wreckedstuff") --override the model's init
 	
 	ENT.GCOldInit = ENT.Initialize
 	
@@ -113,8 +139,26 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 		if not self.copy then --we are the original, make the second half now.
 		
 			local PlaneNorm = Vector(math.Rand(0,1000),math.Rand(0,1000),math.Rand(0,1000)):Normalize()
+			
+			local pos = self.Entity:GetPos()
+			local Force = Vector((pos.x + math.random(-400,400)),(pos.y + math.random(-400,400)),(pos.z + math.random(-400,400))):GetNormalized() * 300
 		
-			self:GCOldInit()
+			math.randomseed(CurTime())
+			self.exploded = false
+			self.fuseleft = CurTime() + 2
+			self.deathtype = 0	
+			self.Entity:PhysicsInit( SOLID_VPHYSICS )
+			self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
+			self.Entity:SetSolid( SOLID_VPHYSICS ) 
+			self.Entity:SetColor(20,20,20,255)
+			self.Entity:SetCollisionGroup( 0 )
+			local phys = self.Entity:GetPhysicsObject()  	
+			if (phys:IsValid()) then  		
+				phys:Wake()
+				phys:EnableGravity(false)
+				phys:ApplyForceCenter(Force)
+			end 
+			
 			self.brother = ents.Create("wreckedstuff")
 			self.brother:SetModel( self:GetModel() )
 			self.brother:SetAngles( self:GetAngles() )
@@ -127,11 +171,11 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 			if (phys:IsValid()) then  		
 				phys:Wake()
 				phys:EnableGravity(false)
-				phys:ApplyForceCenter(self:GetPhysicsObject():GetVelocity()+(PlaneNorm*20))
+				phys:ApplyForceCenter(Force+(PlaneNorm*20))
 			end 
 			
-			SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self:EntIndex(),PlaneNorm)
-			SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self.brother:EntIndex(),PlaneNorm*-1)
+			SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self:EntIndex(),PlaneNorm,false)
+			SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self.brother:EntIndex(),PlaneNorm,true)
 		else
 			math.randomseed(CurTime())
 			self.exploded = false
