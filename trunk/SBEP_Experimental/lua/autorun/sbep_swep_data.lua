@@ -650,6 +650,125 @@ local SBEP_SWeps = {
 						Side = -1
 					end
 				end
+				},
+	[ "Blast Rifle" ] = {
+				Model = "models/Spacebuild/Nova/dronegun1.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(10,20,-20), 
+				IVec = Vector(20,10,10),
+				MuzzlePos = Vector(0,30,17),
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = 5,
+				RecoilVulnerability = 5,
+				Refire = .3, 
+				Auto = false,
+				Bullets = 0,
+				Damage = 0,
+				Sound = "Weapon_XM1014.Single",
+				Cone = 0.01,
+				AkimboPenalty = 2,
+				ClipSize = 20,
+				ReloadLength = 2,
+				AmmoType = "AR2",
+				Description = "Unlike its siblings, the Mitchell AV-18 and Sudnik VP, the Pilum H-AVR (Heavy Anti Vehicle Rifle) lacks any guidance package, instead relying on the high speed of its projectile to eliminate targets. With an embedded, microprocessor-driven, anti-recoil system and steel alloy-composite structure, the Pilum H-AVR launches armor-piercing fin stabilized projectiles that have proven far more effective armored targets than traditional warheads, capable of punching clean through armor and detonating inside, causing massive damage to sensitive instruments and crew-members.",
+				CustomPrimary = function(Wep,Ply,Prime,Data)
+					if Wep:FireCheck(Prime) then
+						local Side = 1
+						if !Prime then
+							Side = -1
+						end
+						local Shell = ents.Create( "SF-MortarShell" )
+						Shell:SetAngles( Ply:EyeAngles() )
+						Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
+						Shell:SetOwner( Ply )
+						Shell:Spawn()
+						Shell:Initialize()
+						Shell:Activate()
+						local physi = Shell:GetPhysicsObject()
+						local CrouchMod = 1
+						if Ply:Crouching() then
+							CrouchMod = 0.5
+						end
+						local AkimboPenalty = 1
+						if Ply.Slots.Secondary[Ply.CSlot] > 0 then
+							AkimboPenalty = Data.AkimboPenalty
+						end
+						local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 100, 0, 100)
+						physi:SetVelocity((Ply:GetAimVector() * 6000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+						
+						Wep:EmitSound("Weapon_XM1014.Single")
+		
+						Wep:Recoil(Data.Recoil * CrouchMod * AkimboPenalty)
+						
+						Wep:StandardMuzzleFlash(Prime)
+						
+						Wep:ConsumeAmmo(Prime, 1)
+						
+						Wep:SetNextPrimaryFire( CurTime() + Data.Refire )
+					else
+						Wep:ReloadCheck(Prime)
+					end
+				end,
+				CustomSecondary = function(Wep,Ply,Prime)
+					if Wep:FireCheck(Prime) then
+						Wep.Bursting = !Wep.Bursting
+					else
+						Wep:EmitSound( "Weapon_Pistol.Empty" )
+						Wep:Reload()
+					end
+					Wep:SetNextSecondaryFire( CurTime() + .2 )
+				end,
+				CustomThink = function(Wep,Ply,Prime,Data)
+					if SERVER then
+						if Wep.Bursting then
+							if Wep:FireCheck(Prime) then
+								Wep.NBurst = Wep.NBurst or 0
+								if CurTime() > Wep.NBurst then
+									local Side = 1
+									if !Prime then
+										Side = -1
+									end
+									local Shell = ents.Create( "SF-MortarShell" )
+									Shell:SetAngles( Ply:EyeAngles() )
+									Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
+									Shell:SetOwner( Ply )
+									Shell:Spawn()
+									Shell:Initialize()
+									Shell:Activate()
+									local physi = Shell:GetPhysicsObject()
+									local CrouchMod = 1
+									if Ply:Crouching() then
+										CrouchMod = 0.5
+									end
+									local AkimboPenalty = 1
+									if Ply.Slots.Secondary[Ply.CSlot] > 0 then
+										AkimboPenalty = Data.AkimboPenalty
+									end
+									local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 200, 0, 100)
+									physi:SetVelocity((Ply:GetAimVector() * 6000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+									
+									Wep:EmitSound("Weapon_XM1014.Single")
+					
+									Wep:Recoil(Data.Recoil * .5 * CrouchMod * AkimboPenalty)
+									
+									if Prime then
+										Wep:TakePrimaryAmmo( 1 )
+									else
+										Wep:TakeSecondaryAmmo( 1 )
+									end
+									
+									Wep:ConsumeAmmo(Prime, 1)
+									Wep.NBurst = CurTime() + 0.1
+								end
+							else
+								Wep:EmitSound( "Weapon_Pistol.Empty" )
+								Wep.Bursting = false
+								Wep:Reload()
+							end
+						end
+					end
+				end
 				}
 	}
 	
