@@ -96,6 +96,11 @@ DTT[ "Door_ModBridge_23a"]	= { model = "models/Cerus/Modbridge/Misc/Doors/door23
 		OS = { [0] = "Doors.Move14" 	, [0.90] = "Doors.Move14"    , [2.80] = "Doors.FullOpen8" 	, [5.00] = "Doors.FullOpen9" } , 
 		CS = { [0] = "Doors.Fullopen8" 	, [2.40] = "Doors.FullOpen8" , [3.40] = "Doors.Move14" 		, [4.40] = "Doors.FullOpen8" , [5.20] = "Doors.FullOpen9" } }
 		
+DTT[ "Door_ModBridge_33a"]	= { model = "models/Cerus/Modbridge/Misc/Doors/door33a_anim.mdl" 	, 
+										UD = 2.8 , OD = 1.6 , CD = 1.2 	,
+		OS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
+		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		
 DTT[ "ACC_Furnace1"]	= { model = "models/Cerus/Modbridge/Misc/Accessories/acc_furnace1_anim.mdl" 	, 
 										UD = 1 , OD = 0.2 , CD = 0.8 	,
 		OS = { [0] = "Doors.Move14" 	, [1.00] = "Doors.FullOpen9" } , 
