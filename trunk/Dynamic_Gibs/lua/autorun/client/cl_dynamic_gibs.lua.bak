@@ -94,12 +94,19 @@ usermessage.Hook("gib_message", CreateGibs)
 usermessage.Hook("ApplyClippingPlaneToGCObject",function(um) 
 	local ent = ents.GetByIndex(um:ReadLong())
 	local norm = um:ReadVector()
+	local invert = um:ReadBool()
 	if ent and ent:IsValid() then
 		ent:SetRenderClipPlaneEnabled( true )
 		hook.Add("PreDrawOpaqueRenderables",gibcount.."GCombatServersideWreckPlane",function() 
 			if ent and ent:IsValid() then
-				local nrml,dist = Plane( (norm+ent:GetAngles():Forward()):GetNormal(), ent:GetPos() )
-				ent:SetRenderClipPlane( nrml, dist ) 
+				if not invert then
+					local nrml,dist = Plane( (norm+ent:GetAngles():Forward()):GetNormal(), ent:GetPos() )
+					ent:SetRenderClipPlane( nrml, dist ) 
+				else
+					local nrml,dist = Plane( (norm+ent:GetAngles():Forward()):GetNormal()*-1, ent:GetPos() )
+					ent:SetRenderClipPlane( nrml, dist ) 
+
+				end
 			else
 				hook.Remove("PreDrawOpaqueRenderables",gibcount.."GCombatServersideWreckPlane")
 			end
