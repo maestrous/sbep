@@ -52,11 +52,6 @@ GOTO GetName
 :ExcludeSubD
 DIR /b *.mdl > Modelprep.txt
 GOTO GetName
-
-
-
-
-GOTO GetName
 REM Return here if file already exists
 :Confirm
 ECHO File already exists, overwrite?
@@ -64,8 +59,8 @@ SET /p OVER=[y/n]^>
 IF "!OVER!"== "y" (
 IF EXIST %SPAWNLIST%.txt del %SPAWNLIST%.txt
 GOTO WriteFile
-) else (
-GOTO GetName
+) ELSE (
+ECHO Backing up...
 )
 
 GOTO GetName
