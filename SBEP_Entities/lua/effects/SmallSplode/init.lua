@@ -39,7 +39,7 @@
 				particle2:SetVelocity( self.vFw * math.Rand(-30, -100) + self.vUp * math.Rand(-20, 20) + self.vRi * math.Rand(-20, 20) )
 				particle2:SetLifeTime( 0 )
 				particle2:SetDieTime( math.Rand( 2, 3 ) )
-				particle2:SetStartAlpha( math.Rand( 200, 255 ) )
+				particle2:SetStartAlpha( math.Rand( 150, 200 ) )
 				particle2:SetEndAlpha( 0 )
 				particle2:SetStartSize( 50 )
 				particle2:SetEndSize( 40 )
