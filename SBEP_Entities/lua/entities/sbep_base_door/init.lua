@@ -126,7 +126,7 @@ function ENT:PhysicsInitialize()
 		if (phys:IsValid()) then  		
 			phys:Wake()  
 			phys:EnableGravity(false)
-			phys:EnableMotion( false )
+			phys:EnableMotion( true )
 		end
 end
 
