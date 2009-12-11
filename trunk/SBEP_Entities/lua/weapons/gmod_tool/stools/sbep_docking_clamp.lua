@@ -8,37 +8,14 @@ local ModelSelectTable = list.Get( "SBEP_DockingClampModels" )
 if CLIENT then
 	language.Add( "Tool_sbep_docking_clamp_name"	, "SBEP Docking Clamp Tool" 						)
 	language.Add( "Tool_sbep_docking_clamp_desc"	, "Create an SBEP docking clamp."					)
-	language.Add( "Tool_sbep_docking_clamp_0"		, "Left click to spawn a docking clamp." 			)
+	language.Add( "Tool_sbep_docking_clamp_0"		, "Left click to spawn a docking clamp." 			) --Right click an existing clamp to spawn a counterpart."	)
 	language.Add( "undone_SBEP Docking Clamp"		, "Undone SBEP Docking Clamp"						)
-	
-	--[[
-	function SBEP_AddDockCLEffectsTable( um )
-	
-		local CLDockEnt = um:ReadEntity()
-		local NumPoints = um:ReadShort()
-
-		local EfPoints = {}
-		for i = 1, NumPoints do
-			EfPoints[i] = {}
-			local Vec = um:ReadVector()
-			local sp  = um:ReadShort()
-			print( tostring( Vec ) )
-			EfPoints[i]["x" ] = Vec.x
-			EfPoints[i]["y" ] = Vec.y
-			EfPoints[i]["z" ] = Vec.z
-			EfPoints[i]["sp"] = sp
-			print( tostring( sp ) )
-		end
-		CLDockEnt:AddEfPointsTable( EfPoints )
-	end
-	usermessage.Hook("SBEP_AddDockCLEffectsTable_cl", SBEP_AddDockCLEffectsTable)
-	]]--
 end
 
 local CategoryTable = {
-			{ "SmallBridge"			, "SmallBridge"	  , "models/SmallBridge/Ship Parts/sblanduramp.mdl"  } ,
-			{ "MedBridge"		 	, "MedBridge"	  , "models/Slyfo/airlock_docksys.mdl" 			     } ,
-			{ "ElevatorSmall"		, "ElevatorSmall" , "models/SmallBridge/Elevators,Small/sbselevt.mdl"} ,
+			{ "SmallBridge"			, "SmallBridge"	  , "models/smallbridge/ship parts/sblanduramp.mdl"  } ,
+			{ "MedBridge"		 	, "MedBridge"	  , "models/slyfo/airlock_docksys.mdl" 			     } ,
+			{ "ElevatorSmall"		, "ElevatorSmall" , "models/smallbridge/elevators,small/sbselevt.mdl"} ,
 			{ "PHX"					, "PHX" 		  , "models/props_phx/construct/metal_wire1x1.mdl"	 }
 					}
 
@@ -56,46 +33,27 @@ function TOOL:LeftClick( trace )
 	
 	local pos = trace.HitPos
 	
-	local DockEnt = ents.Create( "sbep_base_docking_clamp" )
-				
+	local DockEnt = ents.Create( "sbep_base_docking_clamp" )	
 		DockEnt.SPL = self:GetOwner()
-				
-		DockEnt.ALType  = DataTable.ALType or ""
-
 		DockEnt:SetModel( model )
-		DockEnt:SetName( DataTable.ALType )
-		
-		DockEnt.CompatibleLocks = DataTable.Compatible
+		DockEnt:SetDockType( DataTable.ALType )
 		DockEnt.Usable = GetConVarNumber( "sbep_docking_clamp" ) == 1
-		--DataTable.EfPoints = table.Copy( DataTable.EfPoints )
-
-		DockEnt:Spawn()
-		DockEnt:Initialize()
-		DockEnt:Activate()
+	DockEnt:Spawn()
+	DockEnt:Initialize()
+	DockEnt:Activate()
 		
-		for k,v in pairs( DataTable.EfPoints ) do
-			DockEnt:SetNetworkedVector("EfVec"..k, v.vec)
-			DockEnt:SetNetworkedInt("EfSp"..k, v.sp)
+	for k,v in pairs( DataTable.EfPoints ) do
+		DockEnt:SetNetworkedVector("EfVec"..k, v.vec)
+		DockEnt:SetNetworkedInt("EfSp"..k, v.sp)
+	end
+	
+	DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
+	
+	if DataTable.Doors then
+		for m,n in ipairs( DataTable.Doors ) do
+			DockEnt:AddDockDoor( n )
 		end
-		
-		--[[
-		umsg.Start("SBEP_AddDockCLEffectsTable_cl", RecipientFilter():AddAllPlayers())
-		    umsg.Entity( DockEnt )
-			umsg.Short( #DataTable.EfPoints )
-			for k,v in pairs( DataTable.EfPoints ) do
-				umsg.Vector( v.vec )
-				umsg.Short( v.sp )
-			end
-		umsg.End()
-		]]--
-
-		DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
-		
-		if DataTable.Doors then
-			for m,n in ipairs( DataTable.Doors ) do
-				DockEnt:AddDockDoor( n )
-			end
-		end
+	end
 	
 	undo.Create("SBEP Docking Clamp")
 		undo.AddEntity( DockEnt )
