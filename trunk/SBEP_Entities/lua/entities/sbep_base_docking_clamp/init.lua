@@ -34,21 +34,13 @@ function ENT:TriggerInput(iname, value)
 			self.Entity:EmitSound("Buttons.snd1")
 		else
 			self.Entity:EmitSound("Buttons.snd19")
-			self.DMode = 1
-			if self.LinkLock && self.LinkLock:IsValid() then
-				if self.LinkLock.DMode == 3 || self.LinkLock.DMode == 4 then 
-					self.LinkLock.DMode = 2
-				end
-				self.LinkLock.LinkLock = nil
-				self.LinkLock:SetNetworkedEntity( "LinkLock", nil )
-				self.Entity:SetNetworkedEntity( "LinkLock", nil )
-			end
-			self.LinkLock = nil
-			if self.AWeld then
-				if self.AWeld:IsValid() then
-					self.AWeld:Remove()
-				end
-			end
+			if self.UDD then
+				self.DMode = 0
+				self.DTime = CurTime() + 2
+			else
+				self.DMode = 1
+				self:Disengage()
+			end			
 		end
 		
 	elseif (iname == "UndockDelay") then
@@ -57,7 +49,6 @@ function ENT:TriggerInput(iname, value)
 		else
 			self.UDD = false
 		end
-		
 	end
 end
 
@@ -99,6 +90,14 @@ function ENT:Think()
 			end
 		end
 	end
+	
+	if self.DMode == 0 then
+		if self.DTime > CurTime() then
+			self:Disengage()
+			self.DMode = 1
+		end
+	end
+	
 	if self.DMode == 2 then
 	
 		--local mn, mx = self.Entity:WorldSpaceAABB()
@@ -324,20 +323,12 @@ function ENT:Use( activator, caller )
 		self.Entity:EmitSound("Buttons.snd1")
 	else
 		self.Entity:EmitSound("Buttons.snd19")
-		self.DMode = 1
-		if self.LinkLock && self.LinkLock:IsValid() then
-			if self.LinkLock.DMode == 3 || self.LinkLock.DMode == 4 then 
-				self.LinkLock.DMode = 2
-			end
-			self.LinkLock.LinkLock = nil
-			self.LinkLock:SetNetworkedEntity( "LinkLock", nil )
-			self.Entity:SetNetworkedEntity( "LinkLock", nil )
-		end
-		self.LinkLock = nil
-		if self.AWeld then
-			if self.AWeld:IsValid() then
-				self.AWeld:Remove()
-			end
+		if self.UDD then
+			self.DMode = 0
+			self.DTime = CurTime() + 2		
+		else
+			self.DMode = 1
+			self:Disengage()
 		end
 	end
 end
@@ -446,4 +437,21 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 		WireLib.ApplyDupeInfo( pl, Ent, DI.WireData, function(id) return CreatedEntities[id] end)
 	end
 
+end
+
+function ENT:Disengage()
+	if self.LinkLock && self.LinkLock:IsValid() then
+		if self.LinkLock.DMode == 3 || self.LinkLock.DMode == 4 then 
+			self.LinkLock.DMode = 2
+		end
+		self.LinkLock.LinkLock = nil
+		self.LinkLock:SetNetworkedEntity( "LinkLock", nil )
+		self.Entity:SetNetworkedEntity( "LinkLock", nil )
+	end
+	self.LinkLock = nil
+	if self.AWeld then
+		if self.AWeld:IsValid() then
+			self.AWeld:Remove()
+		end
+	end
 end

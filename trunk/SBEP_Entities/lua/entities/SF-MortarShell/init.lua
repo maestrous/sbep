@@ -32,7 +32,11 @@ function ENT:Initialize()
 
 end
 
-function ENT:PhysicsUpdate()
+function ENT:PhysicsUpdate(phys)
+
+	local Vel = phys:GetVelocity()
+	self.Entity:SetAngles( Vel:Angle() )
+	phys:SetVelocity(Vel)
 
 	if(self.Exploded) then
 		self.Entity:Remove()
@@ -57,6 +61,10 @@ function ENT:Think()
 		--self.PhysObj:SetVelocity(self.Entity:GetForward()*3100)
 
 		self.PreLaunch = true
+	end
+	
+	if self.RifleNade then
+		self.Entity:GetPhysicsObject():SetVelocity(self.Entity:GetForward() * 3000)
 	end
 	
 	local trace = {}
@@ -88,8 +96,8 @@ end
 
 function ENT:GoBang()
 	self.Exploded = true
-	util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 100, 75)
-	gcombat.hcgexplode( self.Entity:GetPos(), 100, math.Rand(150, 300), 7)
+	util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 200, 75)
+	gcombat.hcgexplode( self.Entity:GetPos(), 200, math.Rand(50, 100), 7)
 
 	self.Entity:EmitSound("explode_4")
 	
@@ -97,5 +105,5 @@ function ENT:GoBang()
 	effectdata:SetOrigin(self.Entity:GetPos())
 	effectdata:SetStart(self.Entity:GetPos())
 	effectdata:SetAngle(self.Entity:GetAngles())
-	util.Effect( "SmallSplode", effectdata )
+	util.Effect( "TinyWhomphSplode", effectdata )
 end

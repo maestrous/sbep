@@ -50,7 +50,7 @@ function ENT:Initialize()
 end
 
 function ENT:PhysicsSimulate( phys, deltatime )
-
+	
 	if self.PasteDelay || !self.Controller || !self.Controller:IsValid() || self.Controller.Disabled then return SIM_NOTHING end
 	
 	phys:Wake()
@@ -78,18 +78,11 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	local RPos = self.Entity:GetPos() + (self.Controller:GetUp() * -self.ZCo) + (self.Controller:GetForward() * -self.YCo) + (self.Controller:GetRight() * -self.XCo) --+ (self.Controller:GetPhysicsObject():GetVelocity() * self.Controller.Vel ) --(phys:GetVelocity() * 0.8)
 	
 	return phys:ComputeShadowControl(self.ShadowParams)
-
+	
 end
 
 function ENT:Think()
-	
-	self.Entity:SetLocalPos(Vector(self.Controller.XCo,self.Controller.YCo,self.Controller.ZCo))
-	local Ang = Angle(0,0,0)
-	Ang.y = self.Yaw
-	Ang.r = self.Roll
-	Ang.p = self.Pitch
-	self.Entity:SetLocalAngles(Ang)
-	
+		
 	if self.PasteDelay || self.Controller.Disabled then return end
 	
 	if !self.Controller || !self.Controller:IsValid() then
@@ -137,4 +130,15 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 		end
 	end
 	self.PasteDelay = false
+end
+
+function ENT:Use( activator, caller )
+	/*
+	if !self.Socked then
+		--Vector( self.Controller.FulX , self.Controller.FulY , self.Controller.FulZ )
+		local LPos = Vector(0,0,0)--self.Controller:WorldToLocal(self:GetPos() + self:GetRight() * self.Controller.FulX + self:GetForward() * self.Controller.FulY + self:GetUp() * self.Controller.FulZ)
+		local Cons = constraint.Ballsocket( self, self.Controller, 0, 0, LPos, 0, 0, 1)
+		self.Socked = true
+	end
+	*/
 end

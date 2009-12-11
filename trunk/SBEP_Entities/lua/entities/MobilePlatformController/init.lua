@@ -230,7 +230,7 @@ end
 function ENT:Think()
 	
 	if self.PasteDelay then return end
-
+	
 	if (!self.Plat || !self.Plat:IsValid()) and self.PlModel then
 		self.Plat = ents.Create( "MobilePlatform" )
 		self.Plat:SetModel( self.PlModel )
@@ -248,7 +248,6 @@ function ENT:Think()
 		--self.MWeld = constraint.Weld(self.Entity,self.Plat,0,0,0,true)
 		--self.Plat:SetParent(self.Entity)
 	end
-	
 	--self.Plat:SetLocalPos(Vector(self.XCo, self.YCo, self.ZCo))
 	--self.Plat:SetLocalAngles(Vector(self.Pitch, self.Yaw, self.Roll))
 	--print(self.PlModel)
@@ -314,8 +313,8 @@ function ENT:Think()
 		self.Plat.ZCo = self.ZCo
 	end
 	
-	self.Plat:SetLocalPos(Vector(self.XCo,self.YCo,self.ZCo))
-	self.Plat:SetLocalAngles(Angle(self.Pitch,self.Yaw,self.Roll))
+	--self.Plat:SetLocalPos(Vector(self.XCo,self.YCo,self.ZCo))
+	--self.Plat:SetLocalAngles(Angle(self.Pitch,self.Yaw,self.Roll))
 	
 	self.Plat.Duration = self.Duration
 	
@@ -366,4 +365,19 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	end
 	self.PasteDelay = false
 	self.Entity:Think()
+end
+
+function ENT:Use( activator, caller )
+	if activator:KeyDown( IN_SPEED ) && activator:KeyDown( IN_WALK ) then
+		local RPos = Vector( self.XCo , self.YCo , self.ZCo )
+		
+		if self.FulX ~= 0 || self.FulY ~= 0 || self.FulZ ~= 0 then
+			local FulVec = Vector( self.FulX , self.FulY , self.FulZ )
+			FulVec:Rotate( Angle( self.Pitch , self.Yaw , self.Roll ) )
+			RPos = RPos - FulVec
+		end
+		
+		local Pos = self.Plat:LocalToWorld( RPos * -1 )
+		self.Entity:SetPos(Pos)
+	end
 end

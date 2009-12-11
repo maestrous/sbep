@@ -91,7 +91,7 @@ if (SERVER) then
 		datagpod:SetPos(Pos)
 		datagpod:SetModel(Model)
 		datagpod:Spawn()
-		datagpod:GetTable():SetPlayer( pl )
+		datagpod:SetPlayer( pl )
 		local ttable = {
 			pl = pl
 		}
