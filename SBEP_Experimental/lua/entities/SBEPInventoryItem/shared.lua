@@ -4,7 +4,7 @@ ENT.PrintName		= "Inventory Item"
 ENT.Author			= "Paradukes"
 ENT.Category		= "SBEP - Other"
 
-ENT.Spawnable		= true
-ENT.AdminSpawnable	= true
+ENT.Spawnable		= false
+ENT.AdminSpawnable	= false
 ENT.Owner			= nil
 ENT.SPL				= nil
