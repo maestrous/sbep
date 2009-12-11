@@ -2,6 +2,8 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 
+local DCDT = list.Get( "SBEP_DockingClampModels" )
+
 function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
@@ -73,6 +75,16 @@ function ENT:AddDockDoor( DoorData )
 		
 	table.insert( self.Doors , door )
 
+end
+
+function ENT:SetDockType( type )
+	if !type then return false end
+	local DT = DCDT[ self.Entity:GetModel() ]
+	if !DT then return false end
+
+	self.ALType  = type
+	self.Entity:SetName( type )
+	self.CompatibleLocks = DT.Compatible
 end
 
 function ENT:Think()
@@ -360,25 +372,78 @@ function ENT:TypeSet( Type )
 end
 
 function ENT:PreEntityCopy()
-	local dupeInfo = {}
+	local DI = {}
 	
-	if WireAddon then
-		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+	DI.Type = self.ALType
+	
+	DI.EfPoints = {}
+	for i = 1,10 do
+		local Vec = self.Entity:GetNetworkedVector("EfVec"..i)
+		if Vec && Vec != Vector(0,0,0) then
+			DI.EfPoints[i] = {}
+			DI.EfPoints[i].x = Vec.x
+			DI.EfPoints[i].y = Vec.y
+			DI.EfPoints[i].z = Vec.z
+			DI.EfPoints[i].sp = self.Entity:GetNetworkedInt("EfSp"..i) or 0
+		end
 	end
 	
-	dupeInfo.CompatibleLocks = self.CompatibleLocks
+	DI.Doors = {}
+	for n,D in ipairs( self.Doors ) do
+		if D && D:IsValid() then
+			DI.Doors[n] = D:EntIndex()
+		end
+	end
 	
-	duplicator.StoreEntityModifier(self, "SBEPDockingClampDupeInfo", dupeInfo)
+	if self.AWeld && self.AWeld:IsValid() then
+		self.AWeld:Remove()
+	end
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	DI.CompatibleLocks = self.CompatibleLocks
+	DI.DMode = self.DMode
+	if self.LinkLock && self.LinkLock:IsValid() then
+		DI.LinkLock = self.LinkLock:EntIndex()
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPDCI", DI)
 end
-duplicator.RegisterEntityModifier( "SBEPDockingClampDupeInfo" , function() end)
+duplicator.RegisterEntityModifier( "SBEPDCI" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
-	if(Ent.EntityMods and Ent.EntityMods.SBEPDockingClampDupeInfo.WireData) then
-		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPDockingClampDupeInfo.WireData, function(id) return CreatedEntities[id] end)
-		self.CompatibleLocks = Ent.EntityMods.SBEPDockingClampDupeInfo.CompatibleLocks
+	local DI = Ent.EntityMods.SBEPDCI
+	
+	if !DI then return end
+	
+	self:SetDockType( DI.Type )
+	
+	for k,v in ipairs( DI.EfPoints ) do
+		self.Entity:SetNetworkedVector("EfVec"..k, Vector( v.x , v.y , v.z ) )
+		self.Entity:SetNetworkedInt("EfSp"..k, v.sp)
+	end
+
+	self.Doors = {}
+	for n,I in ipairs( DI.Doors ) do
+		self.Doors[n] = CreatedEntities[I]
 	end
 	
+	self.AWeld = CreatedEntities[ DI.AWeld ]
+	self.CompatibleLocks = DI.CompatibleLocks
+	self.DMode = DI.DMode
+	if DI.LinkLock then
+		self.LinkLock = CreatedEntities[ DI.LinkLock ]
+	end
 	
+	if self.DMode == 4 then
+		self.AWeld = constraint.Weld(self.LinkLock.Entity, self.Entity, 0, 0, 0, true)
+	end
+	
+	if DI.WireData then
+		WireLib.ApplyDupeInfo( pl, Ent, DI.WireData, function(id) return CreatedEntities[id] end)
+	end
 
 end
