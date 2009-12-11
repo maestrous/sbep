@@ -656,7 +656,7 @@ local SBEP_SWeps = {
 				LVec = Vector(0,0,0), 
 				RVec = Vector(10,20,-20), 
 				IVec = Vector(20,10,10),
-				MuzzlePos = Vector(0,30,17),
+				MuzzlePos = Vector(0,20,17),
 				RAng = Angle(0,0,0), 
 				LAng = Angle(0,0,0), 
 				Recoil = 5,
@@ -668,7 +668,7 @@ local SBEP_SWeps = {
 				Sound = "Weapon_XM1014.Single",
 				Cone = 0.01,
 				AkimboPenalty = 2,
-				ClipSize = 20,
+				ClipSize = 45,
 				ReloadLength = 2,
 				AmmoType = "AR2",
 				Description = "Unlike its siblings, the Mitchell AV-18 and Sudnik VP, the Pilum H-AVR (Heavy Anti Vehicle Rifle) lacks any guidance package, instead relying on the high speed of its projectile to eliminate targets. With an embedded, microprocessor-driven, anti-recoil system and steel alloy-composite structure, the Pilum H-AVR launches armor-piercing fin stabilized projectiles that have proven far more effective armored targets than traditional warheads, capable of punching clean through armor and detonating inside, causing massive damage to sensitive instruments and crew-members.",
@@ -678,7 +678,7 @@ local SBEP_SWeps = {
 						if !Prime then
 							Side = -1
 						end
-						local Shell = ents.Create( "SF-MortarShell" )
+						local Shell = ents.Create( "SF-MicroRocket" )
 						Shell:SetAngles( Ply:EyeAngles() )
 						Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
 						Shell:SetOwner( Ply )
@@ -695,7 +695,7 @@ local SBEP_SWeps = {
 							AkimboPenalty = Data.AkimboPenalty
 						end
 						local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 100, 0, 100)
-						physi:SetVelocity((Ply:GetAimVector() * 6000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+						physi:SetVelocity((Ply:GetAimVector() * 1000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
 						
 						Wep:EmitSound("Weapon_XM1014.Single")
 		
@@ -729,7 +729,7 @@ local SBEP_SWeps = {
 									if !Prime then
 										Side = -1
 									end
-									local Shell = ents.Create( "SF-MortarShell" )
+									local Shell = ents.Create( "SF-MicroRocket" )
 									Shell:SetAngles( Ply:EyeAngles() )
 									Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
 									Shell:SetOwner( Ply )
@@ -746,9 +746,11 @@ local SBEP_SWeps = {
 										AkimboPenalty = Data.AkimboPenalty
 									end
 									local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 200, 0, 100)
-									physi:SetVelocity((Ply:GetAimVector() * 6000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+									physi:SetVelocity((Ply:GetAimVector() * 1000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
 									
 									Wep:EmitSound("Weapon_XM1014.Single")
+									
+									Wep:StandardMuzzleFlash(Prime)
 					
 									Wep:Recoil(Data.Recoil * .5 * CrouchMod * AkimboPenalty)
 									

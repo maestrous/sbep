@@ -234,6 +234,7 @@ function SWEP:Think()
 				end
 			end
 		end
+		
 	end
 	
 	if CLIENT then
@@ -277,7 +278,7 @@ function SWEP:Think()
 			--print("Client", self.Owner.CRecoil)
 		end
 		
-	
+		/*
 		if( input.IsKeyDown(KEY_I)) then
 			if !self.NTog then
 				if self.Owner.InventoryDisplay then
@@ -299,6 +300,33 @@ function SWEP:Think()
 		else
 			self.NTog = false
 		end
+		*/
+		
+		if( input.IsKeyDown(KEY_I)) then
+			if !self.NTog then
+				if !self.Owner.InventoryDisplay then
+					self:CreateInventory()
+					gui.EnableScreenClicker(true)
+					print("Creating")
+				end
+				self.NTog = true
+			end
+		else
+			if self.NTog then
+				if self.Owner.InventoryDisplay then
+					self.Owner.InventoryDisplay:Remove()
+					self.Owner.InventoryDisplay = nil
+					self.Owner.InfoDisplay:Remove()
+					self.Owner.InfoDisplay = nil
+					self.Owner.WeaponSlot:Remove()
+					self.Owner.WeaponSlot = nil
+					gui.EnableScreenClicker(false)
+					print("Removing")
+				end
+				self.NTog = false
+			end
+		end
+		
 		
 		local NSlot = 0
 		for i = 2, 10 do
@@ -911,7 +939,7 @@ if SERVER then
 	
 	
 	function SBEPSlotReorder(player,commandName,args)
-		/*
+		
 		local Dropped = tonumber(args[1])
 		--print(Dropped)
 		for i=0,10 do
@@ -932,7 +960,7 @@ if SERVER then
 		umsg.Start("SBEPSlotReorder", player )
 		umsg.Float( tonumber(args[1]) )
 		umsg.End()
-		*/
+		
 	end 
 	concommand.Add("SBEPSlotReorder",SBEPSlotReorder)
 end
@@ -1052,7 +1080,7 @@ if CLIENT then
 		ModelDisp:SetLookAt( Vector(0,1,0) )
 		ModelDisp.Inv = 0
 		function ModelDisp:Think()
-			if ModelDisp.Inv <= 0 then return end
+			if ModelDisp.Inv <= 0 || !LocalPlayer().Inventory[ModelDisp.Inv] then return end
 			local InfoData = SWEPData[ LocalPlayer().Inventory[ModelDisp.Inv].Type ]
 			if InfoData then
 				if ModelDisp.Entity && ModelDisp.Entity:IsValid() then
@@ -1170,6 +1198,7 @@ if CLIENT then
 		WSlot:SetMouseInputEnabled( true )
 		WSlot:ShowCloseButton( true )
 		WSlot:SetDeleteOnClose( true )
+		WSlot.RebuildTime = 0
 		
 		function WSlot:PaintOver()
 			for i = 1,10 do
@@ -1210,11 +1239,18 @@ if CLIENT then
 			end
 		end
 		
-		
+		function WSlot:Think()
+			if WSlot.NeedsRebuilding then
+				if CurTime() > WSlot.RebuildTime then
+					WSlot:Rebuild()
+				end
+			end
+		end		
 		
 		function WSlot:Rebuild()
-			
-			for i = 1,10 do
+			--print("Rebuilding")
+			WSlot.NeedsRebuilding = false
+			for i = 0,10 do
 				if LocalPlayer().Slots.Primary[i].Icon then
 					LocalPlayer().Slots.Primary[i].Icon:Remove()
 					LocalPlayer().Slots.Primary[i].Icon = nil
@@ -1374,6 +1410,8 @@ if CLIENT then
 										LocalPlayer():ConCommand("SBEPItemDrop "..i.." "..Vec.x.." "..Vec.y.." "..Vec.z)
 										--LocalPlayer():ConCommand("SBEPSlotReorder "..i)
 										WSlot:Rebuild()
+										WSlot.NeedsRebuilding = true
+										WSlot.RebuildTime = CurTime() + 0.1
 									else
 										for n = 1,10 do
 											local WSX,WSY = WSlot:GetPos()
@@ -1538,6 +1576,33 @@ if CLIENT then
 	end
 	usermessage.Hook("SBEPEmergencyWeaponScrap", SBEPEmergencyWeaponScrap)
 	
+	
+	
+	function SBEPInventoryOpen( um )
+		if !LocalPlayer().InventoryDisplay then
+			local Wep = player:GetWeapon("SBEPWepBase")
+			Wep:CreateInventory()
+			gui.EnableScreenClicker(true)
+			print("Creating")
+		end
+	end
+	usermessage.Hook("SBEPInventoryOpen", SBEPInventoryOpen)
+	
+	
+	
+	function SBEPInventoryClose( um )
+		if LocalPlayer().InventoryDisplay then
+			LocalPlayer().InventoryDisplay:Remove()
+			LocalPlayer().InventoryDisplay = nil
+			LocalPlayer().InfoDisplay:Remove()
+			LocalPlayer().InfoDisplay = nil
+			LocalPlayer().WeaponSlot:Remove()
+			LocalPlayer().WeaponSlot = nil
+			gui.EnableScreenClicker(false)
+			print("Removing")
+		end
+	end
+	usermessage.Hook("SBEPInventoryClose", SBEPInventoryClose)
 	
 	
 	
