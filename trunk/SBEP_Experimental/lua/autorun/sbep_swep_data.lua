@@ -678,14 +678,7 @@ local SBEP_SWeps = {
 						if !Prime then
 							Side = -1
 						end
-						local Shell = ents.Create( "SF-MicroRocket" )
-						Shell:SetAngles( Ply:EyeAngles() )
-						Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
-						Shell:SetOwner( Ply )
-						Shell:Spawn()
-						Shell:Initialize()
-						Shell:Activate()
-						local physi = Shell:GetPhysicsObject()
+						
 						local CrouchMod = 1
 						if Ply:Crouching() then
 							CrouchMod = 0.5
@@ -694,8 +687,20 @@ local SBEP_SWeps = {
 						if Ply.Slots.Secondary[Ply.CSlot] > 0 then
 							AkimboPenalty = Data.AkimboPenalty
 						end
-						local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 100, 0, 100)
-						physi:SetVelocity((Ply:GetAimVector() * 1000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+						local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 10, 0, 10)
+						--local AVec = (Ply:GetAimVector() * 1000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc))
+						local AAng = (Ply:EyeAngles() + Angle(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+						local Shell = ents.Create( "SF-MicroRocket" )
+						Shell:SetAngles( AAng )
+						Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
+						Shell:SetOwner( Ply )
+						Shell:Spawn()
+						Shell.Drunk = math.Clamp(Acc * 5,5,20)
+						Shell:Initialize()
+						Shell:Activate()
+						local physi = Shell:GetPhysicsObject()
+						
+						physi:SetVelocity(Shell:GetForward() * 1000)
 						
 						Wep:EmitSound("Weapon_XM1014.Single")
 		
@@ -729,14 +734,7 @@ local SBEP_SWeps = {
 									if !Prime then
 										Side = -1
 									end
-									local Shell = ents.Create( "SF-MicroRocket" )
-									Shell:SetAngles( Ply:EyeAngles() )
-									Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
-									Shell:SetOwner( Ply )
-									Shell:Spawn()
-									Shell:Initialize()
-									Shell:Activate()
-									local physi = Shell:GetPhysicsObject()
+									
 									local CrouchMod = 1
 									if Ply:Crouching() then
 										CrouchMod = 0.5
@@ -745,8 +743,19 @@ local SBEP_SWeps = {
 									if Ply.Slots.Secondary[Ply.CSlot] > 0 then
 										AkimboPenalty = Data.AkimboPenalty
 									end
-									local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 200, 0, 100)
-									physi:SetVelocity((Ply:GetAimVector() * 1000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+									local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 20, 0, 20)
+									local AAng = (Ply:EyeAngles() + Angle(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+									--local AVec = (Ply:GetAimVector() * 1000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc))
+									local Shell = ents.Create( "SF-MicroRocket" )
+									Shell:SetAngles( AAng )
+									Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
+									Shell:SetOwner( Ply )
+									Shell:Spawn()
+									Shell.Drunk = math.Clamp(Acc * 5,5,20)
+									Shell:Initialize()
+									Shell:Activate()
+									local physi = Shell:GetPhysicsObject()
+									physi:SetVelocity(Shell:GetForward() * 1000)
 									
 									Wep:EmitSound("Weapon_XM1014.Single")
 									

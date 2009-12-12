@@ -381,19 +381,17 @@ function SBEPRTS_IssueOrder( Vec, Computer, OrderType )
 end
 
 function SBEPBMView( ply, origin, angles, fov ) 
-	--print("VIEWCALC")
 	if ply.BCMode then
 		if ply.BComp && ply.BComp:IsValid() then
 			
 		 	origin = origin + ply.BComp.CVVec
 			angles = Angle(90,0,0) 
 		end
-		--return GAMEMODE:CalcView(ply,origin,angles,fov)
 	end
-	--print("VIEWCALC")	
-end
-hook.Add("CalcView", "SBEPRTSView", SBEPBMView)  
-
+	
+	return GAMEMODE:CalcView(ply,origin,angles,fov)
+end 
+hook.Add("CalcView", "SBEPBMView", SBEPBMView)  
 --[[
 function PlayerPress( ply, bind ) -- Thanks to Catdaemon and Creec for this bit :)
 	if string.find(bind, "invnext") then
