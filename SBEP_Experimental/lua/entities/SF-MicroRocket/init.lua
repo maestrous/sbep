@@ -29,10 +29,11 @@ function ENT:Initialize()
 	self.CAng = self.Entity:GetAngles()
 	util.SpriteTrail( self.Entity, 0, Color(50,50,50,50), false, 10, 0, 1, 1, "trails/smoke.vmt" ) --"trails/smoke.vmt"
 
-	self.CSAng = 0
-	self.CSSpeed = math.random(-100,100)
-	self.CSXSp = math.random(0,200)
-	self.CSYSp = math.random(0,200)
+	self.Drunk = self.Drunk or 1
+	self.CSAng = math.random(0,360)
+	self.CSSpeed = math.random(-100 * self.Drunk,100 * self.Drunk)
+	self.CSXSp = math.random(0,10 * self.Drunk)
+	self.CSYSp = math.random(0,10 * self.Drunk)
 	self.STime = CurTime()
 end
 
