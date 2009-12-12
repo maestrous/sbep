@@ -1,4 +1,3 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include('entities/base_wire_entity/init.lua')
@@ -39,24 +38,6 @@ function ENT:Initialize()
 	self.YMult = 1
 	self.RMult = 1
 end
-
-/*
-function ENT:SpawnFunction( ply, tr )
-
-	if ( !tr.Hit ) then return end
-	
-	local SpawnPos = tr.HitPos + tr.HitNormal * 16
-	
-	local ent = ents.Create( "GyroPod2" )
-	ent:SetPos( SpawnPos )
-	ent:Spawn()
-	ent:Activate()
-	ent.SPL = ply
-	
-	return ent
-	
-end
-*/
 
 local Gyrojcon = {}	
 local GyroJoystickControl = function()
@@ -349,12 +330,12 @@ function ENT:Think()
 						local physi = c:GetPhysicsObject()
 						physi:SetVelocity( (physi:GetVelocity() * 0.75) + ((self.Entity:GetForward() * self.Speed) + (self.Entity:GetUp() * self.VSpeed)) + (self.Entity:GetRight() * self.HSpeed) )
 						physi:AddAngleVelocity(physi:GetAngleVelocity() * -0.5)
-						physi:ApplyForceOffset( self.Entity:GetForward() * ((self.Pitch * self.PMult) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetUp() * 5000 )
-						physi:ApplyForceOffset( self.Entity:GetForward() * ((-self.Pitch * self.PMult) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetUp() * -5000 )
-						physi:ApplyForceOffset( self.Entity:GetForward() * ((self.Yaw * self.YMult) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * 5000 )
-						physi:ApplyForceOffset( self.Entity:GetForward() * ((-self.Yaw * self.YMult) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * -5000 )
-						physi:ApplyForceOffset( self.Entity:GetUp() * ((-self.Roll * self.RMult) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * 5000 )
-						physi:ApplyForceOffset( self.Entity:GetUp() * ((self.Roll * self.RMult) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * -5000 )
+						physi:ApplyForceOffset( self.Entity:GetForward() * ((self.Pitch * self.PMult * 0.005) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetUp() * 5000 )
+						physi:ApplyForceOffset( self.Entity:GetForward() * ((-self.Pitch * self.PMult * 0.005) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetUp() * -5000 )
+						physi:ApplyForceOffset( self.Entity:GetForward() * ((self.Yaw * self.YMult * 0.01) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * 5000 )
+						physi:ApplyForceOffset( self.Entity:GetForward() * ((-self.Yaw * self.YMult * 0.01) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * -5000 )
+						physi:ApplyForceOffset( self.Entity:GetUp() * ((-self.Roll * self.RMult * 0.01) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * 5000 )
+						physi:ApplyForceOffset( self.Entity:GetUp() * ((self.Roll * self.RMult * 0.01) * physi:GetMass()), self.Entity:GetPos() + self.Entity:GetRight() * -5000 )
 						physi:EnableGravity(false)
 					end
 				end
@@ -419,6 +400,9 @@ end
 
 function ENT:OnRemove()
 	self.Entity:StopSound( "k_lab.ambient_powergenerators" )
+end
+
+function ENT:Use()
 end
 
 function ENT:BuildDupeInfo()

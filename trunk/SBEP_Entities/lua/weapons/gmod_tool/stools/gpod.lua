@@ -4,15 +4,15 @@ TOOL.Command		= nil
 TOOL.ConfigName		= ""
 
 TOOL.ent = {}
-
+TOOL.LT  = {}
 
 // Add Default Language translation (saves adding it to the txt files)
 if ( CLIENT ) then
 
 	language.Add( "Tool_gpod_name", "Gyro-Pod" )
 	language.Add( "Tool_gpod_desc", "Make stuff fly." )
-	language.Add( "Tool_gpod_0", "Right-Click to spawn the gyro, left click a prop followed by a gyro to link the two. The last vehicle linked to the gyro will control its motion. Connect the Gyro to every prop in the ship it's meant to control. The turning speed can be fine-tuned using wire-inputs on the gyro." )
-	language.Add( "Tool_gpod_1", "Now click a Gyro-Pod." )
+	language.Add( "Tool_gpod_0", "Right-Click to spawn the gyro, left click a prop followed by a gyro to link the two. The last vehicle linked to the gyro will control its motion.\nConnect the Gyro to every prop in the ship it's meant to control. The turning speed can be fine-tuned using wire-inputs on the gyro." )
+	language.Add( "Tool_gpod_1", "Select all other props to be linked, then click a Gyro-Pod to link them." )
 	
 	language.Add( "Tool_turret_type", "Type of weapon" )
 	
@@ -25,27 +25,45 @@ if ( !trace.Hit ) then return end
 	--if ( SERVER && !util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) ) then return false end
 	--if (CLIENT) then return true end
 	
-	if (self:GetStage() == 0) and (!trace.Entity.GPod) and (trace.Entity:IsValid()) then
-		--self.ST = 1
-		self.LEnt = trace.Entity
+	if (!trace.Entity.GPod) and (trace.Entity:IsValid()) then
+		if trace.Entity:IsVehicle() then
+			if self.LP then
+				self.LP:SetColor( 255 , 255 , 255 , 255 )
+			end
+			self.LP = trace.Entity
+			trace.Entity:SetColor( 0 , 0 , 255 , 255 )
+		else
+			table.insert( self.LT , trace.Entity )
+			trace.Entity:SetColor( 255 , 0 , 0 , 255 )
+		end
+
 		self:SetStage(1)
 		return true
 	elseif (self:GetStage() == 1) and (trace.Entity.GPod) and (trace.Entity:IsValid()) then
-		trace.Entity:Link(self.LEnt)
+		for n,E in ipairs( self.LT ) do
+			trace.Entity:Link( E )
+			E:SetColor( 255 , 255 , 255 , 255 )
+		end
+		self.LT = {}
+		
+		if self.LP then
+			trace.Entity:Link( self.LP )
+			self.LP:SetColor( 255 , 255 , 255 , 255 )
+		end
+		self.LP = nil
+		
 		self:SetStage(0)
-		self.LEnt = nil
 		return true
 	else
 		return false
 	end
 	
 	return true
-
 end
 
 function TOOL:RightClick( trace )
 	
-if ( !trace.Hit ) then return end
+if !trace.Hit || self:GetStage() == 1 then return end
 	
 	if ( SERVER && !util.IsValidPhysicsObject( trace.Entity, trace.PhysicsBone ) ) then return false end
 	if (CLIENT) then return true end
@@ -68,8 +86,21 @@ if ( !trace.Hit ) then return end
 end
 
 function TOOL:Reload(trace)
+
+end
+
+function TOOL:Holster( wep )
 	self:SetStage(0)
-	self.LEnt = nil
+	
+	for n,E in ipairs( self.LT ) do
+		E:SetColor( 255 , 255 , 255 , 255 )
+	end
+	self.LT = {}
+	
+	if self.LP then
+		self.LP:SetColor( 255 , 255 , 255 , 255 )
+	end
+	self.LP = nil
 end
 
 function TOOL.BuildCPanel( panel )
