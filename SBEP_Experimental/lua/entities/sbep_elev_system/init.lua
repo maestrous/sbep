@@ -32,12 +32,12 @@ function ENT:Initialize()
 	
 	self.Usable = self.Usable || true
 	self:SetSystemSize( "S" )
-	self.ST.Usable = self.Usable
-	self.ST.Skin   = self.Skin
-
-	self:SetModel( PMT[self.Size[1]][5] ) 
+	self.ST.Usable = self.Usable || true
+	self.ST.Skin   = self.Skin || 0
 	
-	self.Activated = false
+	--self:SetModel( PMT[self.Size[1]][5] ) 
+	
+	self.LiftActive = false
 	
 	self.ST.MAT = {0,0,0,0} --Model Access Table
 
@@ -160,15 +160,15 @@ end
 
 function ENT:CheckSkin()
 	if self:SkinCount() > 5 then
-		self:SetSkin( self.Skin * 2 )
+		self:SetSkin( self.ST.Skin * 2 )
 	else
-		self:SetSkin( self.Skin )
+		self:SetSkin( self.ST.Skin )
 	end
 end
 
 function ENT:Think()
 
-	if !self.Activated then	
+	if !self.LiftActive then	
 		self.Entity:NextThink( CurTime() + 0.05 )
 		return true
 	end
@@ -249,7 +249,7 @@ end
 
 function ENT:PhysicsSimulate( phys, deltatime )
 
-	if !self.Activated then return SIM_NOTHING end
+	if !self.LiftActive || !self.PT then return SIM_NOTHING end
 
 	local Pos1 = self.PT[1]:GetPos()
 	local Pos2 = self.PT[self:GetPartCount()]:GetPos()
@@ -277,7 +277,7 @@ end
 
 function ENT:CheckHatchStatus()
 	if 	!self.ST.UseHatches 	||
-		!self.Activated 		||
+		!self.LiftActive 		||
 		self.ATL 				||
 		!self.HT then return end
 
@@ -299,7 +299,7 @@ function ENT:CheckHatchStatus()
 end
 
 function ENT:CheckDoorStatus()
-	if (!self.ST.UseDoors) || (!self.Activated) then return end
+	if (!self.ST.UseDoors) || (!self.LiftActive) || !self.PT then return end
 
 	if self.ATL then
 		for k,V in ipairs( self.PT[ self:FloorToPartNum( self:GetFloorNum() ) ].PD.FDT ) do
@@ -382,7 +382,7 @@ function ENT:FinishSystem()
 	
 	self:AddCallFloorNum( 1 )
 	
-	self.Activated = true
+	self.LiftActive = true
 
 end
 
@@ -404,7 +404,7 @@ function ENT:CreateHatches()		--Creating Hatches. Each Hatch is paired with the 
 			NH.HD.HO = V.PD.HO + NH.HD.PO					--Offset from system origin
 			NH:SetPos( V:LocalToWorld( Vector(0,0,NH.HD.PO) ) )
 			constraint.Weld( NH, self.PT[k + math.Clamp( S,0,1 )] , 0, 0, 0, true )
-			NH:SetSkin( self.Skin )
+			NH:SetSkin( self.ST.Skin )
 
 			NH.OpenTrigger = false
 			self:DeleteOnRemove(NH)
@@ -573,60 +573,57 @@ function ENT:GetFloorNum()
 	return self.CFT[1]
 end
 
-function ENT:PasteRefreshSystem()
-	
-	self:RefreshParts( 1 )
-	self.Activated = true
-
-end
-
 function ENT:PreEntityCopy()
-	local dupeInfo = {}
-		dupeInfo.ST  = self.ST
-		dupeInfo.FT  = self.FT
-		dupeInfo.INC = self.INC
-		dupeInfo.PT = {}
-			for k,v in pairs( self.PT ) do
-				dupeInfo.PT[k] = v:EntIndex()
+	local DI = {}
+		DI.ST  = self.ST
+		DI.FT  = self.FT
+		DI.INC = self.INC
+		DI.PT = {}
+			for n,P in pairs( self.PT ) do
+				DI.PT[n] = P:EntIndex()
 			end
 		if self.ST.UseHatches then
-			dupeInfo.HDT = {}
+			DI.HDT = {}
 			for k,v in pairs( self.HT ) do
-				dupeInfo.HDT[k]		  = {}
-				dupeInfo.HDT[k].Index = v:EntIndex()
-				dupeInfo.HDT[k].HD 	  = v.HD
+				DI.HDT[k]		= {}
+				DI.HDT[k].Index = v:EntIndex()
+				DI.HDT[k].HD 	= v.HD
 			end
 		end
 	if WireAddon then
-		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
 	end
-	duplicator.StoreEntityModifier(self, "SBEPLS", dupeInfo)
+	duplicator.StoreEntityModifier(self, "SBEPLS", DI)
 end
 duplicator.RegisterEntityModifier( "SBEPLS" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
-	self.ST			= Ent.EntityMods.SBEPLS.ST
-	self.FT			= Ent.EntityMods.SBEPLS.FT
-	self.INC		= Ent.EntityMods.SBEPLS.INC
+	local DT = Ent.EntityMods.SBEPLS
 
-	for i = 1, self:GetPartCount() do
-		self.PT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLS.DT[i].Index]
+	self.ST			= DT.ST
+	self.FT			= DT.FT
+	self.INC		= DT.INC
+
+	for n = 1, #DT.PT do
+		self.PT[n] 	= CreatedEntities[DT.PT[n]]
 	end
 	
 	if self.ST.UseHatches then
 		self.HT = {}
-		for i = 1, self.ST.HC do
-			self.HT[i] 				= CreatedEntities[Ent.EntityMods.SBEPLS.HDT[i].Index]
-			self.HT[i].HD			= Ent.EntityMods.SBEPLS.HDT[i].HD
+		for n, H in ipairs( DT.HDT ) do
+			self.HT[n] 				= CreatedEntities[H.Index]
+			self.HT[n].HD			= H.HD
 		end
 	end
 	
-	self:PasteRefreshSystem()
-	self:AddCallFloorNum( 1 )
-	
-	if(Ent.EntityMods && Ent.EntityMods.SBEPLS.WireData) then
-		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLS.WireData, function(id) return CreatedEntities[id] end)
+	if(Ent.EntityMods && DT.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, DT.WireData, function(id) return CreatedEntities[id] end)
 	end
+	
+	--self:RefreshParts( 1 )
+	self.Entity:GetPhysicsObject():EnableMotion( true )
+	self.LiftActive = 1
+	self:AddCallFloorNum( 1 )
 
 end

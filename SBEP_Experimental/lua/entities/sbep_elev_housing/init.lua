@@ -236,31 +236,32 @@ function ENT:Use()
 end
 
 function ENT:PreEntityCopy()
-	local dupeInfo = {}
-		dupeInfo.PD		= self.PD
-		dupeInfo.Cont	= self.Cont:EntIndex()
+	local DI = {}
+		DI.PD	= self.PD
+		DI.Cont	= self.Cont:EntIndex()
 		if self.PD.FDT then
-			dupeInfo.FDT = {}
+			DI.FDT = {}
 			for n,D in ipairs( self.PD.FDT ) do
-				dupeInfo.FDT[n] = D:EntIndex()
+				DI.FDT[n] = D:EntIndex()
 			end
 		end
 	if WireAddon then
-		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
 	end
-	duplicator.StoreEntityModifier(self, "SBEPLP", dupeInfo)
+	duplicator.StoreEntityModifier(self, "SBEPLP", DI)
 end
 duplicator.RegisterEntityModifier( "SBEPLP" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
-	self.PD		= Ent.EntityMods.SBEPLP.PD
-	self.Cont	= CreatedEntities[Ent.EntityMods.SBEPLP.Cont]
-	if Ent.EntityMods.SBEPLP.FDT then
-		for n,K in ipairs( Ent.EntityMods.SBEPLP.FDT ) do
+	local DI = Ent.EntityMods.SBEPLP
+	self.PD		= DI.PD
+	self.Cont	= CreatedEntities[DI.Cont]
+	if DI.FDT then
+		for n,K in ipairs( DI.FDT ) do
 			self.PD.FDT[n] = CreatedEntities[K]
 		end
 	end
-	if(Ent.EntityMods && Ent.EntityMods.SBEPLP.WireData) then
-		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPLP.WireData, function(id) return CreatedEntities[id] end)
+	if(Ent.EntityMods && DI.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, DI.WireData, function(id) return CreatedEntities[id] end)
 	end
 end
