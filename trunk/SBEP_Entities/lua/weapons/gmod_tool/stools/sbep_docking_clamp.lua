@@ -118,5 +118,12 @@ function TOOL.BuildCPanel( panel )
 									RunConsoleCommand( "sbep_docking_clamp_activecat", k )
 							end
 	end
+	
+	local HelpB = vgui.Create( "DButton" )
+		HelpB.DoClick = function()
+								SBEPDoc.OpenPage( "Construction" , "Docking Clamps.txt" )
+							end
+		HelpB:SetText( "Docking Clamps Help Page" )
+	panel:AddItem( HelpB )
 
 end

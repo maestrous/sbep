@@ -1,7 +1,9 @@
+<t>MobilePlatform MobilePlatformController mobile platform controller mpc </t>
+
 /**MPCs - Mobile Platform Controllers**/
 
-/*Paragraph 1 [IMG]spacebuild/Fusion[/IMG] */
+/*Paragraph 1*/
 
-/*Para[IMG]spacebuild/Fusion[/IMG]graph 2 */
+/*Paragraph 2*/
 
-/*[IMG]spacebuild/Fusion[/IMG] Paragraph 3 */
+/*Paragraph 3*/

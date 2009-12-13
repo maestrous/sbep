@@ -95,6 +95,13 @@ function TOOL.BuildCPanel( panel )
 
 		panel:SetSpacing( 10 )
 		panel:SetName( "SBEP Door" )
+		
+	local HelpB = vgui.Create( "DButton" )
+		HelpB.DoClick = function()
+								SBEPDoc.OpenPage( "Construction" , "Doors.txt" )
+							end
+		HelpB:SetText( "Doors Help Page" )
+	panel:AddItem( HelpB )
 	
 	local WireCheckBox = vgui.Create( "DCheckBoxLabel" )
 		WireCheckBox:SetText( "Create Wire Inputs" )
