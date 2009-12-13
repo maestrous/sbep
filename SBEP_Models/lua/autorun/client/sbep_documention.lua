@@ -47,6 +47,29 @@ function SBEPDoc.OpenManual()
 		T.Form.Text = {}
 		T.Panel:AddItem( T.Form )
 		
+		T.Form:SetName( "SBEP User Manual" )
+		for k,P in ipairs( SBEPDoc.ProcessDoc( file.Read( "sbep_manual/startup.txt" ) ) ) do
+			local L = vgui.Create( "DLabel" )
+				T.Form.Text[k] = L
+				L:SetText( P[1] )
+				L:SetSize( 430 , 10 )
+				L:SizeToContentsY( true )
+				L:SetMultiline( true )
+				L:SetWrap(true)
+				L:SetAutoStretchVertical(true)
+			local I = nil
+			if P[2] then
+				I = vgui.Create( "DImage" )
+					I:SetImage( P[2] )
+					I:SetSize( 120,120 )
+			end
+			if P[3] ~= 1 && I then
+				T.Form:AddItem( I , L)
+			else
+				T.Form:AddItem( L , I)
+			end
+		end
+		
 		T.ListB = vgui.Create( "DPanelList" , T )
 			T.ListB:SetPos( 5 , 5 )
 			T.ListB:SetSize( 120 , 426 )
@@ -62,7 +85,7 @@ function SBEPDoc.OpenManual()
 								T.Form:SetName( string.sub(F, 1, -5) )
 								T.Form.Text = {}
 								for k,P in ipairs( SBEPDoc.ProcessDoc( file.Read( "sbep_manual/"..D.."/"..F ) ) ) do
-									local L = vgui.Create( "DLabel" , T )
+									local L = vgui.Create( "DLabel" )
 										T.Form.Text[k] = L
 										L:SetText( P[1] )
 										L:SetSize( 430 , 10 )
@@ -76,17 +99,68 @@ function SBEPDoc.OpenManual()
 											I:SetImage( P[2] )
 											I:SetSize( 120,120 )
 									end
-									if P[3] == 1 && I then
+									if P[3] ~= 1 && I then
 										T.Form:AddItem( I , L)
 									else
 										T.Form:AddItem( L , I)
 									end
 								end
-								
 							end
 			T.ListB:AddItem( B )
 		end
 	end
+	
+	local SearchTab = vgui.Create( "DPanelList" )
+		SBEPDoc.Menu.Search = SearchTab
+		SearchTab:SetPadding( 5 )
+		SearchTab:SetSpacing( 20 )
+		SBEPDoc.Menu.Sheet:AddSheet( "Search" , SearchTab , "gui/silkicons/magnifier" , false, false, "Search for relevant topics." )
+		
+	local Form = vgui.Create( "DForm" )
+		SBEPDoc.Menu.Search.Form = Form
+		Form:SetName( "Search" )
+		Form:SetSize( 680 , 10 )
+		Form:SetSpacing( 15 )
+		Form:SetPadding( 5 )
+	SBEPDoc.Menu.Search:AddItem( Form )
+	
+	local SearchEntry = vgui.Create( "DTextEntry" )
+		SBEPDoc.Menu.Search.TEntry = SearchEntry
+		SearchEntry:SetWide( 600 )
+		SearchEntry.OnEnter = function()
+									local R = SBEPDoc.SearchWiki( SearchEntry:GetValue() )
+									
+									for k,L in ipairs( SBEPDoc.Menu.Search.Items ) do
+										if k > 1 then
+											L:Remove()
+										end
+									end
+									
+									for n,T in ipairs( R ) do
+										local P = vgui.Create( "DPanel" )
+											P:SetSize( 600, 80 )
+										SBEPDoc.Menu.Search:AddItem( P )
+										
+										local LinkBtn = vgui.Create( "DButton" , P)
+											LinkBtn:SetText( T[1]..": "..string.sub(T[2], 1, -5))
+											LinkBtn:SetPos( 20, 20 )
+											LinkBtn:SetSize( 500, 40 )
+											--LinkBtn:SizeToContentsX( true )
+											LinkBtn.DoClick = function()
+																SBEPDoc.OpenPage( T[1] , T[2] )
+															end
+										
+									end
+								end
+	
+	local SearchBtn = vgui.Create( "DButton" )
+		SBEPDoc.Menu.Search.Btn = SearchBtn
+		SearchBtn:SetText( "Search" )
+		SearchBtn.DoClick = function()
+									SearchEntry:OnEnter()
+								end
+	Form:AddItem( SearchEntry , SearchBtn )
+	
 end
 
 function SBEPDoc.ReloadDocs()
@@ -99,6 +173,7 @@ function SBEPDoc.ReloadDocs()
 		SBEPDoc.DocTable[ D ] = file.Find( "sbep_manual/"..D.."/*.txt" )
 		SBEPDoc.DocEnumTable[ D ] = {}
 		for i,F in ipairs( SBEPDoc.DocTable[ D ] ) do
+			SBEPDoc.RebuildTags( D , F )
 			SBEPDoc.DocEnumTable[ D ][ F ] = i
 		end
 	end
@@ -127,7 +202,7 @@ end
 function SBEPDoc.OpenPage( Dtab , page )
 
 	SBEPDoc.ReloadDocs()
-
+	
 	if !SBEPDoc.DirEnumTable[ Dtab ] || !SBEPDoc.DocEnumTable[ Dtab ] || !SBEPDoc.DocEnumTable[ Dtab ][ page ] then return false end
 	if !SBEPDoc.Menu then SBEPDoc.OpenManual() end
 	
@@ -142,3 +217,52 @@ local function UMOpenPage( um )
 	SBEPDoc.OpenPage( Dtab , page )
 end
 usermessage.Hook( "SBEPDocOpenPage" , UMOpenPage )
+
+function SBEPDoc.RebuildTags( Dir , File )
+	if !SBEPDoc.Tags then SBEPDoc.Tags = {} end
+	if !SBEPDoc.Tags[ Dir ] then SBEPDoc.Tags[ Dir ] = {} end
+	local text = file.Read( "sbep_manual/"..Dir.."/"..File )
+		local t = string.match( text , "<t>(.*)</t>" )
+	if t then
+		SBEPDoc.Tags[ Dir ][ File ] = {}
+		for tag in string.gmatch(t, ".-%s") do
+			table.insert( SBEPDoc.Tags[ Dir ][ File ] , string.lower( tag ) )
+		end
+	end
+	return SBEPDoc.Tags[ Dir ][ File ]
+end
+
+function SBEPDoc.SearchWiki( search )
+
+	if !SBEPDoc.Menu then SBEPDoc.OpenManual() end
+
+	local SerTab = {}
+	for i in string.gmatch( search.." " , ".-%s") do
+		table.insert( SerTab , string.lower( i ) )
+	end
+
+	local Results = {}
+	for D,fl in pairs( SBEPDoc.Tags ) do
+		for F,tt in pairs( fl ) do
+			for n, tag in ipairs( tt ) do
+				for k, S in ipairs( SerTab) do
+					if tag == S then
+						table.insert( Results , { D , F } )
+					end
+				end
+			end
+		end
+	end
+
+	return Results
+end
+
+
+
+
+
+
+
+
+
+

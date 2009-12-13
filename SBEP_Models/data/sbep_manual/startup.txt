@@ -1,0 +1,21 @@
+/**SBEP USER MANUAL**/
+
+/*Welcome to the SBEP User Manual.*/
+
+/*To get started, choose a topic, or use the search bar.*/
+
+/*Dev Note: For making wiki pages, the following tags work (but omit the .):*/
+
+/*/.** HEADER **./*/
+
+/*/.* Paragraph *./*/
+
+/*[.IMG] Images, starting in the /materials folder [/.IMG]*/
+
+/*<.t> Article Search Tags, separated by spaces </.t> */
+
+/*To create a new tab, create a new folder inside the data/sbep_manual folder 
+with your desired tab name.*/
+
+/*To add an article to a tab, place the text file [Article Name].txt in the 
+folder of the tab you want it to appear in.*/
