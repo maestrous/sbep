@@ -183,5 +183,12 @@ function TOOL.BuildCPanel( panel )
 			ModelSelect:AddModel( n , {} )
 		end
 	panel:AddItem( ModelSelect )
+	
+	local HelpB = vgui.Create( "DButton" )
+		HelpB.DoClick = function()
+								SBEPDoc.OpenPage( "Construction" , "MPCs.txt" )
+							end
+		HelpB:SetText( "MPC Help Page" )
+	panel:AddItem( HelpB )
 
 end
