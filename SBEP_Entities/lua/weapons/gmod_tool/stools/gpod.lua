@@ -107,5 +107,12 @@ function TOOL.BuildCPanel( panel )
 
 	panel:SetSpacing( 10 )
 	panel:SetName( "SBEP Gyro-Pod" )
+	
+	local HelpB = vgui.Create( "DButton" )
+		HelpB.DoClick = function()
+								SBEPDoc.OpenPage( "Construction" , "Gyro-Pod.txt" )
+							end
+		HelpB:SetText( "Gyro-Pod Help Page" )
+	panel:AddItem( HelpB )
 
 end

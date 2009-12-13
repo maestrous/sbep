@@ -1,8 +1,0 @@
-<t>lift elev elevator system designer</t>
-
-/**Lift System Designer**/
-
-/*To use the Lift Designer, open the Q menu, and click on  the Lift Designer tool in the SBEP Category.*/ 
-
-/*Left click somewhere to open the Design Wizard. Or if you have a specific start point in mind, you can 
-right-click a suitable lift housing to start from there.*/
