@@ -1,4 +1,4 @@
-/**SBEP USER MANUAL**/
+/**[IMG][size = 3]vgui/entities/sbep_manual[/IMG]SBEP USER MANUAL**/
 
 /*Welcome to the SBEP User Manual.*/
 
@@ -11,6 +11,8 @@
 /*/.* Paragraph *./*/
 
 /*[.IMG] Images, starting in the /materials folder [/.IMG]*/
+
+/*Put [size = n] anywhere inside the IMG tags to change the size of an image. (n is any number from 0 to 9)*/
 
 /*<.t> Article Search Tags, separated by spaces </.t> */
 

@@ -31,11 +31,11 @@ function ENT:Use( activator, caller )
 	umsg.End()
 end
 
-function ENT:Touch( ent )
+/*function ENT:Touch( ent )
 	if ent.HasHardpoints then
 		if ent.Cont && ent.Cont:IsValid() then HPLink( ent.Cont, ent.Entity, self.Entity ) end
 	end
-end
+end*/
 
 function SBEPManualFirstSpawn( ply )
 	if not file.Exists("manuals/spawned.txt") then 
