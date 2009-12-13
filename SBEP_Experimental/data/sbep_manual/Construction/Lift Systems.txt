@@ -1,4 +1,4 @@
-<t>sbep_elev_housing housing sbep_elev_system lift elev elevator system designer design </t>
+<t>sbep_elev_housing housing sbep_elev_system lift elev elevator system designer design</t>
 
 /**Lift System Designer**/
 
