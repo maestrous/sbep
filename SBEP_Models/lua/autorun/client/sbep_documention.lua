@@ -14,8 +14,7 @@ function SBEPDoc.OpenManual()
 		SBEPDoc.Menu:MakePopup()
 		SBEPDoc.Menu:SetDeleteOnClose( true )
 		SBEPDoc.Menu.btnClose.DoClick = function( button ) 
-									SBEPDoc.Menu:Close()
-									SBEPDoc.Menu = nil
+									SBEPDoc.CloseManual()
 								end
 
 	SBEPDoc.ReloadDocs()
@@ -34,41 +33,18 @@ function SBEPDoc.OpenManual()
 		T.Panel = vgui.Create( "DPanelList" , T )
 			T.Panel:SetPos( 130 , 5 )
 			T.Panel:SetSize( 545 , 426 )
-			--T.Panel.m_bgColor = Color( 50,50,50,255 )
 			T.Panel:EnableVerticalScrollbar(true)
 		
 		T.Form = vgui.Create( "DForm" )
 			T.Form:SetPos( 0, 0 )
 			T.Form:SetSize( 545 , 426 )
-			--T.Form:SizeToContents( false )
-			T.Form:SetVerticalScrollbarEnabled(true)
 			T.Form:SetSpacing( 15 )
 			T.Form:SetPadding( 5 )
 		T.Form.Text = {}
 		T.Panel:AddItem( T.Form )
 		
 		T.Form:SetName( "SBEP User Manual" )
-		for k,P in ipairs( SBEPDoc.ProcessDoc( file.Read( "sbep_manual/startup.txt" ) ) ) do
-			local L = vgui.Create( "DLabel" )
-				T.Form.Text[k] = L
-				L:SetText( P[1] )
-				L:SetSize( 430 , 10 )
-				L:SizeToContentsY( true )
-				L:SetMultiline( true )
-				L:SetWrap(true)
-				L:SetAutoStretchVertical(true)
-			local I = nil
-			if P[2] then
-				I = vgui.Create( "DImage" )
-					I:SetImage( P[2] )
-					I:SetSize( 120,120 )
-			end
-			if P[3] ~= 1 && I then
-				T.Form:AddItem( I , L)
-			else
-				T.Form:AddItem( L , I)
-			end
-		end
+		SBEPDoc.ClickPage( "sbep_manual/startup.txt" , "SBEP User Manual" , T.Form )
 		
 		T.ListB = vgui.Create( "DPanelList" , T )
 			T.ListB:SetPos( 5 , 5 )
@@ -81,30 +57,7 @@ function SBEPDoc.OpenManual()
 				T.Btns[ F ] = B
 				B:SetText( string.sub(F, 1, -5) )
 				B.DoClick = function( button )
-								T.Form:Clear()
-								T.Form:SetName( string.sub(F, 1, -5) )
-								T.Form.Text = {}
-								for k,P in ipairs( SBEPDoc.ProcessDoc( file.Read( "sbep_manual/"..D.."/"..F ) ) ) do
-									local L = vgui.Create( "DLabel" )
-										T.Form.Text[k] = L
-										L:SetText( P[1] )
-										L:SetSize( 430 , 10 )
-										L:SizeToContentsY( true )
-										L:SetMultiline( true )
-										L:SetWrap(true)
-										L:SetAutoStretchVertical(true)
-									local I = nil
-									if P[2] then
-										I = vgui.Create( "DImage" )
-											I:SetImage( P[2] )
-											I:SetSize( 120,120 )
-									end
-									if P[3] ~= 1 && I then
-										T.Form:AddItem( I , L)
-									else
-										T.Form:AddItem( L , I)
-									end
-								end
+								SBEPDoc.ClickPage( "sbep_manual/"..D.."/"..F , string.sub(F, 1, -5) , T.Form )
 							end
 			T.ListB:AddItem( B )
 		end
@@ -126,30 +79,42 @@ function SBEPDoc.OpenManual()
 	
 	local SearchEntry = vgui.Create( "DTextEntry" )
 		SBEPDoc.Menu.Search.TEntry = SearchEntry
-		SearchEntry:SetWide( 600 )
+		SearchEntry:SetWide( 590 )
 		SearchEntry.OnEnter = function()
-									local R = SBEPDoc.SearchWiki( SearchEntry:GetValue() )
-									
+									local R, ser = SBEPDoc.SearchWiki( SearchEntry:GetValue() )
+									print( R, ser )
 									for k,L in ipairs( SBEPDoc.Menu.Search.Items ) do
 										if k > 1 then
 											L:Remove()
 										end
 									end
-									
-									for n,T in ipairs( R ) do
+
+									if R then
+										print( "results" )
+										for n,T in ipairs( R ) do
+											local P = vgui.Create( "DPanel" )
+												P:SetSize( 600, 80 )
+											SBEPDoc.Menu.Search:AddItem( P )
+											
+											local LinkBtn = vgui.Create( "DButton" , P)
+												LinkBtn:SetText( T[1]..": "..string.sub(T[2], 1, -5))
+												LinkBtn:SetPos( 20, 20 )
+												LinkBtn:SetSize( 500, 40 )
+												--LinkBtn:SizeToContentsX( true )
+												LinkBtn.DoClick = function()
+																	SBEPDoc.OpenPage( T[1] , T[2] )
+																end
+										end
+									else
+										print( "no results" )
 										local P = vgui.Create( "DPanel" )
-											P:SetSize( 600, 80 )
-										SBEPDoc.Menu.Search:AddItem( P )
-										
-										local LinkBtn = vgui.Create( "DButton" , P)
-											LinkBtn:SetText( T[1]..": "..string.sub(T[2], 1, -5))
-											LinkBtn:SetPos( 20, 20 )
-											LinkBtn:SetSize( 500, 40 )
-											--LinkBtn:SizeToContentsX( true )
-											LinkBtn.DoClick = function()
-																SBEPDoc.OpenPage( T[1] , T[2] )
-															end
-										
+												P:SetSize( 600, 80 )
+											SBEPDoc.Menu.Search:AddItem( P )
+											
+											local LinkBtn = vgui.Create( "DLabel" , P)
+												LinkBtn:SetText( "No results found for '"..ser.."'." )
+												LinkBtn:SetPos( 20, 20 )
+												LinkBtn:SetSize( 500, 40 )
 									end
 								end
 	
@@ -162,6 +127,58 @@ function SBEPDoc.OpenManual()
 	Form:AddItem( SearchEntry , SearchBtn )
 	
 end
+usermessage.Hook( "SBEPDocOpenManual" , SBEPDoc.OpenManual )
+concommand.Add( "sbep_doc_openmanual" , SBEPDoc.OpenManual )
+
+function SBEPDoc.ClickPage( File , name , Form )
+	Form:Clear()
+	Form:SetName( name )
+	Form.Text = {}
+	for k,P in ipairs( SBEPDoc.ProcessDoc( file.Read( File ) ) ) do
+		local para = P[1]
+		local image = P[2]
+		local sizex = P[3]
+		local sizey = P[4]
+		local H = P[5]
+		local label = vgui.Create( "DLabel" )
+			Form.Text[k] = label
+			label:SetText( para )
+			if H then
+				label:SetFont( "MenuLarge" )
+			end
+			label:SetSize( 430 , 10 )
+			label:SizeToContentsY( true )
+			label:SetMultiline( true )
+			label:SetWrap(true)
+			label:SetAutoStretchVertical(true)
+		local Dimage = nil
+		if image then
+			Dimage = vgui.Create( "DImage" )
+				Dimage:SetImage( image )
+				Dimage:SetSize( sizex , sizey )
+		end
+		Form:AddItem( label  , Dimage)
+	end
+end
+
+function SBEPDoc.CloseManual()
+	if SBEPDoc.Menu then
+		SBEPDoc.Menu:Close()
+		SBEPDoc.Menu = nil
+	end
+end
+usermessage.Hook( "SBEPDocCloseManual" , SBEPDoc.CloseManual )
+concommand.Add( "sbep_doc_closemanual" , SBEPDoc.CloseManual )
+
+function SBEPDoc.ToggleManual( um )
+	if SBEPDoc.Menu then
+		SBEPDoc.CloseManual()
+	else
+		SBEPDoc.OpenManual()
+	end
+end
+usermessage.Hook( "SBEPDocToggleManual" , SBEPDoc.ToggleManual )
+concommand.Add( "sbep_doc_togglemanual" , SBEPDoc.ToggleManual )
 
 function SBEPDoc.ReloadDocs()
 	SBEPDoc.DirTable = file.FindDir( "sbep_manual/*" )
@@ -187,13 +204,39 @@ function SBEPDoc.ProcessDoc( File )
 		s = string.gsub( s , "\n", "")
 		
 		local i = string.match( s , "%[IMG%](.*)%[/IMG%]"  )
-		s = string.gsub( s , "%[IMG%].*%[/IMG%]" , "")
-		
-		if string.Left( s , 1) == "*" && string.Right( s , 1) == "*" then
-			s = "---------------------------------------------------------------------------------------------------------------------------------\n    "..string.sub( s , 2 )
-			s = string.sub( s , 1 , -2 ).."\n---------------------------------------------------------------------------------------------------------------------------------"
+		local iS = 3
+		if i then
+			iS = tonumber( string.match( i , "%[size%s*=%s*(%d)%]"  ) || 3 )
+			i = string.gsub( i , "%[size%s*=%s*(%d)%]" , "")
 		end
-		table.insert( PT , { s , i } )
+		iSx = 30 + 15 * iS
+		iSy = 30 + 15 * iS
+		s = string.gsub( s , "%[IMG%].*%[/IMG%]" , "")
+		local H = false
+		if string.Left( s , 1) == "*" && string.Right( s , 1) == "*" then
+			H = true
+			if i then
+				local dl1 = "-------------------------------------------------------\n"
+				local ml  = "    "..string.sub( s , 2 , -2 )
+				local dl2 = "\n-------------------------------------------------------"
+				if iS > 2 then
+					dl1 = dl1.."\n"
+					dl2 = "\n"..dl2
+				end
+				if (iS/3) >= 3 then
+					dl1 = "\n\n\n"..dl1
+				elseif (iS/3.4) > 2 then
+					dl1 = "\n\n"..dl1
+				elseif (iS/4) > 1 then
+					dl1 = "\n"..dl1
+				end
+				s = dl1..ml..dl2
+			else
+				s = "-----------------------------------------------------------------------------------------\n    "..string.sub( s , 2 )
+				s = string.sub( s , 1 , -2 ).."\n-----------------------------------------------------------------------------------------"
+			end
+		end
+		table.insert( PT , { s , i , iSx , iSy , H } )
 	end
 	return PT
 
@@ -202,6 +245,11 @@ end
 function SBEPDoc.OpenPage( Dtab , page )
 
 	SBEPDoc.ReloadDocs()
+	
+	if Dtab == "Search" then
+		if !SBEPDoc.Menu then SBEPDoc.OpenManual() end
+		SBEPDoc.Menu.Sheet:SetActiveTab( SBEPDoc.Menu.Sheet.Items[ #SBEPDoc.Menu.Sheet.Items ].Tab )
+	end
 	
 	if !SBEPDoc.DirEnumTable[ Dtab ] || !SBEPDoc.DocEnumTable[ Dtab ] || !SBEPDoc.DocEnumTable[ Dtab ][ page ] then return false end
 	if !SBEPDoc.Menu then SBEPDoc.OpenManual() end
@@ -217,6 +265,7 @@ local function UMOpenPage( um )
 	SBEPDoc.OpenPage( Dtab , page )
 end
 usermessage.Hook( "SBEPDocOpenPage" , UMOpenPage )
+concommand.Add( "SBEPDoc_OpenPage" , UMOpenPage )
 
 function SBEPDoc.RebuildTags( Dir , File )
 	if !SBEPDoc.Tags then SBEPDoc.Tags = {} end
@@ -225,7 +274,8 @@ function SBEPDoc.RebuildTags( Dir , File )
 		local t = string.match( text , "<t>(.*)</t>" )
 	if t then
 		SBEPDoc.Tags[ Dir ][ File ] = {}
-		for tag in string.gmatch(t, ".-%s") do
+		--for tag in string.gmatch(t, ".-%s") do
+		for tag in string.gmatch(t, "%S+") do
 			table.insert( SBEPDoc.Tags[ Dir ][ File ] , string.lower( tag ) )
 		end
 	end
@@ -234,10 +284,10 @@ end
 
 function SBEPDoc.SearchWiki( search )
 
-	if !SBEPDoc.Menu then SBEPDoc.OpenManual() end
+	if !SBEPDoc.Menu then return {} end
 
 	local SerTab = {}
-	for i in string.gmatch( search.." " , ".-%s") do
+	for i in string.gmatch( search , "%S+") do
 		table.insert( SerTab , string.lower( i ) )
 	end
 
@@ -253,9 +303,25 @@ function SBEPDoc.SearchWiki( search )
 			end
 		end
 	end
-
-	return Results
+	if #Results == 0 then 
+		return nil, search
+	end
+	
+	return Results, search
 end
+
+function SBEPDoc.OpenSearch( search )
+
+	SBEPDoc.OpenPage( "Search" )
+	SBEPDoc.Menu.Search.TEntry:SetValue( search )
+	SBEPDoc.Menu.Search.TEntry:OnEnter()
+
+end
+
+local function UMOpenSearch( um )
+	SBEPDoc.OpenSearch( um:ReadString() )
+end
+usermessage.Hook( "SBEPDocOpenSearch" , UMOpenSearch )
 
 
 
