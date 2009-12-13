@@ -40,13 +40,14 @@ function ENT:Initialize()
 	self.MAngle = Angle(0,0,0)
 	self.Weaponry = {}
 	self.TSClamp = 100
+	self.TSpeed = 0.1
 	self.SpeedClamp = 500
 	self.Reversible = false
 	self.Targets = 0
 	self.WPRad = 80
 	self.Entity:SetNetworkedInt("Size", 50)
 	self.Fade = false
-	self.Speed = 50
+	self.Speed = 100
 	
 	self.IsShipController = true
 	
@@ -132,7 +133,7 @@ function ENT:Think()
 
 	self.WaypointReached = 0
 	
-	self.Forward = 0
+	--self.Forward = 0
 	
 	self.Pitch = 0
 	self.Roll = 0
@@ -200,7 +201,7 @@ function ENT:Think()
 	
 	local Phys = self.Entity:GetPhysicsObject()
 	
-	Phys:SetVelocity((self.Entity:GetForward() * self.Forward * self.Speed) + (self.Entity:GetRight() * self.Lat * self.Speed) + (self.Entity:GetUp() * self.Vert * self.Speed))
+	Phys:SetVelocity((self.Entity:GetForward() * self.Forward) + (self.Entity:GetRight() * self.Lat) + (self.Entity:GetUp() * self.Vert))
 	local Sp = 10
 	
 	Phys:AddAngleVelocity((Phys:GetAngleVelocity() * -0.9))
@@ -231,52 +232,21 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator, caller )
-	if !self.Fade then
-		self.Fade = true
-	else
-		self.Fade = false
-	end
+	
 end
 
 function ENT:Touch( ent )
-	/*
-	if ent:GetClass() == "gyropod_advanced" && (!self.Gyro || !self.Gyro:IsValid()) then
-		--Speed
-		Wire_Link_Start(self:EntIndex(), ent, ent:GetPos(), "SpeedAbs", "cable/cable2", Color(0,0,0,0), 0)
-		Wire_Link_End(self:EntIndex(), self.Entity, self.Entity:GetPos(), "Forward", self.SPL)
-		--Pitch
-		Wire_Link_Start(self:EntIndex(), ent, ent:GetPos(), "PitchAbs", "cable/cable2", Color(0,0,0,0), 0)
-		Wire_Link_End(self:EntIndex(), self.Entity, self.Entity:GetPos(), "Pitch", self.SPL)
-		--Yaw
-		Wire_Link_Start(self:EntIndex(), ent, ent:GetPos(), "YawAbs", "cable/cable2", Color(0,0,0,0), 0)
-		Wire_Link_End(self:EntIndex(), self.Entity, self.Entity:GetPos(), "Yaw", self.SPL)
-		--Roll
-		Wire_Link_Start(self:EntIndex(), ent, ent:GetPos(), "RollAbs", "cable/cable2", Color(0,0,0,0), 0)
-		Wire_Link_End(self:EntIndex(), self.Entity, self.Entity:GetPos(), "Roll", self.SPL)
-		--Active
-		Wire_Link_Start(self:EntIndex(), ent, ent:GetPos(), "Activate", "cable/cable2", Color(0,0,0,0), 0)
-		Wire_Link_End(self:EntIndex(), self.Entity, self.Entity:GetPos(), "Stance", self.SPL)
-		--Lateral
-		Wire_Link_Start(self:EntIndex(), ent, ent:GetPos(), "Lateral", "cable/cable2", Color(0,0,0,0), 0)
-		Wire_Link_End(self:EntIndex(), self.Entity, self.Entity:GetPos(), "Lateral", self.SPL)
-		--Vertical
-		Wire_Link_Start(self:EntIndex(), ent, ent:GetPos(), "Vertical", "cable/cable2", Color(0,0,0,0), 0)
-		Wire_Link_End(self:EntIndex(), self.Entity, self.Entity:GetPos(), "Vertical", self.SPL)
-		self.Gyro = ent
-	end
-	*/
+	
 end
 --I should really merge the next two functions together
 function ENT:Orient( Vec, Pos, Up, Right )
-	local FDist = Vec:Distance( Pos + Up * 100 )
-	local BDist = Vec:Distance( Pos + Up * -100 )
-	self.Pitch = math.Clamp((FDist - BDist) * 0.01, -self.TSClamp, self.TSClamp)
-	FDist = Vec:Distance( Pos + Right * 100 )
-	BDist = Vec:Distance( Pos + Right * -100 )
-	self.Yaw = math.Clamp((BDist - FDist) * -0.01, -self.TSClamp, self.TSClamp)
+	local Angle = self:WorldToLocalAngles((Vec - Pos):Angle())
+	self.Yaw = Angle.y * self.TSpeed
+	self.Pitch = Angle.p * self.TSpeed
 end
 
 function ENT:StrafeFinder( Vec, Pos, Up, Right, Forward )
+	/*
 	local FDist = Vec:Distance( Pos + Up * 100 )
 	local BDist = Vec:Distance( Pos + Up * -100 )
 	self.Vert = math.Clamp((FDist - BDist) * -0.001, -self.SpeedClamp * 0.01, self.SpeedClamp * 0.01)
@@ -288,11 +258,18 @@ function ENT:StrafeFinder( Vec, Pos, Up, Right, Forward )
 	FDist = Vec:Distance( Pos + Forward * 100 )
 	BDist = Vec:Distance( Pos + Forward * -100 )
 	self.Forward = math.Clamp((BDist - FDist) * 0.001, -self.SpeedClamp * 0.01, self.SpeedClamp * 0.01)
+	*/
+	local TVec = Vec - Pos
+	TVec:Rotate(self:GetAngles() * -1)
+	self.Lat = -TVec.z
+	self.Forward = -TVec.y
+	self.Vert = -TVec.x
 	
 end
 
 
 function ENT:SpeedFinder( Vec, Pos, Forward )
+	/*
 	local FDist = Vec:Distance( Pos + Forward * 1000 )
 	local BDist = Vec:Distance( Pos + Forward * -1000 )
 	if self.Reversible then
@@ -300,9 +277,17 @@ function ENT:SpeedFinder( Vec, Pos, Forward )
 	else
 		self.Forward = math.Clamp((FDist - BDist) * -0.01, 0, self.SpeedClamp)
 	end
+	*/
+	local TVec = Vec - Pos
+	TVec:Rotate(self:GetAngles() * -1)
+	--self.Lat = TVec.z
+	self.Forward = math.Clamp(TVec.y * 100,0,self.SpeedClamp)
+	--player.GetByID( 1 ):PrintMessage( HUD_PRINTCENTER, self.Forward )
+	--print(self.Forward)
+	--self.Very = TVec.x
 	
 	if self.Forward < 0 then
-		self.Yaw = self.Yaw * -1
-		self.Pitch = self.Pitch * -1
+		--self.Yaw = self.Yaw * -1
+		--self.Pitch = self.Pitch * -1
 	end
 end
