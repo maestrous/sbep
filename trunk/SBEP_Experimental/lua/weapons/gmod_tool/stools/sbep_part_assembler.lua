@@ -254,4 +254,11 @@ function TOOL.BuildCPanel( panel )
 		UseCheckBox:SizeToContents()
 	panel:AddItem( UseCheckBox )
 	
+	local HelpB = vgui.Create( "DButton" )
+		HelpB.DoClick = function()
+								SBEPDoc.OpenPage( "Construction" , "Part Assembler.txt" )
+							end
+		HelpB:SetText( "Part Assembler Help Page" )
+	panel:AddItem( HelpB )
+	
  end  
