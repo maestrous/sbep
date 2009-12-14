@@ -66,10 +66,8 @@ function TOOL:LeftClick( trace )
 		DoorController:Activate()
 		
 		DoorController:SetPos( pos - Vector(0,0, DoorController:OBBMins().z ) )
-	
-		DoorController.AnimData = table.Copy( MST[model].doors )
 		
-		DoorController:AddAnimDoors()
+		DoorController:AddAnimDoors( table.Copy( MST[model].doors ) )
 	
 		DoorController.SBEPEnableWire = tonumber(self:GetClientNumber( "wire" )) == 1
 		DoorController:MakeWire()

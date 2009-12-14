@@ -1,6 +1,6 @@
 <t>gyropod2 gyro pod gyropod </t>
 
-/**Gyro-Pod**/
+/**GYRO-POD**/
 
 /*Paragraph 1*/
 

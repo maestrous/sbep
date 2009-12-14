@@ -145,14 +145,24 @@ function ENT:SetDoorVars( type )
 	self.D = DTT[ type ]
 end
 
-function ENT:Attach( ent , vecoff , angoff )
-	local vecoff = vecoff or Vector(0,0,0)
-		self.Entity:SetPos( ent:LocalToWorld( vecoff ) )
-	local angoff = angoff or Angle(0,0,0)
-		self.Entity:SetAngles( ent:GetAngles() + angoff )
-	constraint.Weld( ent , self.Entity , 0, 0, 0, true )
+function ENT:Attach( ent , V , A )
+	self.Entity.D = self.Entity.D || {}
+	local Voff = Vector(0,0,0)
+	if V then Voff = Vector( V.x , V.y , V.z ) end
+		print( Voff )
+		self.Entity:SetPos( ent:LocalToWorld( Voff ) )
+	local Aoff = Angle(0,0,0)
+	if A then Aoff = Angle( A.p , A.y , A.r ) end
+		print( Aoff )
+		self.Entity:SetAngles( ent:GetAngles() + Aoff )
+	self.Entity.ATWeld = constraint.Weld( ent , self.Entity , 0, 0, 0, true )
 		self.Entity:SetSkin( ent:GetSkin() )
 		self.Entity.OpenTrigger = false
+		self.Entity.D.ATEnt		= ent
+		self.Entity.D.VecOff	= Voff
+		print( self.Entity.D.VecOff )
+		self.Entity.D.AngOff	= Aoff
+		print( self.Entity.D.AngOff )
 		self.Entity:GetPhysicsObject():EnableMotion( true )
 	ent:DeleteOnRemove( self.Entity )
 end
@@ -247,15 +257,14 @@ function ENT:Think()
 			end
 		end
 	end
+	if !self.ATWeld || !self.ATWeld:IsValid() then
+		self:Attach( self.D.ATEnt , self.D.VecOff , self.D.AngOff )
+		print( "Attaching" )
+	end
 	if self.Cont then
 		if self.Entity:GetSkin() != self.Cont.Skin then
 			self.Entity:SetSkin( self.Cont.Skin )
 		end
-		--[[local pos1 = self.Cont:GetPos()
-		local pos2 = self.Entity:GetPos()
-		if (math.abs(pos1.x - pos2.x) > 20) || (math.abs(pos1.y - pos2.y) > 20) || (math.abs(pos1.z - pos2.z) > 20) then
-			self.Entity:SetPos( pos1 )
-		end]]
 	end
 	self.Entity:NextThink( CurTime() + 0.05 )
 	return true
