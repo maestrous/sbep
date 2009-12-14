@@ -226,6 +226,12 @@ function ENT:Think()
 		end
 	end
 	
+	if self.DMode == 4 && self.LinkLock && self.LinkLock:IsValid() then
+		if !self.AWeld or !self.AWeld:IsValid() then
+			self.AWeld = constraint.Weld(self.LinkLock.Entity, self.Entity, 0, 0, 0, true)
+		end
+	end
+	
 	if self.DMode == 3 then
 		if self.LinkLock && self.LinkLock:IsValid() then
 			local Physy = self.Entity:GetPhysicsObject()
