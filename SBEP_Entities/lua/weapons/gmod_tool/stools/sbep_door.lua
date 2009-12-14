@@ -116,7 +116,7 @@ function TOOL.BuildCPanel( panel )
 	panel:AddItem( UseCheckBox )
 	
 	local PropertySheet = vgui.Create( "DPropertySheet" )
-		PropertySheet:SetSize( 50, 640 )
+		PropertySheet:SetSize( 50, 600 )
 	panel:AddItem( PropertySheet )
 
 	SmallBridgeTab = vgui.Create( "DPanelList" )

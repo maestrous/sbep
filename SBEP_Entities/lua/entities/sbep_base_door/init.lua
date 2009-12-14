@@ -257,7 +257,7 @@ function ENT:Think()
 			end
 		end
 	end
-	if !self.ATWeld || !self.ATWeld:IsValid() then
+	if (self.D.ATEnt && self.D.ATEnt:IsValid() ) && (!self.ATWeld || !self.ATWeld:IsValid()) then
 		self:Attach( self.D.ATEnt , self.D.VecOff , self.D.AngOff )
 		print( "Attaching" )
 	end
