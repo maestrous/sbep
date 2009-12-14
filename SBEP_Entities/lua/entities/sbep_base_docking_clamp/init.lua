@@ -228,7 +228,12 @@ function ENT:Think()
 	
 	if self.DMode == 4 && self.LinkLock && self.LinkLock:IsValid() then
 		if !self.AWeld or !self.AWeld:IsValid() then
-			self.AWeld = constraint.Weld(self.LinkLock.Entity, self.Entity, 0, 0, 0, true)
+			if self.LinkLock.AWeld && self.LinkLock.AWeld:IsValid() then
+				self.AWeld = self.LinkLock.AWeld
+			else
+				self.AWeld = constraint.Weld(self.LinkLock.Entity, self.Entity, 0, 0, 0, true)
+				self.LinkLock.AWeld = self.AWeld
+			end
 		end
 	end
 	
