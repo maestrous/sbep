@@ -21,3 +21,6 @@ with your desired tab name.*/
 
 /*To add an article to a tab, place the text file [Article Name].txt in the 
 folder of the tab you want it to appear in.*/
+
+/*Be aware, when editing, simply pressing the Article button again will reload the article 
+- no need to restart, or reload entities or anything like that.*/
