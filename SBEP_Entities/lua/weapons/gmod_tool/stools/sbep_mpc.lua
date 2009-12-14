@@ -6,7 +6,7 @@ TOOL.ConfigName 	= ""
 if CLIENT then
 	language.Add( "Tool_sbep_mpc_name"	, "SBEP MPC Tool" 				)
 	language.Add( "Tool_sbep_mpc_desc"	, "Create an SBEP Mobile Platform Controller." 		)
-	language.Add( "Tool_sbep_mpc_0"		, "Left click to spawn an MPC. Right click to copy the model of whatever you're looking at. Press Reload to replace the target prop with an MPC." )
+	language.Add( "Tool_sbep_mpc_0"		, "Left-click to spawn an MPC. Right-click to copy the model of whatever you're looking at, or Shift-Right-click to replace the target prop with an MPC." )
 	language.Add( "undone_SBEP MPC"		, "Undone SBEP MPC"				)
 	
 	local function SBEPMPCModelToolNotify( um )
@@ -88,67 +88,90 @@ end
 function TOOL:RightClick( tr )
 
 	if CLIENT then return end
-	if ( !tr.Hit || !tr.Entity || !tr.Entity:IsValid() ) then return end
 	
-	local PlModel = tr.Entity:GetModel()
-	local skin	  = tr.Entity:GetSkin()
-	local vec	  = tr.Entity:OBBMaxs()
-	
-	if self:CheckBadModel( PlModel ) then return true end
-	
-	RunConsoleCommand( "sbep_mpc_model" , PlModel )
-	RunConsoleCommand( "sbep_mpc_skin"  , skin    )
-	
-	umsg.Start( "SBEPMPCTool_ModelNotify_cl" , RecipientFilter():AddPlayer( self:GetOwner() ) )
-			umsg.String( "Copied Model!" )
-			umsg.Float( 0 )
-		umsg.End()
+	if self:GetOwner():KeyDown( IN_SPEED ) then
+		if !tr.Hit || !tr.Entity || !tr.Entity:IsValid() then return end
 
-	umsg.Start("SBEP_MPCTool_Model", RecipientFilter():AddPlayer( self:GetOwner() ) )
-	    umsg.String( PlModel )
-		umsg.Vector( vec )
-		umsg.Char( skin )
-	umsg.End()
-	
-	return true
+		local model = tr.Entity:GetModel()
+		if self:CheckBadModel( model ) then return end
+		
+		local skin  = tr.Entity:GetSkin()
+		local pos   = tr.Entity:GetPos()
+		local ang   = tr.Entity:GetAngles()
+		local ply   = self:GetOwner()
+
+		local MPCEnt = ents.Create( "MobilePlatformController" )
+			MPCEnt:SetPos( pos )
+			MPCEnt:SetAngles( ang )
+			MPCEnt:Spawn()
+			MPCEnt:Initialize()
+			MPCEnt:Activate()
+			MPCEnt:GetPhysicsObject():EnableMotion( false )
+			
+			MPCEnt.SPL 		= ply
+			MPCEnt.PlModel 	= model
+			if skin ~= 0 then
+				MPCEnt.Skin = skin
+			end
+			MPCEnt.PasteDelay = false --I really need a better system than this...
+		
+		undo.Create("SBEP MPC")
+			undo.AddEntity( MPCEnt )
+			undo.SetPlayer( ply )
+		undo.Finish()
+		
+		tr.Entity:Remove()
+		
+		return true
+	else
+		if ( !tr.Hit || !tr.Entity || !tr.Entity:IsValid() ) then return end
+		
+		local PlModel = tr.Entity:GetModel()
+		local skin	  = tr.Entity:GetSkin()
+		local vec	  = tr.Entity:OBBMaxs()
+		
+		if self:CheckBadModel( PlModel ) then return true end
+		
+		RunConsoleCommand( "sbep_mpc_model" , PlModel )
+		RunConsoleCommand( "sbep_mpc_skin"  , skin    )
+		
+		umsg.Start( "SBEPMPCTool_ModelNotify_cl" , RecipientFilter():AddPlayer( self:GetOwner() ) )
+				umsg.String( "Copied Model!" )
+				umsg.Float( 0 )
+			umsg.End()
+
+		umsg.Start("SBEP_MPCTool_Model", RecipientFilter():AddPlayer( self:GetOwner() ) )
+			umsg.String( PlModel )
+			umsg.Vector( vec )
+			umsg.Char( skin )
+		umsg.End()
+		
+		return true
+	end
 end
 
 function TOOL:Reload( tr )
 
 	if CLIENT then return end
+	
 	if !tr.Hit || !tr.Entity || !tr.Entity:IsValid() then return end
-
-	local model = tr.Entity:GetModel()
-	if self:CheckBadModel( model ) then return end
+	local mp = tr.Entity
+	local class = mp:GetClass()
 	
-	local skin  = tr.Entity:GetSkin()
-	local pos   = tr.Entity:GetPos()
-	local ang   = tr.Entity:GetAngles()
-	local ply   = self:GetOwner()
-
-	local MPCEnt = ents.Create( "MobilePlatformController" )
-		MPCEnt:SetPos( pos )
-		MPCEnt:SetAngles( ang )
-		MPCEnt:Spawn()
-		MPCEnt:Initialize()
-		MPCEnt:Activate()
-		MPCEnt:GetPhysicsObject():EnableMotion( false )
-		
-		MPCEnt.SPL 		= ply
-		MPCEnt.PlModel 	= model
-		if skin ~= 0 then
-			MPCEnt.Skin = skin
+	if string.lower( class ) == "mobileplatform" then
+		if self:GetOwner():KeyDown( IN_SPEED ) then
+			mp.Controller.FulX = 0
+			mp.Controller.FulY = 0
+			mp.Controller.FulZ = 0
+		else
+			local fulcrum = mp:WorldToLocal( tr.HitPos )
+			
+			mp.Controller.FulX = fulcrum.x
+			mp.Controller.FulY = fulcrum.y
+			mp.Controller.FulZ = fulcrum.z
 		end
-		MPCEnt.PasteDelay = false --I really need a better system than this...
-	
-	undo.Create("SBEP MPC")
-		undo.AddEntity( MPCEnt )
-		undo.SetPlayer( ply )
-	undo.Finish()
-	
-	tr.Entity:Remove()
-	
-	return true
+		return true
+	end
 
 end
 

@@ -199,33 +199,6 @@ function ENT:PhysicsUpdate( phys )
 end
 
 */
---[[
-function ENT:SpawnFunction( ply, tr )
-
-	if ( !tr.Hit || !tr.Entity || !tr.Entity:IsValid() ) then return end
-		
-	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
-	
-	local PlModel = tr.Entity:GetModel()
-	
-	if !util.IsValidModel( PlModel ) then
-		print("Invalid Model")
-		return
-	end
-	
-	local ent = ents.Create( "MobilePlatformController" )
-	ent:SetPos( SpawnPos )
-	ent:Spawn()
-	ent:Initialize()
-	ent:Activate()
-	ent.SPL = ply
-	
-	ent.PlModel = PlModel
-		
-	return ent
-	
-end
-]]--
 
 function ENT:Think()
 	

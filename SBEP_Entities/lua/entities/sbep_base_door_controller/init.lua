@@ -44,16 +44,16 @@ function ENT:MakeWire( adjust )
 	end
 end
 
-function ENT:AddAnimDoors()
-	if !self.AnimData then return end
-	
+function ENT:AddAnimDoors( animdata )	
+	self.AnimData = animdata
 	self.DT = {}
-	for k,v in pairs( self.AnimData ) do
-		self.DT[k] = ents.Create( "sbep_base_door" )
-			self.DT[k]:Spawn()
-			self.DT[k]:SetDoorType( v[1] )
-			self.DT[k]:Attach( self.Entity , v[2] , v[3] )
-		self.DT[k]:SetController( self.Entity , k )
+	for k,v in pairs( animdata ) do
+		local D = ents.Create( "sbep_base_door" )
+			D:Spawn()
+			D:SetDoorType( v[1] )
+			D:Attach( self.Entity , v[2] , v[3] )
+		D:SetController( self.Entity , k )
+		table.insert( self.DT , D )
 	end
 end
 
