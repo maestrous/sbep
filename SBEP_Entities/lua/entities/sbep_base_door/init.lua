@@ -126,6 +126,7 @@ function ENT:PhysicsInitialize()
 		if (phys:IsValid()) then  		
 			phys:Wake()  
 			phys:EnableGravity(false)
+			--phys:EnableDrag(false)
 			phys:EnableMotion( true )
 		end
 end
@@ -147,22 +148,24 @@ end
 
 function ENT:Attach( ent , V , A )
 	self.Entity.D = self.Entity.D || {}
+	
 	local Voff = Vector(0,0,0)
 	if V then Voff = Vector( V.x , V.y , V.z ) end
-		print( Voff )
 		self.Entity:SetPos( ent:LocalToWorld( Voff ) )
+		
 	local Aoff = Angle(0,0,0)
 	if A then Aoff = Angle( A.p , A.y , A.r ) end
-		print( Aoff )
 		self.Entity:SetAngles( ent:GetAngles() + Aoff )
-	self.Entity.ATWeld = constraint.Weld( ent , self.Entity , 0, 0, 0, true )
+		
+	self.ATWeld = constraint.Weld( ent , self.Entity , 0, 0, 0, true )
+	
 		self.Entity:SetSkin( ent:GetSkin() )
 		self.Entity.OpenTrigger = false
-		self.Entity.D.ATEnt		= ent
-		self.Entity.D.VecOff	= Voff
-		print( self.Entity.D.VecOff )
-		self.Entity.D.AngOff	= Aoff
-		print( self.Entity.D.AngOff )
+		
+		self.Entity.ATEnt	= ent
+		self.Entity.VecOff	= Voff
+		self.Entity.AngOff	= Aoff
+		
 		self.Entity:GetPhysicsObject():EnableMotion( true )
 	ent:DeleteOnRemove( self.Entity )
 end
@@ -172,7 +175,7 @@ function ENT:SetController( cont , sysnum )
 		self.Cont = cont
 	end
 	if sysnum then
-		self.D.SDN = sysnum
+		self.SDN = sysnum
 	end
 end
 
@@ -216,11 +219,11 @@ function ENT:Open()
 		timer.Create( var , self.D.UD , 1 , function()
 							self.OpenStatus = true
 							if self.Cont then
-								WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.D.SDN ),1)
+								WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.SDN ),1)
 							end
 						end)
 	if self.Cont then
-		WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.D.SDN ),0.5)
+		WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.SDN ),0.5)
 	end
 end
 
@@ -237,11 +240,11 @@ function ENT:Close()
 		timer.Create( var , self.D.UD , 1 , function()
 							self.OpenStatus = false
 							if self.Cont then
-								WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.D.SDN ),0)
+								WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.SDN ),0)
 							end
 						end)
 	if self.Cont then
-		WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.D.SDN ),0.5)
+		WireLib.TriggerOutput(self.Cont,"Open_"..tostring( self.SDN ),0.5)
 	end
 end
 
@@ -257,9 +260,9 @@ function ENT:Think()
 			end
 		end
 	end
-	if (self.D.ATEnt && self.D.ATEnt:IsValid() ) && (!self.ATWeld || !self.ATWeld:IsValid()) then
-		self:Attach( self.D.ATEnt , self.D.VecOff , self.D.AngOff )
-		print( "Attaching" )
+	if (self.ATEnt && self.ATEnt:IsValid() ) && (!self.ATWeld || !self.ATWeld:IsValid()) then
+		print( "rewelding" )
+		self:Attach( self.ATEnt , self.VecOff , self.AngOff )
 	end
 	if self.Cont then
 		if self.Entity:GetSkin() != self.Cont.Skin then
@@ -287,26 +290,36 @@ function ENT:OnRemove()
 		end
 	end
 	if self.Cont and ValidEntity( self.Cont ) then
-		table.remove( self.Cont.DT , self.D.SDN )
+		table.remove( self.Cont.DT , self.SDN )
 		self.Cont:MakeWire( true )
 	end
 end
 
 function ENT:PreEntityCopy()
-	local dupeInfo = {}
-	dupeInfo.type 	= self.type
+	local DI = {}
+	DI.type 	= self.type
 	if self.Cont then
-		dupeInfo.Cont 	= self.Cont:EntIndex()
+		DI.Cont 	= self.Cont:EntIndex()
 	end
-	dupeInfo.D 		= self.D
-	duplicator.StoreEntityModifier(self, "SBEPD", dupeInfo)
+	DI.D 		= self.D
+	DI.ATEnt	= self.ATEnt:EntIndex()
+	DI.VecOff	= self.VecOff
+	DI.AngOff	= self.AngOff
+	DI.ATWeld	= self.ATWeld:EntIndex()
+	duplicator.StoreEntityModifier(self, "SBEPD", DI)
 end
 duplicator.RegisterEntityModifier( "SBEPD" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	self.type 	= Ent.EntityMods.SBEPD.type
 	self.D 		= Ent.EntityMods.SBEPD.D
-	self.Entity:SetController( CreatedEntities[Ent.EntityMods.SBEPD.Cont] )
+	self.ATEnt	= CreatedEntities[ Ent.EntityMods.SBEPD.ATEnt ]
+	self.VecOff	= Ent.EntityMods.SBEPD.VecOff
+	self.AngOff	= Ent.EntityMods.SBEPD.AngOff
+	self.ATWeld = CreatedEntities[ Ent.EntityMods.SBEPD.ATWeld ]
+	if Ent.EntityMods.SBEPD.Cont then
+		self.Entity:SetController( CreatedEntities[ Ent.EntityMods.SBEPD.Cont ] )
+	end
 	self.Entity:PhysicsInitialize()
 	self.Entity:GetSequenceData()
 	self.Entity:Close()

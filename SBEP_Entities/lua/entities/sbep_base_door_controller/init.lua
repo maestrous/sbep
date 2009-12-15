@@ -50,10 +50,8 @@ function ENT:AddAnimDoors( animdata )
 	for k,v in pairs( animdata ) do
 		local D = ents.Create( "sbep_base_door" )
 			D:Spawn()
+			D:Initialize()
 			D:SetDoorType( v[1] )
-			/*print(v[1])
-			print(v[2])
-			print(v[3])*/
 			D:Attach( self.Entity , v[2] , v[3] )
 		D:SetController( self.Entity , k )
 		table.insert( self.DT , D )
@@ -117,21 +115,21 @@ function ENT:TriggerInput(k,v)
 end
 
 function ENT:PreEntityCopy()
-	local dupeInfo = {}
+	local DI = {}
 
-	dupeInfo.AnimData 		= self.AnimData
-	dupeInfo.SBEPEnableWire = self.SBEPEnableWire
-	dupeInfo.EnableUseKey 	= self.EnableUseKey
-	dupeInfo.DT = {}
+	DI.AnimData 		= self.AnimData
+	DI.SBEPEnableWire = self.SBEPEnableWire
+	DI.EnableUseKey 	= self.EnableUseKey
+	DI.DT = {}
 	for m,n in ipairs(self.DT) do
-		dupeInfo.DT[m] = n:EntIndex()
+		DI.DT[m] = n:EntIndex()
 	end
 	
 	if WireAddon then
-		dupeInfo.WireData = WireLib.BuildDupeInfo( self.Entity )
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
 	end
 	
-	duplicator.StoreEntityModifier(self, "SBEPDC", dupeInfo)
+	duplicator.StoreEntityModifier(self, "SBEPDC", DI)
 end
 duplicator.RegisterEntityModifier( "SBEPDC" , function() end)
 
