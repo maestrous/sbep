@@ -131,19 +131,22 @@ function ENT:PhysicsInitialize()
 		end
 end
 
-function ENT:SetDoorType( type )
-	if (!DTT[type]) || (type == self.type) then return end
-	self.Entity:SetDoorVars( type )
+function ENT:SetDoorType( strType )
+	if !strType || (!DTT[strType]) || (strType == self.type) then 
+		print( "Invalid Door Type: "..tostring(strType) )
+		return false 
+	end
+	self.Entity:SetDoorVars( strType )
 	self.Entity:SetModel( self.D.model )
 	self.Entity:GetSequenceData()
 	self.Entity:PhysicsInitialize()	
 	self.Entity:Close()
 end
 
-function ENT:SetDoorVars( type )
-	if (!DTT[type]) then return end
-	self.type  = type
-	self.D = DTT[ type ]
+function ENT:SetDoorVars( strType )
+	if !strType || (!DTT[strType]) then return end
+	self.type  = strType
+	self.D = DTT[ strType ]
 end
 
 function ENT:Attach( ent , V , A )
@@ -261,7 +264,6 @@ function ENT:Think()
 		end
 	end
 	if (self.ATEnt && self.ATEnt:IsValid() ) && (!self.ATWeld || !self.ATWeld:IsValid()) then
-		print( "rewelding" )
 		self:Attach( self.ATEnt , self.VecOff , self.AngOff )
 	end
 	if self.Cont then

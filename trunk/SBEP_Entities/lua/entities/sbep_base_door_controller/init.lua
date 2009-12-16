@@ -2,6 +2,8 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( "shared.lua" ) 
 
+local MST = list.Get( "SBEP_DoorControllerModels" )
+
 ENT.WireDebugName = "SBEP Door Controller"
 
 function ENT:Initialize()	
@@ -17,8 +19,10 @@ function ENT:Initialize()
 	self.SpawnTime = CurTime()
 end
 
-function ENT:MakeWire( adjust )
-	if !self.DT or !self.SBEPEnableWire then return end
+function ENT:MakeWire( bWire , bAdjust )
+
+	self.EnableWire = bWire
+	if !self.DT then return end
 
 	self.SBEPWireInputs = {}
 	self.SBEPWireOutputs = {}
@@ -31,11 +35,11 @@ function ENT:MakeWire( adjust )
 		table.insert(self.SBEPWireOutputs , "Locked_"..tostring( k ) )
 	end
 
-	if self.EnableUseKey then
+	if self.EnableUse then
 		table.insert(self.SBEPWireInputs , "Disable Use" )
 	end
 
-	if adjust then
+	if bAdjust then
 		Wire_AdjustInputs(self.Entity, self.SBEPWireInputs )
 		Wire_AdjustOutputs(self.Entity, self.SBEPWireOutputs)
 	else
@@ -44,22 +48,27 @@ function ENT:MakeWire( adjust )
 	end
 end
 
-function ENT:AddAnimDoors( animdata )	
-	self.AnimData = animdata
+function ENT:SetUsable( bUsable )
+	self.EnableUse = bUsable
+end
+
+function ENT:AddDoors()
+	local doors = MST[ string.lower(self:GetModel()) ]
+	if !doors then return false end
 	self.DT = {}
-	for k,v in pairs( animdata ) do
+	for n,Data in ipairs( doors ) do
 		local D = ents.Create( "sbep_base_door" )
 			D:Spawn()
 			D:Initialize()
-			D:SetDoorType( v[1] )
-			D:Attach( self.Entity , v[2] , v[3] )
+			D:SetDoorType( Data.type )
+			D:Attach( self.Entity , Data.V , Data.A )
 		D:SetController( self.Entity , k )
 		table.insert( self.DT , D )
 	end
 end
 
 function ENT:Use( activator, caller )
-	if !self.EnableUseKey or self.DisableUse then return end
+	if !self.EnableUse or self.DisableUse then return end
 
 	for k,v in pairs( self.DT ) do
 		if !v.Locked then
@@ -117,9 +126,8 @@ end
 function ENT:PreEntityCopy()
 	local DI = {}
 
-	DI.AnimData 		= self.AnimData
-	DI.SBEPEnableWire = self.SBEPEnableWire
-	DI.EnableUseKey 	= self.EnableUseKey
+	DI.EnableWire = self.EnableWire
+	DI.EnableUse 	= self.EnableUse
 	DI.DT = {}
 	for m,n in ipairs(self.DT) do
 		DI.DT[m] = n:EntIndex()
@@ -135,9 +143,8 @@ duplicator.RegisterEntityModifier( "SBEPDC" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 
-	self.AnimData 		= Ent.EntityMods.SBEPDC.AnimData
-	self.SBEPEnableWire = Ent.EntityMods.SBEPDC.SBEPEnableWire
-	self.EnableUseKey 	= Ent.EntityMods.SBEPDC.EnableUseKey
+	self.EnableWire = Ent.EntityMods.SBEPDC.EnableWire
+	self.EnableUse 	= Ent.EntityMods.SBEPDC.EnableUse
 	self.DT			= {}
 	for k,v in ipairs( Ent.EntityMods.SBEPDC.DT ) do
 		if v then

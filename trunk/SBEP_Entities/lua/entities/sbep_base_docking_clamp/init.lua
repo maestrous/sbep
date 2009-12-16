@@ -3,6 +3,7 @@ AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
 
 local DCDT = list.Get( "SBEP_DockingClampModels" )
+local DD = list.Get( "SBEP_DoorControllerModels" )
 
 function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
@@ -52,29 +53,29 @@ function ENT:TriggerInput(iname, value)
 	end
 end
 
-function ENT:AddDockDoor( DoorData )
+function ENT:AddDockDoor()
 
-	self.Doors = self.Doors or {}
-	local doortype, vecoff, angoff = unpack( DoorData )
-	vecoff, angoff = vecoff or Vector(0,0,0), angoff or Angle(0,0,0)
-
-	local door = ents.Create( "sbep_base_door" )
+	local Data = DD[ string.lower( self.Entity:GetModel() ) ]
+	if !Data then return end
 	
-	door:Spawn()
-	door:SetDoorType( doortype )
-	door:Attach( self.Entity , vecoff , angoff )
-		
-	table.insert( self.Doors , door )
-
+	self.Doors = self.Doors or {}
+	for n,Door in ipairs( Data ) do
+		local D = ents.Create( "sbep_base_door" )
+			D:Spawn()
+			D:Initialize()
+			local ct = D:SetDoorType( Door.type )
+		D:Attach( self.Entity , Door.V , Door.A )
+		table.insert( self.Doors , D )
+	end
 end
 
-function ENT:SetDockType( type )
-	if !type then return false end
-	local DT = DCDT[ self.Entity:GetModel() ]
+function ENT:SetDockType( strType )
+	if !strType then return false end
+	local DT = DCDT[ string.lower( self.Entity:GetModel() ) ]
 	if !DT then return false end
 
-	self.ALType  = type
-	self.Entity:SetName( type )
+	self.ALType  = strType
+	self.Entity:SetName( strType )
 	self.CompatibleLocks = DT.Compatible
 end
 
