@@ -4,7 +4,7 @@ ENT.PrintName		= "Gold-Fish"
 ENT.Author			= "Paradukes + SlyFo"
 ENT.Category		= "SBEP-Weapons"
 
-ENT.Spawnable		= true
+ENT.Spawnable		= false
 ENT.AdminSpawnable	= true
 ENT.Armed			= false
 ENT.Exploded		= false
