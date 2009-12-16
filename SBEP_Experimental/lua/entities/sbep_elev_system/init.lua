@@ -414,18 +414,18 @@ function ENT:CreateHatches()		--Creating Hatches. Each Hatch is paired with the 
 end
 
 function ENT:CreateDoors()
-	for k,V in ipairs( self.PT ) do
-		V.PD.FDT = {}
-		local data = DD[ V.PD.model ]
-		if data && data.doors then
-			for n,I in pairs( data.doors ) do
-				if !(I[1] == "Door_ElevHatch_S" || I[1] == "Door_ElevHatch_L") then
+	for n,P in ipairs( self.PT ) do
+		P.PD.FDT = {}
+		local data = DD[ string.lower( P.PD.model ) ]
+		if data then
+			for n,I in pairs( data ) do
+				if !(I.type == "Door_ElevHatch_S" || I.type == "Door_ElevHatch_L") then
 					local ND = ents.Create( "sbep_base_door" )
 						ND:Spawn()
 						ND:Initialize()
-						ND:SetDoorType( I[1] )
-						ND:Attach( V, I[2], I[3] )
-					table.insert( V.PD.FDT , ND )
+						ND:SetDoorType( I.type )
+						ND:Attach( P, I.V, I.A )
+					table.insert( P.PD.FDT , ND )
 					self.Entity:DeleteOnRemove( ND )
 				end
 			end
