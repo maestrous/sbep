@@ -36,4 +36,11 @@ function TOOL.BuildCPanel( panel )
 	panel:SetSpacing( 10 )
 	panel:SetName( "SBEP Wiki Tool" )
 	
+	local HelpB = vgui.Create( "DButton" )
+		HelpB.DoClick = function()
+								SBEPDoc.OpenManual()
+							end
+		HelpB:SetText( "Open the SBEP Manual" )
+	panel:AddItem( HelpB )
+	
  end  
