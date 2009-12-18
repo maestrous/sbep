@@ -5,11 +5,12 @@ include( 'shared.lua' )
 
 function ENT:Initialize()
 
-	self.Entity:SetModel( "models/Items/AR2_Grenade.mdl" )
-	self.Entity:SetName("Artillery Shell")
+	self.Entity:SetModel( "models/Slyfo_2/rocketpod_smallrocket.mdl" )
+	self.Entity:SetName("Drunk Shell")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self.Entity:SetCollisionGroup(GROUP_PROJECTILE)
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -31,7 +32,7 @@ function ENT:Initialize()
 
 	self.Drunk = self.Drunk or 1
 	self.CSAng = math.random(0,360)
-	self.CSSpeed = math.random(-100 * self.Drunk,100 * self.Drunk)
+	self.CSSpeed = math.Clamp(math.random(-100 * self.Drunk,100 * self.Drunk),-100,100)
 	self.CSXSp = math.random(0,10 * self.Drunk)
 	self.CSYSp = math.random(0,10 * self.Drunk)
 	self.STime = CurTime()
@@ -49,17 +50,23 @@ end
 function ENT:Think()
 
 	local LTime = CurTime() - self.STime
-	
-	if LTime > 10 then
+	local DistTime = 10000
+	if self.Distance then
+		DistTime = self.Distance * 0.001
+	end
+	print(self.Distance, DistTime, LTime)
+	if LTime > 10 || LTime > DistTime then
 		self:GoBang()
+		--print(self.Distance, DistTime, LTime)
 	end
 
 	self.CSAng = math.fmod(self.CSAng + self.CSSpeed,360)
 	--print(self.CSAng)
 	local XShift = math.sin(math.rad( self.CSAng )) * self.CSXSp
 	local YShift = math.cos(math.rad( self.CSAng )) * self.CSYSp
+	--print(XShift, YShift)
 
-	self.Entity:GetPhysicsObject():SetVelocity((self.Entity:GetForward() * (1000 + (LTime * 100))) + (self.Entity:GetRight() * XShift)+ (self.Entity:GetUp() * YShift))
+	self.Entity:GetPhysicsObject():SetVelocity((self.Entity:GetForward() * (1000)) + (self.Entity:GetRight() * XShift)+ (self.Entity:GetUp() * YShift))
 	
 	local trace = {}
 	trace.start = self.Entity:GetPos()
@@ -92,14 +99,17 @@ end
 
 function ENT:GoBang()
 	self.Exploded = true
-	util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 200, 75)
-	gcombat.hcgexplode( self.Entity:GetPos(), 200, math.Rand(50, 100), 7)
-
-	self.Entity:EmitSound("explode_4")
+	local LTime = CurTime() - self.STime
+	if LTime > 0.5 then
+		util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 400, 50)
+		--gcombat.hcgexplode( self.Entity:GetPos(), 200, math.Rand(50, 100), 7)
 	
-	local effectdata = EffectData()
-	effectdata:SetOrigin(self.Entity:GetPos())
-	effectdata:SetStart(self.Entity:GetPos())
-	effectdata:SetAngle(self.Entity:GetAngles())
-	util.Effect( "TinyWhomphSplode", effectdata )
+		self.Entity:EmitSound("explode_4")
+		
+		local effectdata = EffectData()
+		effectdata:SetOrigin(self.Entity:GetPos())
+		effectdata:SetStart(self.Entity:GetPos())
+		effectdata:SetAngle(self.Entity:GetAngles())
+		util.Effect( "TinyWhomphSplode", effectdata )
+	end
 end
