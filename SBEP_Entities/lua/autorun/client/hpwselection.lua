@@ -1,3 +1,5 @@
+CreateClientConVar("SBEPLighting", 1, true, false) --Just sticking this in here to save having to create it in other entities.
+
 CreateClientConVar("SBHP_0", 0, true, true)
 CreateClientConVar("SBHP_1", 1, true, true)
 CreateClientConVar("SBHP_2", 0, true, true)

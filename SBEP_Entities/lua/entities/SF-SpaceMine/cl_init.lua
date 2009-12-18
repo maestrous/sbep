@@ -36,31 +36,32 @@ function ENT:Think()
 		end
 			
 		if self.Blip then
-			
-			local dlight = DynamicLight( self:EntIndex() )
-			if ( dlight ) then
-				--local r, g, b, a = self:GetColor()
-				dlight.Pos = self:GetPos() + self:GetUp() * 70
-				dlight.r = 200
-				dlight.g = 60
-				dlight.b = 60
-				dlight.Brightness = 5
-				dlight.Decay = 200 * 5
-				dlight.Size = 200
-				dlight.DieTime = CurTime() + 1
-			end
-			
-			local dlight = DynamicLight( self:EntIndex() )
-			if ( dlight ) then
-				--local r, g, b, a = self:GetColor()
-				dlight.Pos = self:GetPos() + self:GetUp() * -70
-				dlight.r = 200
-				dlight.g = 60
-				dlight.b = 60
-				dlight.Brightness = 5
-				dlight.Decay = 200 * 5
-				dlight.Size = 200
-				dlight.DieTime = CurTime() + 1
+			if LocalPlayer():GetInfoNum( "SBEPLighting" ) > 0 then
+				local dlight = DynamicLight( self:EntIndex() )
+				if ( dlight ) then
+					--local r, g, b, a = self:GetColor()
+					dlight.Pos = self:GetPos() + self:GetUp() * 70
+					dlight.r = 200
+					dlight.g = 60
+					dlight.b = 60
+					dlight.Brightness = 5
+					dlight.Decay = 200 * 5
+					dlight.Size = 200
+					dlight.DieTime = CurTime() + 1
+				end
+				
+				local dlight = DynamicLight( self:EntIndex() )
+				if ( dlight ) then
+					--local r, g, b, a = self:GetColor()
+					dlight.Pos = self:GetPos() + self:GetUp() * -70
+					dlight.r = 200
+					dlight.g = 60
+					dlight.b = 60
+					dlight.Brightness = 5
+					dlight.Decay = 200 * 5
+					dlight.Size = 200
+					dlight.DieTime = CurTime() + 1
+				end
 			end
 		
 		end

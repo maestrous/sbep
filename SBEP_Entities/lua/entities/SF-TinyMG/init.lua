@@ -101,7 +101,12 @@ function ENT:Think()
 				end
 			end
 		end
-			
+		
+		local effectdata = EffectData()
+		effectdata:SetOrigin(self:GetPos() + self:GetForward() * 18)
+		effectdata:SetAngle(self:GetAngles())
+		effectdata:SetScale( 1.5 )
+		util.Effect( "MuzzleEffect", effectdata )
 				
 		self:FireBullets(Bullet)
 				
