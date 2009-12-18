@@ -1,13 +1,10 @@
 TOOL.Category		= "SBEP"
-TOOL.Name			= "#Wiki Help" 
+TOOL.Name			= "#SBEP Help" 
 TOOL.Command 		= nil 
 TOOL.ConfigName 	= ""
 
-TOOL.ClientConVar[ "skin"  	] = 0
-TOOL.ClientConVar[ "glass"  ] = 0
-
 if ( CLIENT ) then
-	language.Add( "Tool_sbep_wiki_name" , "SBEP Wiki Tool" 				)
+	language.Add( "Tool_sbep_wiki_name" , "SBEP Wiki Help Tool" 				)
 	language.Add( "Tool_sbep_wiki_desc" , "Look up help and info on SBEP stuff." 		)
 	language.Add( "Tool_sbep_wiki_0" 	, "Click something to look it up in the wiki." 	)
 end
@@ -37,10 +34,27 @@ function TOOL.BuildCPanel( panel )
 	panel:SetName( "SBEP Wiki Tool" )
 	
 	local HelpB = vgui.Create( "DButton" )
+		DupeFixButton:SetSize( 100, 50 )
 		HelpB.DoClick = function()
 								SBEPDoc.OpenManual()
 							end
 		HelpB:SetText( "Open the SBEP Manual" )
 	panel:AddItem( HelpB )
+	
+	local LightCB = vgui.Create( "DCheckBoxLabel" )
+		LightCB:SetPos( 10,50 )
+		LightCB:SetText( "Use Dynamic Lights?" )
+		LightCB:SetConVar( "SBEPLighting" )
+		LightCB:SetValue( 1 )
+		LightCB:SizeToContents()
+	panel:AddItem( LightCB )
+	
+	local DupeFixButton = vgui.Create("DButton")
+		DupeFixButton:SetText( "Fix All Dupes" )
+		DupeFixButton:SetSize( 100, 20 )
+		DupeFixButton.DoClick = function ( btn )
+							RunConsoleCommand( "SBEP_FixAllDupes" )
+						end
+	panel:AddItem( DupeFixButton )
 	
  end  
