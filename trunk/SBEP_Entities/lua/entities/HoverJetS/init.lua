@@ -145,7 +145,7 @@ function ENT:Think()
 				local HVPos = tr.HitPos + (tr.HitNormal * 100)
 				if HVPos.z > tr.HitPos.z + 50 then --This controls the maximum incline the jets will function on.
 					self.Hovering = true
-					self.TargetZ = tr.HitPos.z + 50 + HOffset
+					self.TargetZ = tr.HitNormal * (50 + HOffset)
 					
 					FSpeed = FSpeed * self.Entity:GetPhysicsObject():GetMass()
 					SSpeed = SSpeed * self.Entity:GetPhysicsObject():GetMass()

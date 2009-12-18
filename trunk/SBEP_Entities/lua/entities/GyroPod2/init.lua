@@ -320,6 +320,15 @@ function ENT:Think()
 				FDist = PRel:Distance( self.Pod:GetPos() + self.Pod:GetForward() * 500 )
 				BDist = PRel:Distance( self.Pod:GetPos() + self.Pod:GetForward() * -500 )
 				self.Yaw = (BDist - FDist) * 0.1
+				/*
+				
+				Paradukes: TVec = TheirPos - OurPos
+				Paradukes: AVec = self:WorldToLocal(TVec)
+				Hysteria: lol
+				Paradukes: Angle = AVec:Angle
+				Paradukes: And that's about it, I think
+				
+				*/
 
 				self.CPL:CrosshairEnable()
 			end
