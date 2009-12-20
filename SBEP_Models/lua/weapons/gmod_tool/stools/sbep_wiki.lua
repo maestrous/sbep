@@ -34,7 +34,7 @@ function TOOL.BuildCPanel( panel )
 	panel:SetName( "SBEP Wiki Tool" )
 	
 	local HelpB = vgui.Create( "DButton" )
-		DupeFixButton:SetSize( 100, 50 )
+		HelpB:SetSize( 100, 50 )
 		HelpB.DoClick = function()
 								SBEPDoc.OpenManual()
 							end
