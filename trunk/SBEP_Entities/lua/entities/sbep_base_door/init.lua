@@ -6,106 +6,92 @@ ENT.WireDebugName = "SBEP Door"
 
 local DTT = {}
 
---[[DTT[ "Door Type Name (Class)"	]	= { model = "models/examplemodelpath.mdl" 	,
-										UD = Length of sequence (s) , OD = time before door can be walked though   , CD = time before door becomes solid  ,
+--[[DTT[ "Door Type Name (Class)"	]	= { { model = "models/examplemodelpath.mdl" 	,	UD = Length of sequence (s) , OD = time before door can be walked though   , CD = time before door becomes solid  ,
 		Opening Sounds => { [time 1(s)] = "Sound 1 Name" , [time 2(s)] = "Sound 2 Name" , etc } ,
 		Closing Soungs   => { [time 1(s)] = "Sound 1 Name" , [time 2(s)] = "Sound 2 Name" , etc } }]]
 
-DTT[ "Door_Anim1"	]	= { model = "models/SmallBridge/SEnts/SBADoor1.mdl" 	,
-										UD = 3 , OD = 2   , CD = 1 	,
+DTT[ "Door_AnimS1"	]	= { { model = "models/SmallBridge/SEnts/SBADoorS1a.mdl" ,	UD = 3 , OD = 2   , CD = 1 	,
 		OS = { [0] = "Doors.Move14" , [1.45] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.45] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.45] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } } ,
+							{ model = "models/SmallBridge/SEnts/SBADoorS1.mdl" 	,	UD = 3 , OD = 2   , CD = 1 	,
+		OS = { [0] = "Doors.Move14" , [1.45] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
+		CS = { [0] = "Doors.Move14" , [1.45] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_Anim2"	]	= { model = "models/SmallBridge/SEnts/SBADoor2.mdl" 	,
-										UD = 3 , OD = 1   , CD = 2 	,
-		OS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
-
-DTT[ "Door_Anim3"	]	= { model = "models/SmallBridge/SEnts/SBADoor3.mdl" 	,
-										UD = 2 , OD = 1   , CD = 1 	,
+DTT[ "Door_AnimS2"	]	= { { model = "models/SmallBridge/SEnts/SBADoorS2a.mdl" 	,	UD = 2 , OD = 1   , CD = 1 	,
 		OS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } }
-
-DTT[ "Door_Anim3dh"	]	= { model = "models/SmallBridge/SEnts/SBADoor3dh.mdl" 	,
-										UD = 2 , OD = 1   , CD = 1 	,
+		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } } ,
+							{ model = "models/SmallBridge/SEnts/SBADoorS2.mdl" 	,	UD = 2 , OD = 1   , CD = 1 	,
 		OS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_Anim2"	]	= { model = "models/SmallBridge/SEnts/SBADoor2.mdl" 	,
-										UD = 3 , OD = 1   , CD = 2 	,
-		OS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
+DTT[ "Door_AnimT"	]	= { { model = "models/SmallBridge/SEnts/SBADoorT.mdl" 	,	UD = 2 , OD = 1   , CD = 1 	,
+		OS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } ,
+		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_Iris"		]	= { model = "models/SmallBridge/SEnts/SBADoorIris2.mdl",
-										UD = 3 , OD = 2   , CD = 1 	,
+DTT[ "Door_SIris"	]	= { { model = "models/SmallBridge/SEnts/SBADoorSIrisa.mdl",	UD = 3 , OD = 2   , CD = 1 	,
 		OS = { [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [2.65] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } } ,
+							{ model = "models/SmallBridge/SEnts/SBADoorSIris.mdl",	UD = 3 , OD = 2   , CD = 1 	,
+		OS = { [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [2.65] = "Doors.FullOpen9" } ,
+		CS = { [0] = "Doors.Move14" , [1.95] = "Doors.FullOpen8" , [2.75] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_DW"		]	= { model = "models/SmallBridge/SEnts/SBADoorWide.mdl" ,
-										UD = 3 , OD = 1.5 , CD = 1.5 	,
+DTT[ "Door_AnimW"	]	= { { model = "models/SmallBridge/SEnts/SBADoorWb.mdl" ,	UD = 3 , OD = 1.5 , CD = 1.5 	,
 		OS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.95] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.95] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.95] = "Doors.FullOpen9" } } ,
+							{ model = "models/SmallBridge/SEnts/SBADoorWa.mdl" ,	UD = 3 , OD = 1.5 , CD = 1.5 	,
+		OS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.95] = "Doors.FullOpen9" } ,
+		CS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.95] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_DWDH"		]	= { model = "models/SmallBridge/SEnts/SBADoorWideDH.mdl" ,
-										UD = 3 , OD = 1.5 , CD = 1.5 	,
+DTT[ "Door_AnimL"	]	= { { model = "models/SmallBridge/SEnts/SBADoorLa.mdl" ,	UD = 3 , OD = 1.5 , CD = 1.5 	,
 		OS = { [0] = "Doors.Move14" , [0.80] = "Doors.FullOpen8" , [1.60] = "Doors.FullOpen8" , [2.40] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.35] = "Doors.FullOpen8" , [2.15] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.35] = "Doors.FullOpen8" , [2.15] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } } ,
+							{ model = "models/SmallBridge/SEnts/SBADoorL.mdl" ,	UD = 3 , OD = 1.5 , CD = 1.5 	,
+		OS = { [0] = "Doors.Move14" , [0.80] = "Doors.FullOpen8" , [1.60] = "Doors.FullOpen8" , [2.40] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } ,
+		CS = { [0] = "Doors.Move14" , [1.35] = "Doors.FullOpen8" , [2.15] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_Sly1"		]	= { model = "models/Slyfo/SLYAdoor1.mdl" ,
-										UD = 2 , OD = 0.5 , CD = 1.5 	,
+DTT[ "Door_Sly1"	]	= { { model = "models/Slyfo/SLYAdoor1.mdl" ,	UD = 2 , OD = 0.5 , CD = 1.5 	,
 		OS = { [0] = "Doors.Move14" , [1.80] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.80] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.80] = "Doors.FullOpen9" } } }
 		
-DTT[ "Door_DBS"		]	= { model = "models/SmallBridge/SEnts/SBADoorDBsmall.mdl" ,
-										UD = 5 , OD = 4   , CD = 1.5	,
+DTT[ "Door_DBS"		]	= { { model = "models/SmallBridge/SEnts/SBADoorDBs.mdl" ,	UD = 5 , OD = 4   , CD = 1.5	,
 		OS = { [0] = "Doors.Move14" , [1.30] = "Doors.FullOpen8" , [2.60] = "Doors.FullOpen8" , [3.90] = "Doors.FullOpen9" , [4.90] = "Doors.FullOpen8" } ,
-		CS = { [0] = "Doors.Move14" , [2.60] = "Doors.FullOpen8" , [3.95] = "Doors.FullOpen8" , [4.90] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [2.60] = "Doors.FullOpen8" , [3.95] = "Doors.FullOpen8" , [4.90] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_Hull"		]	= { model = "models/SmallBridge/SEnts/SBAhullDsEb.mdl" ,
-										UD = 3 , OD = 1.5 , CD = 1.5 ,
+DTT[ "Door_Hull"	]	= { { model = "models/SmallBridge/SEnts/SBAhullDsE.mdl" ,	UD = 3 , OD = 1.5 , CD = 1.5 ,
 		OS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.85] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [0.95] = "Doors.FullOpen8" , [1.95] = "Doors.FullOpen8" , [2.90] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_ElevHatch_S"]	= { model = "models/SmallBridge/SEnts/sbahatchelevs.mdl" 	, 
-										UD = 1 , OD = 0.6 , CD = 0.4 	,
+DTT[ "Door_ElevHatch_S"]	= { { model = "models/SmallBridge/SEnts/sbahatchelevs.mdl" 	,	UD = 1 , OD = 0.6 , CD = 0.4 	,
 		OS = { [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } } }
 
-DTT[ "Door_ElevHatch_L"]	= { model = "models/SmallBridge/SEnts/sbahatchelevl.mdl" 	, 
-										UD = 2 , OD = 0.6 , CD = 1 	,
+DTT[ "Door_ElevHatch_L"]	= { { model = "models/SmallBridge/SEnts/sbahatchelevl.mdl" 	,	UD = 2 , OD = 0.6 , CD = 1 	,
 		OS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } } }
 		
-DTT[ "Door_ModBridge_11a"]	= { model = "models/Cerus/Modbridge/Misc/Doors/door11a_anim.mdl" 	, 
-										UD = 3.8 , OD = 1.5 , CD = 2 	,
+DTT[ "Door_ModBridge_11a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door11a_anim.mdl" 	,	UD = 3.8 , OD = 1.5 , CD = 2 	,
 		OS = { [0] = "Doors.FullOpen8" , [0.50] = "Doors.Move14"    , [1.50] = "Doors.FullOpen8" , [3.40] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" 	  , [1.50] = "Doors.FullOpen8" , [2.30] = "Doors.FullOpen9" , [3.00] = "Doors.Move14" , [3.60] = "Doors.FullOpen8" } }
+		CS = { [0] = "Doors.Move14" 	  , [1.50] = "Doors.FullOpen8" , [2.30] = "Doors.FullOpen9" , [3.00] = "Doors.Move14" , [3.60] = "Doors.FullOpen8" } } }
 		
-DTT[ "Door_ModBridge_12a"]	= { model = "models/Cerus/Modbridge/Misc/Doors/door12a_anim.mdl" 	, 
-										UD = 3.0 , OD = 1.5 , CD = 1.5 	,
+DTT[ "Door_ModBridge_12a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door12a_anim.mdl" 	,	UD = 3.0 , OD = 1.5 , CD = 1.5 	,
 		OS = { [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } } }
 		
-DTT[ "Door_ModBridge_13a"]	= { model = "models/Cerus/Modbridge/Misc/Doors/door13a_anim.mdl" 	, 
-										UD = 4.8 , OD = 2 , CD = 3.5 	,
+DTT[ "Door_ModBridge_13a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door13a_anim.mdl" 	,	UD = 4.8 , OD = 2 , CD = 3.5 	,
 		OS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } } }
 		
-DTT[ "Door_ModBridge_23a"]	= { model = "models/Cerus/Modbridge/Misc/Doors/door23a_anim.mdl" 	, 
-										UD = 5.2 , OD = 4 , CD = 1.5 	,
+DTT[ "Door_ModBridge_23a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door23a_anim.mdl" 	,	UD = 5.2 , OD = 4 , CD = 1.5 	,
 		OS = { [0] = "Doors.Move14" 	, [0.90] = "Doors.Move14"    , [2.80] = "Doors.FullOpen8" 	, [5.00] = "Doors.FullOpen9" } , 
-		CS = { [0] = "Doors.Fullopen8" 	, [2.40] = "Doors.FullOpen8" , [3.40] = "Doors.Move14" 		, [4.40] = "Doors.FullOpen8" , [5.20] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Fullopen8" 	, [2.40] = "Doors.FullOpen8" , [3.40] = "Doors.Move14" 		, [4.40] = "Doors.FullOpen8" , [5.20] = "Doors.FullOpen9" } } }
 		
-DTT[ "Door_ModBridge_33a"]	= { model = "models/Cerus/Modbridge/Misc/Doors/door33a_anim.mdl" 	, 
-										UD = 2.8 , OD = 1.6 , CD = 1.2 	,
+DTT[ "Door_ModBridge_33a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door33a_anim.mdl" 	,	UD = 2.8 , OD = 1.6 , CD = 1.2 	,
 		OS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
-		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } }
+		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } } }
 		
-DTT[ "ACC_Furnace1"]	= { model = "models/Cerus/Modbridge/Misc/Accessories/acc_furnace1_anim.mdl" 	, 
-										UD = 1 , OD = 0.2 , CD = 0.8 	,
+DTT[ "ACC_Furnace1"]	= { { model = "models/Cerus/Modbridge/Misc/Accessories/acc_furnace1_anim.mdl" 	,	UD = 1 , OD = 0.2 , CD = 0.8 	,
 		OS = { [0] = "Doors.Move14" 	, [1.00] = "Doors.FullOpen9" } , 
-		CS = { [0] = "Doors.Fullopen8" 	, [1.00] = "Doors.FullOpen9" } }
-
+		CS = { [0] = "Doors.Fullopen8" 	, [1.00] = "Doors.FullOpen9" } } }
 
 function ENT:Initialize()
 	self.D					= {}
@@ -131,22 +117,38 @@ function ENT:PhysicsInitialize()
 		end
 end
 
-function ENT:SetDoorType( strType )
-	if !strType || (!DTT[strType]) || (strType == self.type) then 
+function ENT:SetDoorType( strType , nClass )
+	if !strType ||(strType == self.type && nClass == self.DClass) then 
 		print( "Invalid Door Type: "..tostring(strType) )
 		return false 
 	end
-	self.Entity:SetDoorVars( strType )
+	self.Entity:SetDoorVars( strType , nClass )
 	self.Entity:SetModel( self.D.model )
 	self.Entity:GetSequenceData()
 	self.Entity:PhysicsInitialize()	
 	self.Entity:Close()
 end
 
-function ENT:SetDoorVars( strType )
-	if !strType || (!DTT[strType]) then return end
+function ENT:SetDoorVars( strType , nClass )
+	if !strType || ( nClass && !DTT[strType][nClass] ) then return end
 	self.type  = strType
-	self.D = DTT[ strType ]
+	self.DClass = nClass || 1
+	self.D = DTT[ strType ][ self.DClass ]
+end
+
+function GetDoorType()
+	return self.type
+end
+
+function ENT:SetDoorClass( nClass )
+	nClass = math.fmod( nClass - 1 , #DTT[ self.type ] ) + 1
+	if DTT[ self.type ][ nClass ] then
+		self:SetDoorType( self.type, nClass )
+	end
+end
+
+function ENT:GetDoorClass()
+	return self.DClass
 end
 
 function ENT:Attach( ent , V , A )

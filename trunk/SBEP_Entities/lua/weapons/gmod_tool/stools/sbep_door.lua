@@ -8,7 +8,7 @@ local MST = list.Get( "SBEP_DoorToolModels" )
 if CLIENT then
 	language.Add( "Tool_sbep_door_name"	, "SBEP Door Tool" 				)
 	language.Add( "Tool_sbep_door_desc"	, "Create an SBEP door." 		)
-	language.Add( "Tool_sbep_door_0"	, "Left click to spawn a door." )
+	language.Add( "Tool_sbep_door_0"	, "Left click to spawn a door. Right-click a door to cycle through any alternative models." )
 	language.Add( "undone_SBEP Door"	, "Undone SBEP Door"			)
 	
 	function SBEPDoorToolError( ply, cmd, args )
@@ -35,7 +35,7 @@ TOOL.ClientConVar[ "model"  	] = "models/SmallBridge/Panels/sbpaneldoor.mdl"
 TOOL.ClientConVar[ "wire"  		] = 1
 TOOL.ClientConVar[ "enableuse"	] = 1
 
-function TOOL:LeftClick( trace )
+function TOOL:LeftClick( tr )
 
 	if CLIENT then return end
 
@@ -45,7 +45,7 @@ function TOOL:LeftClick( trace )
 	end
 
 	local model = self:GetClientInfo( "model" )
-	local pos = trace.HitPos
+	local pos = tr.HitPos
 
 	local DoorController = ents.Create( "sbep_base_door_controller" )
 		DoorController:SetModel( model )
@@ -71,11 +71,22 @@ function TOOL:LeftClick( trace )
 	return true
 end
 
-function TOOL:RightClick( trace )
+function TOOL:RightClick( tr )
 
+	if CLIENT then return end
+	if !tr.Hit || !tr.Entity || !tr.Entity:IsValid() then return end
+	local door = tr.Entity
+	local entclass = door:GetClass()
+	
+	if entclass == "sbep_base_door" then
+		class = door:GetDoorClass()
+		door:SetDoorClass( class + 1 )
+		
+		return true
+	end
 end
 
-function TOOL:Reload( trace )
+function TOOL:Reload( tr )
 
 end
 
