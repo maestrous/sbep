@@ -1,5 +1,6 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
+ENT.Category		= "SBEP - Other"
 ENT.PrintName		= "Double Tank Bay"
 ENT.Author			= "Paradukes"
 

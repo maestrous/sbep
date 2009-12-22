@@ -316,16 +316,19 @@ function ENT:Touch( ent )
 	
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.Plat) and (self.Plat:IsValid()) then
-	    info.Plat = self.Plat:EntIndex()
+function ENT:Use( activator, caller )
+	if activator:KeyDown( IN_SPEED ) && activator:KeyDown( IN_WALK ) then
+		local RPos = Vector( self.XCo , self.YCo , self.ZCo )
+		
+		if self.FulX ~= 0 || self.FulY ~= 0 || self.FulZ ~= 0 then
+			local FulVec = Vector( self.FulX , self.FulY , self.FulZ )
+			FulVec:Rotate( Angle( self.Pitch , self.Yaw , self.Roll ) )
+			RPos = RPos - FulVec
+		end
+		
+		local Pos = self.Plat:LocalToWorld( RPos * -1 )
+		self.Entity:SetPos(Pos)
 	end
-	return info
-end
-
-function ENT:PreEntityPaste()
-	--self.PasteDelay = true
 end
 
 function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
@@ -340,17 +343,33 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	self.Entity:Think()
 end
 
-function ENT:Use( activator, caller )
-	if activator:KeyDown( IN_SPEED ) && activator:KeyDown( IN_WALK ) then
-		local RPos = Vector( self.XCo , self.YCo , self.ZCo )
-		
-		if self.FulX ~= 0 || self.FulY ~= 0 || self.FulZ ~= 0 then
-			local FulVec = Vector( self.FulX , self.FulY , self.FulZ )
-			FulVec:Rotate( Angle( self.Pitch , self.Yaw , self.Roll ) )
-			RPos = RPos - FulVec
-		end
-		
-		local Pos = self.Plat:LocalToWorld( RPos * -1 )
-		self.Entity:SetPos(Pos)
+function ENT:PreEntityCopy()
+	local DI = {}
+
+	if (self.Plat) and (self.Plat:IsValid()) then
+	    DI.Plat = self.Plat:EntIndex()
 	end
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPMobPlatCont", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPMobPlatCont" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPMobPlatCont
+
+	if (DI.Plat) then
+		self.Plat = CreatedEntities[ DI.Plat ]
+		/*if (!self.Plat) then
+			self.Plat = ents.GetByIndex(DI.Plat)
+		end*/
+	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPMobPlatCont.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPMobPlatCont.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

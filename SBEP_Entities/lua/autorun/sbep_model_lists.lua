@@ -125,162 +125,162 @@ local DCT = {}
 	DCT[ "models/cerus/modbridge/misc/accessories/acc_furnace1.mdl"	] = { { type = "ACC_Furnace1"  		} }
 	
 	DCT[ "models/smallbridge/elevators,small/sbselevb.mdl" 		] = { { type = "Door_ElevHatch_S" 	, V = Vector( 0,0,60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} }
 	DCT[ "models/smallbridge/elevators,small/sbselevbe.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector( 0,0,60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevbedh.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,190.65) 						} ,
 																	  { type = "Door_AnimT"   		, V = Vector( 60.45,0,0) 						} ,
 																	  { type = "Door_AnimT"   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevbedw.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector( 0,0,60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevbr.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector( 0,0,60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0,270,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0,270,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevbt.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector( 0,0,60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevbx.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector( 0,0,60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} ,
+																	  { type = "Door_AnimS2"	  	, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
 	
 	DCT[ "models/smallbridge/elevators,large/sblelevb.mdl" 		] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7 ,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevbe.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7 ,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7 ,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevbedh.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,190.65) 						} ,
-																	  { type = "Door_AnimL"   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimL"   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimL"   		, V = Vector( 176.7 ,0,0) 						} ,
+																	  { type = "Door_AnimL"   		, V = Vector(-176.7 ,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevbedw.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7 ,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7 ,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevbr.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7 ,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7 ,0) , A = Angle(0, 90,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevbt.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(0,-173.91,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7 ,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7 ,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(0,-176.7 ,0) , A = Angle(0,-90,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevbx.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(0,-173.91,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7 ,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7 ,0,0) , A = Angle(0,180,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7 ,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(0,-176.7 ,0) , A = Angle(0,-90,0) 	} }
 
 	DCT[ "models/smallbridge/elevators,small/sbselevm.mdl" 		] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,60.45 ) 						} ,
 																	  { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} }
 	DCT[ "models/smallbridge/elevators,small/sbselevme.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,60.45 ) 						} ,
 																	  { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevmedh.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,190.65) 						} ,
 																	  { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
 																	  { type = "Door_AnimT"   		, V = Vector( 60.45,0,0) 						} ,
 																	  { type = "Door_AnimT"   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevmedw.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,60.45 ) 						} ,
 																	  { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevmr.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,60.45 ) 						} ,
 																	  { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0,270,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0,270,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevmt.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,60.45 ) 						} ,
 																	  { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevmx.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,60.45 ) 						} ,
 																	  { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
 	
 	DCT[ "models/smallbridge/elevators,large/sblelevm.mdl" 		] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
 																	  { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevme.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
 																	  { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevmedh.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,190.65) 						} ,
 																	  { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimL"   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimL"   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimL"   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimL"   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevmedw.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
 																	  { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevmr.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
 																	  { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7,0) , A = Angle(0, 90,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevmt.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
 																	  { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(0,-173.91,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(0,-176.7,0) , A = Angle(0,-90,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevmx.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector(  0,0,60.45) 						} ,
 																	  { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(0,-173.91,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(0,-176.7,0) , A = Angle(0,-90,0) 	} }
 
 	DCT[ "models/smallbridge/elevators,small/sbselevt.mdl" 		] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} }
 	DCT[ "models/smallbridge/elevators,small/sbselevte.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevtedh.mdl"	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
 																	  { type = "Door_AnimT"   		, V = Vector( 60.45,0,0) 						} ,
 																	  { type = "Door_AnimT"   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevtedw.mdl"	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevtr.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0,270,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0,270,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevtt.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
 	DCT[ "models/smallbridge/elevators,small/sbselevtx.mdl" 	] = { { type = "Door_ElevHatch_S" 	, V = Vector(0,0,-60.45) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 60.45,0,0) 						} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(-60.45,0,0) , A = Angle(0,180,0)	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimS2"	   		, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimS2"	   	, V = Vector( 60.45,0,0) 						} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(-60.45,0,0) , A = Angle(0,180,0)	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector( 0,60.45,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimS2"	   	, V = Vector(0,-60.45,0) , A = Angle(0,-90,0) 	} }
 	
 	DCT[ "models/smallbridge/elevators,large/sblelevt.mdl" 		] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevte.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevtedh.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimL"   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimL"   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimL"   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimL"   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevtedw.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevtr.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7,0) , A = Angle(0, 90,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevtt.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(0,-173.91,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(0,-176.7,0) , A = Angle(0,-90,0) 	} }
 	DCT[ "models/smallbridge/elevators,large/sblelevtx.mdl" 	] = { { type = "Door_ElevHatch_L" 	, V = Vector( 0,0,-60.45) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 173.91,0,0) 						} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(-173.91,0,0) , A = Angle(0,180,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector( 0,173.91,0) , A = Angle(0, 90,0) 	} ,
-																	  { type = "Door_AnimW"	   		, V = Vector(0,-173.91,0) , A = Angle(0,-90,0) 	} }
+																	  { type = "Door_AnimW"	   		, V = Vector( 176.7,0,0) 						} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(-176.7,0,0) , A = Angle(0,180,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector( 0,176.7,0) , A = Angle(0, 90,0) 	} ,
+																	  { type = "Door_AnimW"	   		, V = Vector(0,-176.7,0) , A = Angle(0,-90,0) 	} }
 	
 	DCT[ "models/smallbridge/panels/sbpaneldbsmall.mdl"			] = { { type = "Door_DBS"   	} }
 	DCT[ "models/smallbridge/station parts/sbbaydps.mdl"		] = { { type = "Door_AnimS2" 	, V = Vector(51.15,0,0     ) 							} ,

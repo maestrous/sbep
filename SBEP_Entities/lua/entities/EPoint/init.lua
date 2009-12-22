@@ -91,25 +91,34 @@ function ENT:Use( ply )
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+function ENT:PreEntityCopy()
+	local DI = {}
+
 	if (self.Vec) and (self.Vec:IsValid()) then
-	    info.Vec = self.Vec:EntIndex()
+	    DI.Vec = self.Vec:EntIndex()
 	end
 	if (self.CDown) then
-	    info.CDown = self.CDown
+	    DI.CDown = self.CDown
 	end
-	return info
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPEPoint", DI)
 end
+duplicator.RegisterEntityModifier( "SBEPEPoint" , function() end)
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Vec) then
-		self.Vec = GetEntByID(info.Vec)
-		if (!self.Vec) then
-			self.Vec = ents.GetByIndex(info.Vec)
-		end
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPEPoint
+
+	if DI.Vec then
+		self.Vec = CreatedEntities[ info.Vec ]
 		self.Vec.ExitPoint = self.Entity
 	end
-	self.CDown = info.CDown
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPEPoint.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPEPoint.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

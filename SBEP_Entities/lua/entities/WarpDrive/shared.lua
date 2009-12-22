@@ -3,6 +3,7 @@ ENT.Base = "base_wire_entity"
 
 ENT.PrintName		= "Warp Drive"
 ENT.Author			= "Asphid_Jackal, help by Zeik"
+ENT.Category		= "SBEP - Other"
 ENT.Contact			= ""
 ENT.Purpose			= ""
 ENT.Instructions	= ""

@@ -127,3 +127,32 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	GetEntByID(info.NPod1):Remove()
 	GetEntByID(info.NPod2):Remove()
 end
+
+function ENT:PreEntityCopy()
+	local DI = {}
+
+	if (self.NPod1) and (self.NPod1:IsValid()) then
+	    DI.NPod1 = self.NPod1:EntIndex()
+	end
+	if (self.NPod2) and (self.NPod2:IsValid()) then
+	    DI.NPod2 = self.NPod2:EntIndex()
+	end
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPAPodLaunch", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPAPodLaunch" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+
+	CreatedEntities[ Ent.EntityMods.SBEPAPodLaunch.NPod1 ]:Remove()
+	CreatedEntities[ Ent.EntityMods.SBEPAPodLaunch.NPod2 ]:Remove()
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPAPodLaunch.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPAPodLaunch.WireData, function(id) return CreatedEntities[id] end)
+	end
+
+end

@@ -802,14 +802,6 @@ function ENT:OnRemove()
 	end	
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.Pod and self.Pod:IsValid()) then
-		info.Pod = self.Pod:EntIndex()
-	end
-	return info
-end
-
 function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	if (info.Pod) then
 		self.Pod = GetEntByID(info.Pod)
@@ -818,4 +810,31 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 		end
 	end
 	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
+end
+
+function ENT:PreEntityCopy()
+	local DI = {}
+
+	if (self.Pod and self.Pod:IsValid()) then
+		DI.Pod = self.Pod:EntIndex()
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPGyroAdv", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPGyroAdv" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPGyroAdv
+	
+	if (DI.Pod) then
+		self.Pod = CreatedEntities[ DI.Pod ]
+		/*if (!self.Pod) then
+			self.Pod = ents.GetByIndex(DI.Pod)
+		end*/
+	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPGyroAdv.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPGyroAdv.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end
