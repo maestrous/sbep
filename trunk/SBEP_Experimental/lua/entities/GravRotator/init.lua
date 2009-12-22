@@ -41,6 +41,7 @@ function ENT:SpawnFunction( ply, tr )
 	ent:Spawn()
 	ent:Activate()
 	ent.SPL = ply
+	ent.GravMode = 3
 	
 	return ent
 	
@@ -96,7 +97,7 @@ function ENT:Think()
 			elseif self.GravMode == 3 then
 				self:SetAngles(tr.HitNormal:Angle():Up():Angle())
 				local Ang = self:GetAngles()
-				Ang.y = 0
+				--Ang.y = 0
 				self:SetAngles(Ang)
 			end
 			if GravDir then
@@ -138,7 +139,7 @@ function ENT:Think()
 		--print(self.CPL:GetAngles(),self.CPL:EyeAngles(),self.CPL:GetAimVector())
 		--self.CPL:SetParent()
 	else
-		self:Remove()
+		--self:Remove()
 	end
 	
 	self.Entity:NextThink( CurTime() + 0.01 ) 
