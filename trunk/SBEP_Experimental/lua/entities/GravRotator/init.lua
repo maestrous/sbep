@@ -58,7 +58,7 @@ end
 
 function ENT:Think()
 	if self.CPL then
-		if self.CPL.GravCon != self || (self.CPL:GetVehicle() && self.CPL:GetVehicle():IsValid()) then
+		if self.CPL.GravCon != self || (self.CPL:GetVehicle() && self.CPL:GetVehicle():IsValid()) || self.CPL:GetMoveType() == 8 then
 			self:Remove()
 		end
 		--print(self.CPL:GetMoveType())
@@ -84,19 +84,25 @@ function ENT:Think()
 			local OVel = self:GetPhysicsObject():GetVelocity()
 			self:SetPos(tr.HitPos + tr.HitNormal * 10)
 			local GravDir = nil
+			--print(self.GravMode)
 			if self.GravMode == 1 then
 				if self.GravGen && self.GravGen:IsValid() then
 					GravDir = self.GravGen:GetUp() * -1
 				end
 			elseif self.GravMode == 2 then
 				if self.GravGen && self.GravGen:IsValid() then
-					GravDir = (self.GravGen:GetPos() - self:GetPos()):GetNormal()
+					GravDir = (self.GravGen:GetPos() - self:GetPos()):GetNormal() * -1
 				end
 			elseif self.GravMode == 3 then
 				self:SetAngles(tr.HitNormal:Angle():Up():Angle())
 				local Ang = self:GetAngles()
 				Ang.y = 0
 				self:SetAngles(Ang)
+			end
+			if GravDir then
+				--print("Angling...")
+				print(GravDir:Angle())
+				self:SetAngles(GravDir:Angle() * -1)
 			end
 			local PAng = self.CPL:EyeAngles()
 			--PAng:RotateAroundAxis()
@@ -123,6 +129,7 @@ function ENT:Think()
 			end
 			self:SetPos(self:GetPos() + AAng:Forward() * Forward)
 			self:GetPhysicsObject():SetVelocity((OVel * 0.95) + (AAng:Forward() * Forward) + (AAng:Right() * Right))
+			self:GetPhysicsObject():AddAngleVelocity(self:GetPhysicsObject():GetAngleVelocity() * -1)
 			--print("OnGround")
 		else
 			--print("Falling...")
