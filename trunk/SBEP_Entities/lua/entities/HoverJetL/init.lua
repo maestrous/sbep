@@ -258,42 +258,55 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+function ENT:PreEntityCopy()
+	local DI = {}
+
 	if (self.Side) then
-		info.Side = self.Side
+		DI.Side = self.Side
 	end
 	if (self.Mounted) then
-		info.Mounted = self.Mounted
+		DI.Mounted = self.Mounted
 	end
 	if (self.Pod) and (self.Pod:IsValid()) then
-		info.Pod = self.Pod:EntIndex()
+		DI.Pod = self.Pod:EntIndex()
 	end
 	if (self.Cont) and (self.Cont:IsValid()) then
-		info.Cont = self.Cont:EntIndex()
+		DI.Cont = self.Cont:EntIndex()
 	end
-	return info
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPHovJetS", DI)
 end
+duplicator.RegisterEntityModifier( "SBEPHovJetS" , function() end)
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Cont) then
-		self.Cont = GetEntByID(info.Cont)
-		if (!self.Cont) then
-			self.Cont = ents.GetByIndex(info.Cont)
-		end
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPHovJetS
+
+	if (DI.Cont) then
+		self.Cont = CreatedEntities[ DI.Cont ]
+		/*if (!self.Cont) then
+			self.Cont = ents.GetByIndex(DI.Cont)
+		end*/
 	end
-	if (info.Pod) then
-		self.Pod = GetEntByID(info.Pod)
-		if (!self.Pod) then
-			self.Pod = ents.GetByIndex(info.Pod)
-		end
+	if (DI.Pod) then
+		self.Pod = CreatedEntities[ DI.Pod ]
+		/*if (!self.Pod) then
+			self.Pod = ents.GetByIndex(DI.Pod)
+		end*/
 	end
-	if (info.Mounted) then
-		self.Mounted = info.Mounted
+	if (DI.Mounted) then
+		self.Mounted = DI.Mounted
 	end
-	if (info.Side) then
-		self.Side = info.Side
+	if (DI.Side) then
+		self.Side = DI.Side
 	end
 	self.SPL = ply
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPHovJetS.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPHovJetS.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

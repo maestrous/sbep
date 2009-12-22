@@ -37,11 +37,6 @@ function ENT:TriggerInput(iname, value)
 		else
 			self.Entity:SetActive( false )
 		end
-		
-	elseif (iname == "Detonate") then	
-		if (value > 0) then
-			self.Entity:Splode()
-		end
 	end
 	
 end

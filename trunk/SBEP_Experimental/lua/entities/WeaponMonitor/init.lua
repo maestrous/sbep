@@ -169,3 +169,30 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 		end
 	end
 end
+
+function ENT:PreEntityCopy()
+	local DI = {}
+		if self.Master && self.Master:IsValid() then
+			DI.master = self.Master:EntIndex()
+		end
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	duplicator.StoreEntityModifier(self, "SBEPWepMon", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPWepMon" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+
+	local DI = Ent.EntityMods.SBEPWepMon
+
+	if DI.master then
+		self.Master = CreatedEntities[ DI.master ]
+		/*if (!self.Master) then
+			self.Master = ents.GetByIndex(DI.master)
+		end*/
+	end
+	if(Ent.EntityMods and Ent.EntityMods.SBEPWepMon.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPWepMon.WireData, function(id) return CreatedEntities[id] end)
+	end
+end

@@ -107,18 +107,15 @@ function ENT:Think()
 	return true
 end
 
-
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.Controller) and (self.Controller:IsValid()) then
-	    info.Controller = self.Controller:EntIndex()
+function ENT:Use( activator, caller )
+	/*
+	if !self.Socked then
+		--Vector( self.Controller.FulX , self.Controller.FulY , self.Controller.FulZ )
+		local LPos = Vector(0,0,0)--self.Controller:WorldToLocal(self:GetPos() + self:GetRight() * self.Controller.FulX + self:GetForward() * self.Controller.FulY + self:GetUp() * self.Controller.FulZ)
+		local Cons = constraint.Ballsocket( self, self.Controller, 0, 0, LPos, 0, 0, 1)
+		self.Socked = true
 	end
-	return info
-end
-
-function ENT:PreEntityPaste()
-	--self.PasteDelay = true
-	--print("Freezing")
+	*/
 end
 
 function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
@@ -132,13 +129,33 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 	self.PasteDelay = false
 end
 
-function ENT:Use( activator, caller )
-	/*
-	if !self.Socked then
-		--Vector( self.Controller.FulX , self.Controller.FulY , self.Controller.FulZ )
-		local LPos = Vector(0,0,0)--self.Controller:WorldToLocal(self:GetPos() + self:GetRight() * self.Controller.FulX + self:GetForward() * self.Controller.FulY + self:GetUp() * self.Controller.FulZ)
-		local Cons = constraint.Ballsocket( self, self.Controller, 0, 0, LPos, 0, 0, 1)
-		self.Socked = true
+function ENT:PreEntityCopy()
+	local DI = {}
+
+	if (self.Controller) and (self.Controller:IsValid()) then
+	    DI.Controller = self.Controller:EntIndex()
 	end
-	*/
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPMobPlat", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPMobPlat" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPMobPlat
+
+	if (DI.Controller) then
+		self.Controller = CreatedEntities[ DI.Controller ]
+		/*if (!self.Controller) then
+			self.Controller = ents.GetByIndex(DI.Controller)
+		end*/
+	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPMobPlat.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPMobPlat.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

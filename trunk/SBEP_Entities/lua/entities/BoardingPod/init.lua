@@ -405,3 +405,62 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 		end
 	end
 end
+
+function ENT:PreEntityCopy()
+	local DI = {}
+
+	if (self.Pod) and (self.Pod:IsValid()) then
+	    DI.Pod = self.Pod:EntIndex()
+		if (self.Pod.Pod) and (self.Pod.Pod:IsValid()) then
+			DI.Pod2 = self.Pod.Pod:EntIndex()
+		end
+	end
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPBoardPod", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPBoardPod" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPBoardPod
+
+	if (DI.Pod) then
+		self.Pod = CreatedEntities[ DI.Pod ]
+		/*if (!self.Pod) then
+			self.Pod = ents.GetByIndex(DI.Pod)
+		end*/
+		self.Pod.Pod = CreatedEntities[ DI.Pod2 ]
+		/*if (!self.Pod.Pod) then
+			self.Pod.Pod = ents.GetByIndex(DI.Pod2)
+		end*/
+		self.Pod.Pod.Pod = self.Pod
+		self.Pod.Cont = self.Entity
+		self.Pod.SPL = ply
+		self.Pod:SetNetworkedInt( "HPC", ent.HPC )
+		local TB = self.Pod:GetTable()
+		TB.HandleAnimation = function (vec, ply)
+			return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) 
+		end 
+		self.Pod:SetTable(TB)
+		self.Pod:SetKeyValue("limitview", 0)
+	end
+	self.SPL = ply
+	if (DI.guns) then
+		for k,v in pairs(DI.guns) do
+			--local gun = CreatedEntities[ v ]
+			self.HP[k]["Ent"] = CreatedEntities[ v ]
+			/*if (!self.HP[k]["Ent"]) then
+				gun = ents.GetByIndex(v)
+				self.HP[k]["Ent"] = gun
+			end*/
+		end
+	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPBoardPod.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPBoardPod.WireData, function(id) return CreatedEntities[id] end)
+	end
+
+end

@@ -142,13 +142,14 @@ end
 duplicator.RegisterEntityModifier( "SBEPDC" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPDC
 
-	self.EnableWire = Ent.EntityMods.SBEPDC.EnableWire
-	self.EnableUse 	= Ent.EntityMods.SBEPDC.EnableUse
+	self.EnableWire = DI.EnableWire
+	self.EnableUse 	= DI.EnableUse
 	self.DT			= {}
-	for k,v in ipairs( Ent.EntityMods.SBEPDC.DT ) do
-		if v then
-			self.DT[k] = CreatedEntities[v]
+	for n,I in ipairs( DI.DT ) do
+		if I then
+			self.DT[n] = CreatedEntities[I]
 		end
 	end
 	self:MakeWire()

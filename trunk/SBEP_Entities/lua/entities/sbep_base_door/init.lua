@@ -287,6 +287,12 @@ function ENT:IsOpen()
 
 end
 
+function ENT:Use()
+	if self.Cont && self.Cont then
+		self.Cont:Use()
+	end
+end
+
 function ENT:OnRemove()
 	for k,v in ipairs( self.Timers ) do
 		if timer.IsTimer( v ) then

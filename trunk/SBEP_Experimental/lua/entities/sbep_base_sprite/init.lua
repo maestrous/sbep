@@ -81,3 +81,15 @@ end
 function ENT:GetSpriteType()
 	return self:GetNWString( "SBEPSpriteType" )
 end
+
+function ENT:PreEntityCopy()
+	if self.Entity && self.Entity:IsValid() then
+		self.Entity:Remove()
+	end
+end
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	if self.Entity && self.Entity:IsValid() then
+		self.Entity:Remove()
+	end
+end

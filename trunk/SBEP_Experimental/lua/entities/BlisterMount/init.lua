@@ -182,20 +182,29 @@ function ENT:Use( activator, caller )
 
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.HP[1]["Ent"]) and (self.HP[1]["Ent"]:IsValid()) then
-	    info.gun = self.HP[1]["Ent"]:EntIndex()
-	end
-	return info
-end
-
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.gun) then
-		self.HP[1]["Ent"] = GetEntByID(info.gun)
-		if (!self.HP[1]["Ent"]) then
-			self.HP[1]["Ent"] = ents.GetByIndex(info.gun)
+function ENT:PreEntityCopy()
+	local DI = {}
+		local ent = self.HP[1]["Ent"]
+		if ent && ent:IsValid() then
+			DI.gun = ent:EntIndex()
 		end
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	duplicator.StoreEntityModifier(self, "SBEPBlister", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPBlister" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPBlister
+	if DI.gun then
+		self.HP[1]["Ent"] = CreatedEntities( DI.gun )
+		--if (!self.HP[1]["Ent"]) then
+		--	self.HP[1]["Ent"] = ents.GetByIndex(  Ent.EntityMods.SBEPBlister.gun )
+		--end
+	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPBlister.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPBlister.WireData, function(id) return CreatedEntities[id] end)
 	end
 end
