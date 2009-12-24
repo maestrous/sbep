@@ -1,7 +1,6 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
-include('entities/base_wire_entity/init.lua')
+--include('entities/base_wire_entity/init.lua')
 include( 'shared.lua' )
 
 function ENT:Initialize()
@@ -189,72 +188,6 @@ function ENT:Touch( ent )
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.SWidth) then
-		info.SWidth = self.SWidth
-	end
-	if (self.SHeight) then
-		info.SHeight = self.SHeight
-	end
-	if (self.SLength) then
-		info.SLength = self.SLength
-	end
-	if (self.CSModel) then
-		info.CSModel = self.CSModel
-	end
-	if (self.Radius) then
-		info.Radius = self.Radius
-	end
-	if (self.TLength) then
-		info.TLength = self.TLength
-	end
-	
-	if (self.HeightOffSet) then
-		info.HeightOffSet = self.HeightOffSet
-	end
-	
-	if (self.FTab) then
-		info.FTab = self.FTab
-	end
-	
-	return info
-end
-
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.SWidth) then
-		self.SWidth = info.SWidth
-	end
-	if (info.SHeight) then
-		self.SHeight = info.SHeight
-	end
-	if (info.SLength) then
-		self.SLength = info.SLength
-	end
-	if (info.Radius) then
-		self.Radius = info.Radius
-	end
-	if (info.CSModel) then
-		self.CSModel = info.CSModel
-	end
-	if (info.TLength) then
-		self.TLength = info.TLength
-	end
-	if (info.HeightOffSet) then
-		self.HeightOffSet = info.HeightOffSet
-	end
-	if (info.FTab) then
-		self.FTab = info.FTab
-	end
-	
-	self.Entity:SetCSModel( self.CSModel )
-	self.Entity:SetSegSize( Vector(self.SLength, self.SWidth, self.SHeight) )
-	self.Entity:SetLength( self.TLength )
-    self.Entity:SetRadius( self.Radius )
-    
-end
-
 function ENT:PhysicsSimulate( phys, deltatime )
 
 	if !self.Hovering then return SIM_NOTHING end
@@ -299,4 +232,50 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	
 	return Angular, Linear, SIM_GLOBAL_ACCELERATION
 	
+end
+
+function ENT:PreEntityCopy()
+	local DI = {}
+	
+	local t = {
+		"SWidth"		,
+		"SHeight"		,
+		"SLength"		,
+		"CSModel"		,
+		"Radius"		,
+		"TLength"		,
+		"HeightOffset"	,
+		"FTab"			
+			}
+
+	for n,P in ipairs( t ) do
+		if self[ P ] then
+			DI[ P ] = self[ P ]
+		end
+	end
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPTankTread", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPTankTread" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPTankTread
+
+	for P,q in ipairs( DI ) do
+		self[ P ] = q
+	end
+	
+	self.Entity:SetCSModel( self.CSModel )
+	self.Entity:SetSegSize( Vector(self.SLength, self.SWidth, self.SHeight) )
+	self.Entity:SetLength( self.TLength )
+    self.Entity:SetRadius( self.Radius )
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPTankTread.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPTankTread.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

@@ -1,7 +1,6 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
-include('entities/base_wire_entity/init.lua')
+--include('entities/base_wire_entity/init.lua')
 include( 'shared.lua' )
 util.PrecacheSound( "SB/Gattling2.wav" )
 
@@ -224,35 +223,43 @@ function ENT:HPFire()
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+function ENT:PreEntityCopy()
+	local DI = {}
+
 	if (self.CPod) and (self.CPod:IsValid()) then
-	    info.cpod = self.CPod:EntIndex()
+	    DI.cpod = self.CPod:EntIndex()
 	end
 	if (self.HP[1]["Ent"]) and (self.HP[1]["Ent"]:IsValid()) then
-	    info.gun = self.HP[1]["Ent"]:EntIndex()
+	    DI.gun = self.HP[1]["Ent"]:EntIndex()
 	end
-	return info
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPSwivelMountC", DI)
 end
+duplicator.RegisterEntityModifier( "SBEPSwivelMountC" , function() end)
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPSwivelMountC
+
 	self.HPC				= 1
 	self.HP				= {}
 	self.HP[1]			= {}
 	self.HP[1]["Ent"]	= nil
 	self.HP[1]["Type"]	= "Small"
 	self.HP[1]["Pos"]	= Vector(0,0,12)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.cpod) then
-		self.CPod = GetEntByID(info.cpod)
-		if (!self.CPod) then
-			self.CPod = ents.GetByIndex(info.cpod)
-		end
+	
+	if (DI.cpod) then
+		self.CPod = CreatedEntities[ DI.cpod ]
 	end
-	if (info.gun) then
-		self.HP[1]["Ent"] = GetEntByID(info.gun)
-		if (!self.HP[1]["Ent"]) then
-			self.HP[1]["Ent"] = ents.GetByIndex(info.gun)
-		end
+	if (DI.gun) then
+		self.HP[1]["Ent"] = CreatedEntities[ DI.gun ]
 	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPSwivelMountC.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPSwivelMountC.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

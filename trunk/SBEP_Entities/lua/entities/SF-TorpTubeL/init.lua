@@ -145,20 +145,30 @@ function ENT:HPFire()
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.Torp) and (self.Torp:IsValid()) then
-	    info.Torp = self.Torp:EntIndex()
-	end
-	return info
-end
+function ENT:PreEntityCopy()
+	local DI = {}
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Torp) then
-		self.Torp = GetEntByID(info.Torp)
-		if (!self.Torp) then
-			self.Torp = ents.GetByIndex(info.Torp)
-		end
+	if (self.Torp) and (self.Torp:IsValid()) then
+	    DI.Torp = self.Torp:EntIndex()
 	end
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPTorpL", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPTorpL" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPTorpL
+
+	if (DI.Torp) then
+		self.Torp = CreatedEntities[ DI.Torp ]
+	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPTorpL.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPTorpL.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end
