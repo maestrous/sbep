@@ -1,4 +1,3 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
@@ -159,36 +158,42 @@ function ENT:HPFire()
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+function ENT:PreEntityCopy()
+	local DI = {}
+
 	if (self.Pod) and (self.Pod:IsValid()) then
-	    info.Pod = self.Pod:EntIndex()
+	    DI.Pod = self.Pod:EntIndex()
 	end
-	info.guns = {}
+	DI.guns = {}
 	for k,v in pairs(self.HP) do
 		if (v["Ent"]) and (v["Ent"]:IsValid()) then
-			info.guns[k] = v["Ent"]:EntIndex()
+			DI.guns[k] = v["Ent"]:EntIndex()
 		end
 	end
-	return info
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPRoverBPanel", DI)
 end
+duplicator.RegisterEntityModifier( "SBEPRoverBPanel" , function() end)
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Pod) then
-		self.Pod = GetEntByID(info.Pod)
-		if (!self.Pod) then
-			self.Pod = ents.GetByIndex(info.Pod)
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPRoverBPanel
+
+	if DI.Pod then
+		self.Pod = CreatedEntities[ DI.Pod ]
+	end
+	if DI.guns then
+		for k,v in pairs(DI.guns) do
+			self.HP[k]["Ent"] = CreatedEntities[ v ]
+
 		end
 	end
-	if (info.guns) then
-		for k,v in pairs(info.guns) do
-			local gun = GetEntByID(v)
-			self.HP[k]["Ent"] = gun
-			if (!self.HP[k]["Ent"]) then
-				gun = ents.GetByIndex(v)
-				self.HP[k]["Ent"] = gun
-			end
-		end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPRoverBPanel.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPRoverBPanel.WireData, function(id) return CreatedEntities[id] end)
 	end
+
 end

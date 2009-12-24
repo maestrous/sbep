@@ -1,7 +1,7 @@
 --models/Slyfo/flakvierling_base.mdl - models/Slyfo/flakvierling_blasternorm.mdl - models/Slyfo/flakvierling_gunmount.mdl - models/Slyfo/flakvierling_spinner.mdl
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
-include('entities/base_wire_entity/init.lua')
+--include('entities/base_wire_entity/init.lua')
 include( 'shared.lua' )
 util.PrecacheSound( "SB/Gattling2.wav" )
 
@@ -281,57 +281,56 @@ function ENT:OnHPLink(weap)
 	table.insert(self.TraceMask,weap)
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+function ENT:PreEntityCopy()
+	local DI = {}
+
 	if (self.CPod) and (self.CPod:IsValid()) then
-	    info.cpod = self.CPod:EntIndex()
+	    DI.cpod = self.CPod:EntIndex()
 	end
-	info.guns = {}
+	DI.guns = {}
 	for k,v in pairs(self.HP) do
 		if (v["Ent"]) and (v["Ent"]:IsValid()) then
-			info.guns[k] = v["Ent"]:EntIndex()
+			DI.guns[k] = v["Ent"]:EntIndex()
 		end
 	end
 	if (self.Base) and (self.Base:IsValid()) then
-		info.Base = self.Base:EntIndex()
+		DI.Base = self.Base:EntIndex()
 	end
 	if (self.Base2) and (self.Base2:IsValid()) then
-		info.Base2 = self.Base2:EntIndex()
+		DI.Base2 = self.Base2:EntIndex()
 	end
-	return info
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPVierling", DI)
 end
+duplicator.RegisterEntityModifier( "SBEPVierling" , function() end)
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.cpod) then
-		self.CPod = GetEntByID(info.cpod)
-		if (!self.CPod) then
-			self.CPod = ents.GetByIndex(info.cpod)
-		end
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPVierling
+
+	if (DI.cpod) then
+		self.CPod = CreatedEntities[ DI.cpod ]
 	end
-	if (info.Base) then
-		self.Base = GetEntByID(info.Base)
-		if (!self.Base) then
-			self.Base = ents.GetByIndex(info.Base)
-		end
+	if (DI.Base) then
+		self.Base = CreatedEntities[ DI.Base ]
 	end
-	if (info.Base2) then
-		self.Base2 = GetEntByID(info.Base2)
-		if (!self.Base2) then
-			self.Base2 = ents.GetByIndex(info.Base2)
-		end
+	if (DI.Base2) then
+		self.Base2 = CreatedEntities[ DI.Base2 ]
 	end
 	self.TraceMask = {self.Entity,self.Base,self.Base2,self.CPod}
 	self.TraceData = {filter = self.TraceMask}
-	if (info.guns) then
-		for k,v in pairs(info.guns) do
-			local gun = GetEntByID(v)
-			self.HP[k]["Ent"] = gun
-			if (!self.HP[k]["Ent"]) then
-				gun = ents.GetByIndex(v)
-				self.HP[k]["Ent"] = gun
-				table.insert(self.TraceMask,gun)
-			end
+	if (DI.guns) then
+		for k,v in pairs(DI.guns) do
+			self.HP[k]["Ent"] = CreatedEntities[ v ]
+			--table.insert(self.TraceMask,gun)
 		end
 	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPVierling.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPVierling.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

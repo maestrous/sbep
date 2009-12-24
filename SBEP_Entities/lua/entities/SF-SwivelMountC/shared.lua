@@ -1,5 +1,5 @@
 ENT.Type 			= "anim"
-ENT.Base 			= "base_wire_entity"
+ENT.Base 			= "base_gmodentity"
 ENT.PrintName		= "Cerus Swivel Mount"
 ENT.Author			= "Paradukes, Cerus and Hysteria"
 ENT.Category		= "SBEP-Weapons"

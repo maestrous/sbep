@@ -1,4 +1,3 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 include( 'shared.lua' )
@@ -163,42 +162,49 @@ function ENT:WLink( Cont, Pod )
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
+function ENT:PreEntityCopy()
+	local DI = {}
+
 	if (self.Side) then
-		info.Side = self.Side
+		DI.Side = self.Side
 	end
 	if (self.Mounted) then
-		info.Mounted = self.Mounted
+		DI.Mounted = self.Mounted
 	end
 	if (self.Pod) and (self.Pod:IsValid()) then
-		info.Pod = self.Pod:EntIndex()
+		DI.Pod = self.Pod:EntIndex()
 	end
 	if (self.Cont) and (self.Cont:IsValid()) then
-		info.Cont = self.Cont:EntIndex()
+		DI.Cont = self.Cont:EntIndex()
 	end
-	return info
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPWheel1", DI)
 end
+duplicator.RegisterEntityModifier( "SBEPWheel1" , function() end)
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Cont) then
-		self.Cont = GetEntByID(info.Cont)
-		if (!self.Cont) then
-			self.Cont = ents.GetByIndex(info.Cont)
-		end
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPWheel1
+
+	if (DI.Cont) then
+		self.Cont = CreatedEntities[ DI.Cont ]
 	end
-	if (info.Pod) then
-		self.Pod = GetEntByID(info.Pod)
-		if (!self.Pod) then
-			self.Pod = ents.GetByIndex(info.Pod)
-		end
+	if (DI.Pod) then
+		self.Pod = CreatedEntities[ DI.Pod ]
 	end
-	if (info.Mounted) then
-		self.Mounted = info.Mounted
+	if (DI.Mounted) then
+		self.Mounted = DI.Mounted
 	end
-	if (info.Side) then
-		self.Side = info.Side
+	if (DI.Side) then
+		self.Side = DI.Side
 	end
 	self.SPL = ply
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPWheel1.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPWheel1.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end

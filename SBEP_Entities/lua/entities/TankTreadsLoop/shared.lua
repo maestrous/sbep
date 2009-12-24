@@ -1,5 +1,5 @@
 ENT.Type 			= "anim"
-ENT.Base 			= "base_wire_entity"
+ENT.Base 			= "base_gmodentity"
 ENT.PrintName		= "Tank Tread Loop"
 ENT.Author			= "Paradukes + SlyFo + Hysteria"
 ENT.Category		= "SBEP - Other"
