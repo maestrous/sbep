@@ -152,24 +152,6 @@ function ENT:gcbt_breakactions(damage, pierce)
 	
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.Master) and (self.Master:IsValid()) then
-	    info.master = self.Master:EntIndex()
-	end
-	return info
-end
-
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.master) then
-		self.Master = GetEntByID(info.master)
-		if (!self.Master) then
-			self.Master = ents.GetByIndex(info.master)
-		end
-	end
-end
-
 function ENT:PreEntityCopy()
 	local DI = {}
 		if self.Master && self.Master:IsValid() then
