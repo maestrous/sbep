@@ -802,16 +802,6 @@ function ENT:OnRemove()
 	end	
 end
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	if (info.Pod) then
-		self.Pod = GetEntByID(info.Pod)
-		if (!self.Pod) then
-			self.Pod = ents.GetByIndex(info.Pod)
-		end
-	end
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-end
-
 function ENT:PreEntityCopy()
 	local DI = {}
 

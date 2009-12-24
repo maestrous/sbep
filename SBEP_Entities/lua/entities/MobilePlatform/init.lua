@@ -118,17 +118,6 @@ function ENT:Use( activator, caller )
 	*/
 end
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Controller) then
-		self.Controller = GetEntByID(info.Controller)
-		if (!self.Controller) then
-			self.Controller = ents.GetByIndex(info.Controller)
-		end
-	end
-	self.PasteDelay = false
-end
-
 function ENT:PreEntityCopy()
 	local DI = {}
 

@@ -331,18 +331,6 @@ function ENT:Use( activator, caller )
 	end
 end
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Plat) then
-		self.Plat = GetEntByID(info.Plat)
-		if (!self.Plat) then
-			self.Plat = ents.GetByIndex(info.Plat)
-		end
-	end
-	self.PasteDelay = false
-	self.Entity:Think()
-end
-
 function ENT:PreEntityCopy()
 	local DI = {}
 

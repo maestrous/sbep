@@ -149,24 +149,28 @@ function ENT:OnRemove()
 	self.Entity:StopSound( "k_lab.ambient_powergenerators" )
 end
 
-function ENT:BuildDupeInfo()
-	PrintTable(self.LTab)
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	info.LTab = {}
-	for k,v in pairs(self.LTab) do
-		info.LTab[k] = v:EntIndex()
-	end
-	info.Pod = self.Pod:EntIndex()
-	return info
-end
+function ENT:PreEntityCopy()
+	local DI = {}
 
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	PrintTable(info.LTab)
-	if (info.Pod) then
-		self.Pod = GetEntByID(info.Pod)
-		if (!self.Pod) then
-			self.Pod = ents.GetByIndex(info.Pod)
-		end
+	DI.LTab = {}
+	for k,v in pairs(self.LTab) do
+		DI.LTab[k] = v:EntIndex()
+	end
+	DI.Pod = self.Pod:EntIndex()
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
+	duplicator.StoreEntityModifier(self, "SBEPHPCont", DI)
+end
+duplicator.RegisterEntityModifier( "SBEPHPCont" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SBEPHPCont
+
+	if (DI.Pod) then
+		self.Pod = CreatedEntities[ DI.Pod ]
 		--[[local TB = self.Pod:GetTable()
 		TB.HandleAnimation = function (vec, ply)
 			return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) 
@@ -175,12 +179,12 @@ function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
 		self.Pod:SetKeyValue("limitview", 0)]]
 	end
 	self.LTab = self.LTab or {}
-	for k,v in pairs(info.LTab) do
-		self.LTab[k] = GetEntByID(v)
-		if (!self.LTab[k]) then
-			self.LTab[k] = ents.GetByIndex(v)
-		end
+	for k,v in pairs(DI.LTab) do
+		self.LTab[k] = CreatedEntities[ v ]
 	end
-	PrintTable(self.LTab)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
+	
+	if(Ent.EntityMods and Ent.EntityMods.SBEPHPCont.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPHPCont.WireData, function(id) return CreatedEntities[id] end)
+	end
+
 end
