@@ -360,52 +360,6 @@ function ENT:OnRemove()
 	end
 end
 
-function ENT:BuildDupeInfo()
-	local info = self.BaseClass.BuildDupeInfo(self) or {}
-	if (self.Pod) and (self.Pod:IsValid()) then
-	    info.Pod = self.Pod:EntIndex()
-		if (self.Pod.Pod) and (self.Pod.Pod:IsValid()) then
-			info.Pod2 = self.Pod.Pod:EntIndex()
-		end
-	end
-	return info
-end
-
-function ENT:ApplyDupeInfo(ply, ent, info, GetEntByID)
-	self.BaseClass.ApplyDupeInfo(self, ply, ent, info, GetEntByID)
-	if (info.Pod) then
-		self.Pod = GetEntByID(info.Pod)
-		if (!self.Pod) then
-			self.Pod = ents.GetByIndex(info.Pod)
-		end
-		self.Pod.Pod = GetEntByID(info.Pod2)
-		if (!self.Pod.Pod) then
-			self.Pod.Pod = ents.GetByIndex(info.Pod2)
-		end
-		self.Pod.Pod.Pod = self.Pod
-		self.Pod.Cont = self.Entity
-		self.Pod.SPL = ply
-		self.Pod:SetNetworkedInt( "HPC", ent.HPC )
-		local TB = self.Pod:GetTable()
-		TB.HandleAnimation = function (vec, ply)
-			return ply:SelectWeightedSequence( ACT_HL2MP_SIT ) 
-		end 
-		self.Pod:SetTable(TB)
-		self.Pod:SetKeyValue("limitview", 0)
-	end
-	self.SPL = ply
-	if (info.guns) then
-		for k,v in pairs(info.guns) do
-			local gun = GetEntByID(v)
-			self.HP[k]["Ent"] = gun
-			if (!self.HP[k]["Ent"]) then
-				gun = ents.GetByIndex(v)
-				self.HP[k]["Ent"] = gun
-			end
-		end
-	end
-end
-
 function ENT:PreEntityCopy()
 	local DI = {}
 
