@@ -25,6 +25,8 @@ function SBEPDoc.OpenManual()
 		SBEPDoc.Menu.Sheet:SetFadeTime( 0 )
 
 	SBEPDoc.Menu.Tabs = {}
+	if !SBEPDoc.Tags then SBEPDoc.Tags = {} end
+	if !SBEPDoc.Icons then SBEPDoc.Icons = {} end
 	for n,D in ipairs( SBEPDoc.DirTable ) do
 		local T = vgui.Create( "DPanel" )
 		SBEPDoc.Menu.Tabs[ D ] = T
@@ -88,7 +90,7 @@ function SBEPDoc.OpenManual()
 		SearchEntry:SetWide( 590 )
 		SearchEntry.OnEnter = function()
 									local R, ser = SBEPDoc.SearchWiki( SearchEntry:GetValue() )
-									PrintTable( R )
+									--PrintTable( R )
 									for k,L in ipairs( SBEPDoc.Menu.Search.Items ) do
 										if k > 1 then
 											L:Remove()
@@ -319,14 +321,16 @@ function SBEPDoc.SearchWiki( search )
 
 	local Results = {}
 	for D,fl in pairs( SBEPDoc.Tags ) do
-		for F,tt in pairs( fl ) do
-			for n, tag in ipairs( tt ) do
-				for k, S in ipairs( SerTab) do
-					if !Results[ F ] then
-						if tag == S || string.match( S , tag ) || string.match( tag , S ) then
-							print( "found result" )
-							local Ic = SBEPDoc.Icons[ F ]
-							Results[ F ] = { D , Ic }
+		if fl then
+			for F,tt in pairs( fl ) do
+				for n, tag in ipairs( tt ) do
+					for k, S in ipairs( SerTab) do
+						if !Results[ F ] then
+							if tag == S || string.match( S , tag ) || string.match( tag , S ) then
+								--print( "found result" )
+								local Ic = SBEPDoc.Icons[ F ]
+								Results[ F ] = { D , Ic }
+							end
 						end
 					end
 				end
@@ -335,7 +339,7 @@ function SBEPDoc.SearchWiki( search )
 	end
 	--PrintTable( Results )
 	if table.Count( Results ) == 0 then 
-		print( "no results" )
+		print( "No results." )
 		return nil, search
 	end
 	
