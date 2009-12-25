@@ -418,7 +418,7 @@ function ENT:CreateDoors()
 		P.PD.FDT = {}
 		local data = DD[ string.lower( P.PD.model ) ]
 		if data then
-			for n,I in pairs( data ) do
+			for n,I in ipairs( data ) do
 				if !(I.type == "Door_ElevHatch_S" || I.type == "Door_ElevHatch_L") then
 					local ND = ents.Create( "sbep_base_door" )
 						ND:Spawn()
