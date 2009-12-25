@@ -2,7 +2,7 @@ ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
 ENT.PrintName		= "Small Swivel Mount"
 ENT.Author			= "Paradukes + SlyFo"
-ENT.Category		= "SBEP-Weapons"
+ENT.Category		= "SBEP - Weapons"
 
 ENT.Spawnable		= true
 ENT.AdminSpawnable	= true

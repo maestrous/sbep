@@ -4,8 +4,8 @@ ENT.PrintName		= "Tank Tread Loop"
 ENT.Author			= "Paradukes + SlyFo + Hysteria"
 ENT.Category		= "SBEP - Other"
 
-ENT.Spawnable		= true
-ENT.AdminSpawnable	= true
+ENT.Spawnable		= false
+ENT.AdminSpawnable	= false
 
 
 function ENT:SetLength( val )

@@ -26,6 +26,7 @@ function ENT:Initialize()
 		
 	self.LinkLock = nil
 	self.UDD = false
+	self.Usable = true
 end
 
 function ENT:TriggerInput(iname, value)		
@@ -330,17 +331,19 @@ function ENT:OnRemove()
 end
 
 function ENT:Use( activator, caller )
-	if (self.DMode < 2) then
-		self.DMode = 2		
-		self.Entity:EmitSound("Buttons.snd1")
-	else
-		self.Entity:EmitSound("Buttons.snd19")
-		if self.UDD then
-			self.DMode = 0
-			self.DTime = CurTime() + 2		
+	if self.Usable then
+		if (self.DMode < 2) then
+			self.DMode = 2		
+			self.Entity:EmitSound("Buttons.snd1")
 		else
-			self.DMode = 1
-			self:Disengage()
+			self.Entity:EmitSound("Buttons.snd19")
+			if self.UDD then
+				self.DMode = 0
+				self.DTime = CurTime() + 2		
+			else
+				self.DMode = 1
+				self:Disengage()
+			end
 		end
 	end
 end
@@ -377,7 +380,8 @@ end
 function ENT:PreEntityCopy()
 	local DI = {}
 	
-	DI.Type = self.ALType
+	DI.Type 	= self.ALType
+	DI.Usable 	= self.Usable
 	
 	DI.EfPoints = {}
 	for i = 1,10 do
@@ -423,6 +427,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	if !DI then return end
 	
 	self:SetDockType( DI.Type )
+	self.Usable = DI.Usable
 	
 	for k,v in ipairs( DI.EfPoints ) do
 		self.Entity:SetNetworkedVector("EfVec"..k, Vector( v.x , v.y , v.z ) )

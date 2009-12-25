@@ -22,7 +22,11 @@ function ENT:Initialize()
 	self.Entity:SetKeyValue("rendercolor", "255 255 255")
 	self.PhysObj = self.Entity:GetPhysicsObject()
 
-	self.HPC	= #self.HP
+	if self.HP then
+		self.HPC	= #self.HP
+	else
+		self.HPC	= 0
+	end
 	
 	self.Entity:SetNetworkedInt( "HPC", self.HPC )
 	

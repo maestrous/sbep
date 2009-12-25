@@ -27,9 +27,11 @@ function TOOL:LeftClick( trace )
 		WeaponMountEnt.MountData = {}
 		WeaponMountEnt.MountData["model"] = model
 
-		WeaponMountEnt.HP = {}
-		for n,P in ipairs( Data.HP ) do
-			WeaponMountEnt.HP[n] = P
+		if Data.HP then
+			WeaponMountEnt.HP = {}
+			for n,P in ipairs( Data.HP ) do
+				WeaponMountEnt.HP[n] = P
+			end
 		end
 		
 		WeaponMountEnt.HPType = Data.type

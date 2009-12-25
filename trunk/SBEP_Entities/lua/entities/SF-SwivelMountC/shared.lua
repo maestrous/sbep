@@ -2,7 +2,7 @@ ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
 ENT.PrintName		= "Cerus Swivel Mount"
 ENT.Author			= "Paradukes, Cerus and Hysteria"
-ENT.Category		= "SBEP-Weapons"
+ENT.Category		= "SBEP - Weapons"
 
 ENT.Spawnable		= false
 ENT.AdminSpawnable	= true
