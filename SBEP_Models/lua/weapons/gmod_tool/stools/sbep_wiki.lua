@@ -41,13 +41,15 @@ function TOOL.BuildCPanel( panel )
 		HelpB:SetText( "Open the SBEP Manual" )
 	panel:AddItem( HelpB )
 	
-	local LightCB = vgui.Create( "DCheckBoxLabel" )
-		LightCB:SetPos( 10,50 )
-		LightCB:SetText( "Use Dynamic Lights?" )
-		LightCB:SetConVar( "SBEPLighting" )
-		LightCB:SetValue( 1 )
-		LightCB:SizeToContents()
-	panel:AddItem( LightCB )
+	if ConVarExists( "SBEPLighting" ) then
+		local LightCB = vgui.Create( "DCheckBoxLabel" )
+			LightCB:SetPos( 10,50 )
+			LightCB:SetText( "Use Dynamic Lights?" )
+			LightCB:SetConVar( "SBEPLighting" )
+			LightCB:SetValue( 1 )
+			LightCB:SizeToContents()
+		panel:AddItem( LightCB )
+	end
 	
 	local DupeFixButton = vgui.Create("DButton")
 		DupeFixButton:SetText( "Fix All Dupes" )
