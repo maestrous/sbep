@@ -2,7 +2,7 @@ ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
 ENT.PrintName		= "Winch"
 ENT.Author			= "Paradukes + Slyfo"
-ENT.Category		= "SBEP-Weapons"
+ENT.Category		= "SBEP - Weapons"
 ENT.Instructions	= "Man the Haaaarrrpoons!" 
 
 ENT.Spawnable		= true
