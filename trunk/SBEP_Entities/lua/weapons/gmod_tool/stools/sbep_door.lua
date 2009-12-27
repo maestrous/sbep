@@ -11,10 +11,10 @@ if CLIENT then
 	language.Add( "Tool_sbep_door_0"	, "Left click to spawn a door. Right-click a door to cycle through any alternative models." )
 	language.Add( "undone_SBEP Door"	, "Undone SBEP Door"			)
 	
-	function SBEPDoorToolError( ply, cmd, args )
-		GAMEMODE:AddNotify( args[1] , tonumber(args[2]) , args[3] )
+	local function SBEPDoorToolError( um )
+		GAMEMODE:AddNotify( um:ReadString() , um:ReadFloat() , um:ReadFloat() )
 	end
-	concommand.Add( "SBEPDoorToolError_cl" , SBEPDoorToolError )
+	usermessage.Hook( "SBEPDoorToolError_cl" , SBEPDoorToolError )
 end
 
 local CategoryTable = {}
@@ -40,7 +40,11 @@ function TOOL:LeftClick( tr )
 	if CLIENT then return end
 
 	if tonumber(self:GetClientNumber( "wire" )) == 0 and self:GetClientNumber( "enableuse" ) == 0 then
-		RunConsoleCommand( "SBEPDoorToolError_cl" , "Cannot be both unusable and unwireable." , 1 , 4)
+		umsg.Start( "SBEPDoorToolError_cl" , RecipientFilter():AddPlayer( self:GetOwner() ) )
+			umsg.String( "Cannot be both unusable and unwireable." )
+			umsg.Float( 1 )
+			umsg.Float( 4 )
+		umsg.End()
 		return
 	end
 

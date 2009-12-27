@@ -104,7 +104,7 @@ function TOOL:LeftClick( trace )
 				undo.AddFunction( MoveUndo, self.E1.SEO , pos , ang )
 			undo.Finish()
 
-			if GetConVarNumber( "sbep_part_assembler_mode" ) == 2 then
+			if ply:GetInfoNum( "sbep_part_assembler_mode" ) == 2 then
 				local weld = constraint.Weld( E1.SEO , E2.SEO , 0 , 0 , 0 , self:ShouldNoCollide() )
 				undo.Create( "SBEP Part Assembly Weld" )
 					undo.AddEntity( weld )
