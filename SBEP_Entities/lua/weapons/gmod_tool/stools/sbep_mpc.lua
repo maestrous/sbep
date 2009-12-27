@@ -89,6 +89,8 @@ function TOOL:RightClick( tr )
 
 	if CLIENT then return end
 	
+	local ply   = self:GetOwner()
+	
 	if self:GetOwner():KeyDown( IN_SPEED ) then
 		if !tr.Hit || !tr.Entity || !tr.Entity:IsValid() then return end
 
@@ -98,7 +100,6 @@ function TOOL:RightClick( tr )
 		local skin  = tr.Entity:GetSkin()
 		local pos   = tr.Entity:GetPos()
 		local ang   = tr.Entity:GetAngles()
-		local ply   = self:GetOwner()
 
 		local MPCEnt = ents.Create( "MobilePlatformController" )
 			MPCEnt:SetPos( pos )
