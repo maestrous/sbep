@@ -396,12 +396,14 @@ function ENT:PreEntityCopy()
 	end
 	
 	DI.Doors = {}
-	for n,D in ipairs( self.Doors ) do
-		if D && D:IsValid() then
-			DI.Doors[n] = D:EntIndex()
+	if self.Doors then
+		for n,D in ipairs( self.Doors ) do
+			if D && D:IsValid() then
+				DI.Doors[n] = D:EntIndex()
+			end
 		end
 	end
-	
+
 	if self.AWeld && self.AWeld:IsValid() then
 		self.AWeld:Remove()
 	end

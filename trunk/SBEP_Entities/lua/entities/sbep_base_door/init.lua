@@ -101,6 +101,8 @@ function ENT:Initialize()
 	self.DisableUse 		= false
 	self.Timers 			= {}
 	self.Index				= self.Entity:EntIndex()
+	
+	self.Entity:SetUseType( SIMPLE_USE )
 	self.Entity:PhysicsInitialize()
 end
 
@@ -165,7 +167,7 @@ function ENT:Attach( ent , V , A )
 	self.ATWeld = constraint.Weld( ent , self.Entity , 0, 0, 0, true )
 	
 		self.Entity:SetSkin( ent:GetSkin() )
-		self.Entity.OpenTrigger = false
+		--self.Entity.OpenTrigger = false
 		
 		self.Entity.ATEnt	= ent
 		self.Entity.VecOff	= Voff
@@ -254,16 +256,19 @@ function ENT:Close()
 end
 
 function ENT:Think()
+	--self.inc = self.inc || 1
 	if !(self.OpenTrigger == nil) then
-		if self.OpenTrigger and !self.Entity:IsOpen() then
-			if !self.OpenStatus then
-				self.Entity:Open()
-			end
-		elseif !self.OpenTrigger and self.Entity:IsOpen() then
-			if self.OpenStatus then
-				self.Entity:Close()
-			end
+		if self.OpenTrigger && !self.Entity:IsOpen() && !self.OpenStatus then
+			self.Entity:Open()
+		elseif !self.OpenTrigger && self.Entity:IsOpen() && self.OpenStatus then
+			self.Entity:Close()
 		end
+		/*if self.inc > 8 then
+			print( "Trigger = "..tostring( self.OpenTrigger ) )
+			print( "Status = "..tostring( self.OpenStatus ).."\n" )
+			self.inc = 1
+		end
+		self.inc = self.inc + 1*/
 	end
 	if (self.ATEnt && self.ATEnt:IsValid() ) && (!self.ATWeld || !self.ATWeld:IsValid()) then
 		self:Attach( self.ATEnt , self.VecOff , self.AngOff )
@@ -279,10 +284,10 @@ end
 
 function ENT:IsOpen()
 
-	if self.Entity:GetSequence() == self.OSeq  then 
-		return true 
-	elseif self.Entity:GetSequence() == self.CSeq then 
-		return false 
+	if self.Entity:GetSequence() == self.OSeq then --&& self.OpenStatus then 
+		return true
+	elseif self.Entity:GetSequence() == self.CSeq then --&& !self.OpenStatus then 
+		return false
 	end	
 
 end
@@ -315,20 +320,26 @@ function ENT:PreEntityCopy()
 	DI.ATEnt	= self.ATEnt:EntIndex()
 	DI.VecOff	= self.VecOff
 	DI.AngOff	= self.AngOff
-	DI.ATWeld	= self.ATWeld:EntIndex()
+	if self.ATWeld then
+		DI.ATWeld	= self.ATWeld:Remove() --EntIndex()
+	end
 	duplicator.StoreEntityModifier(self, "SBEPD", DI)
 end
 duplicator.RegisterEntityModifier( "SBEPD" , function() end)
 
 function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
-	self.type 	= Ent.EntityMods.SBEPD.type
-	self.D 		= Ent.EntityMods.SBEPD.D
-	self.ATEnt	= CreatedEntities[ Ent.EntityMods.SBEPD.ATEnt ]
-	self.VecOff	= Ent.EntityMods.SBEPD.VecOff
-	self.AngOff	= Ent.EntityMods.SBEPD.AngOff
-	self.ATWeld = CreatedEntities[ Ent.EntityMods.SBEPD.ATWeld ]
+	local DI = Ent.EntityMods.SBEPD
+
+	self.type 	= DI.type
+	self.D 		= DI.D
+	self.ATEnt	= CreatedEntities[ DI.ATEnt ]
+	self.VecOff	= DI.VecOff
+	self.AngOff	= DI.AngOff
+	if DI.ATWeld then
+		self.ATWeld = CreatedEntities[ DI.ATWeld ]
+	end
 	if Ent.EntityMods.SBEPD.Cont then
-		self.Entity:SetController( CreatedEntities[ Ent.EntityMods.SBEPD.Cont ] )
+		self.Entity:SetController( CreatedEntities[ DI.Cont ] )
 	end
 	self.Entity:PhysicsInitialize()
 	self.Entity:GetSequenceData()

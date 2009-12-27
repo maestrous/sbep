@@ -84,6 +84,7 @@ function ENT:PhysicsInitialize()
 		phys:Wake() 
 		phys:EnableGravity(false)
 		phys:EnableMotion(false)
+		phys:SetMass( 10000 )
 	end
 end
 
