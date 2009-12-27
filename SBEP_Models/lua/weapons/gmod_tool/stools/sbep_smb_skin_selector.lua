@@ -17,6 +17,8 @@ function TOOL:LeftClick( trace )
 	if CLIENT then return end
 	if trace.Entity:IsValid() then
 		if string.find( string.lower( trace.Entity:GetModel() ), "smallbridge" ) then
+			local ply = self:GetOwner()
+		
 			local SkinInt = 0
 			if trace.Entity:SkinCount() == 10 then
 				SkinInt = 1
@@ -24,8 +26,8 @@ function TOOL:LeftClick( trace )
 				SkinInt = 0
 			end
 			
-			local SkinNumber  = GetConVarNumber( "sbep_smb_skin_selector_skin" )
-			local GlassNumber = GetConVarNumber( "sbep_smb_skin_selector_glass" )
+			local SkinNumber  = ply:GetInfoNum( "sbep_smb_skin_selector_skin" )
+			local GlassNumber = ply:GetInfoNum( "sbep_smb_skin_selector_glass" )
 			
 			local Skin = 1
 			if SkinInt == 1 then

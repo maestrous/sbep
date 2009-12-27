@@ -38,7 +38,7 @@ function TOOL:LeftClick( tr )
 	end
 	
 	DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
-	DockEnt.Usable = GetConVarNumber( "sbep_docking_clamp_allowuse" ) == 1
+	DockEnt.Usable = self:GetOwner():GetInfoNum( "sbep_docking_clamp_allowuse" ) == 1
 	
 	DockEnt:AddDockDoor()
 	
