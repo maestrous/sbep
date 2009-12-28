@@ -133,8 +133,8 @@ function TOOL:RightClick( tr )
 		
 		if self:CheckBadModel( PlModel ) then return true end
 		
-		ply:ConCommand( "sbep_mpc_model" , PlModel )
-		ply:ConCommand( "sbep_mpc_skin"  , skin    )
+		ply:ConCommand( "sbep_mpc_model "..PlModel )
+		ply:ConCommand( "sbep_mpc_skin "..skin    )
 		
 		umsg.Start( "SBEPMPCTool_ModelNotify_cl" , RecipientFilter():AddPlayer( ply ) )
 				umsg.String( "Copied Model!" )

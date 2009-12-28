@@ -150,7 +150,9 @@ function TOOL:Reload( trace )
 end
 
 function TOOL:ShouldNoCollide()
-	return GetConVarNumber( "sbep_part_assembler_nocollide" ) == 1
+	if SERVER then
+		return self:GetOwner():GetInfoNum( "sbep_part_assembler_nocollide" ) == 1
+	end
 end
 
 if SERVER then

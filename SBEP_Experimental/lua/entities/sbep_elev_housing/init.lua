@@ -100,7 +100,8 @@ function ENT:PhysicsInitialize()
 
 end
 
-function ENT:MakeWire()
+function ENT:MakeWire( bAdjust )
+
 	if self.PD.SD.MFT then
 		self.PD.WI = {} --Wire Inputs
 		for k,v in ipairs( self.PD.SD.MFT ) do
@@ -109,19 +110,29 @@ function ENT:MakeWire()
 	elseif !self.PD.SD.IsShaft then
 		self.PD.WI = { "Call" }
 	end
-	self.Inputs = Wire_CreateInputs(self.Entity, self.PD.WI )
-	--self.Outputs = WireLib.CreateOutputs(self.Entity,{""})
+
+	if bAdjust then
+		self.Inputs = Wire_AdjustInputs(self.Entity, self.PD.WI )
+		--Wire_AdjustInputs(self.Entity, self.PD.WI )
+	else
+		self.Inputs = Wire_CreateInputs(self.Entity, self.PD.WI )
+		--Wire_CreateInputs(self.Entity, self.PD.WI )
+	end
 end
 
 function ENT:TriggerInput(k,v)
-	if self.PD.WI then
+	if table.getn( self.PD.WI ) > 1 then
 		for m,n in ipairs( self.PD.WI ) do
 			if k == n && v == 1 then
-				self.Entity:CallLift( m )
+				if !self.PD.SD.MFT && self.Cont && self.Cont:IsValid() then
+					self.Entity:CallLift( m )
+				end
 			end
 		end
 	elseif k == "Call" && v == 1 then
-		self.Entity:CallLift()
+		if !self.PD.SD.MFT && self.Cont && self.Cont:IsValid() then
+			self.Entity:CallLift()
+		end
 	end
 end
 
@@ -261,6 +272,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 			self.PD.FDT[n] = CreatedEntities[K]
 		end
 	end
+	self:MakeWire()
 	if(Ent.EntityMods && DI.WireData) then
 		WireLib.ApplyDupeInfo( pl, Ent, DI.WireData, function(id) return CreatedEntities[id] end)
 	end

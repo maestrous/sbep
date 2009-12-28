@@ -38,9 +38,11 @@ TOOL.ClientConVar[ "enableuse"	] = 1
 function TOOL:LeftClick( tr )
 
 	if CLIENT then return end
+	
+	local ply = self:GetOwner()
 
-	if tonumber(self:GetClientNumber( "wire" )) == 0 and self:GetClientNumber( "enableuse" ) == 0 then
-		umsg.Start( "SBEPDoorToolError_cl" , RecipientFilter():AddPlayer( self:GetOwner() ) )
+	if ply:GetInfoNum( "sbep_door_wire" ) == 0 and ply:GetInfoNum( "sbep_door_enableuse" ) == 0 then
+		umsg.Start( "SBEPDoorToolError_cl" , RecipientFilter():AddPlayer( ply ) )
 			umsg.String( "Cannot be both unusable and unwireable." )
 			umsg.Float( 1 )
 			umsg.Float( 4 )
@@ -53,9 +55,9 @@ function TOOL:LeftClick( tr )
 
 	local DoorController = ents.Create( "sbep_base_door_controller" )
 		DoorController:SetModel( model )
-		DoorController:SetSkin( tonumber( self:GetClientNumber( "skin" ) ) )
+		DoorController:SetSkin( ply:GetInfoNum( "sbep_door_skin" ) )
 
-		DoorController:SetUsable( self:GetClientNumber( "enableuse" ) == 1 )
+		DoorController:SetUsable( ply:GetInfoNum( "sbep_door_enableuse" ) == 1 )
 
 		DoorController:Spawn()
 		DoorController:Activate()
@@ -64,12 +66,12 @@ function TOOL:LeftClick( tr )
 		
 		DoorController:AddDoors()
 
-		DoorController:MakeWire( tonumber(self:GetClientNumber( "wire" )) == 1 )
+		DoorController:MakeWire( ply:GetInfoNum( "sbep_door_wire" )) == 1 )
 
 	
 	undo.Create("SBEP Door")
 		undo.AddEntity( DoorController )
-		undo.SetPlayer( self:GetOwner() )
+		undo.SetPlayer( ply )
 	undo.Finish()
 	
 	return true

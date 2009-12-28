@@ -26,13 +26,12 @@ local BEM = { S = true , S2 = true , H = true }
 if CLIENT then
 	language.Add( "Tool_sbep_lift_designer_name", "SBEP Lift System Designer" 		)
 	language.Add( "Tool_sbep_lift_designer_desc", "Create a lift system." 			)
-	language.Add( "Tool_sbep_lift_designer_0"	, "Left click somewhere to begin, or right click an existing lift shaft to start from there." 	)
+	language.Add( "Tool_sbep_lift_designer_0"	, "Left click somewhere to begin."  ) --, or right click an existing lift shaft to start from there." 	)
 	language.Add( "undone_SBEP Lift System"		, "Undone SBEP Lift System"			)
 end
 
 local ConVars = {
 		editing 		= 0,
-		activepart		= 1,
 		skin			= 0,
 		enableuse		= 0,
 		doors			= 0,
@@ -41,10 +40,6 @@ local ConVars = {
 				}
 for k,v in pairs(ConVars) do
 	TOOL.ClientConVar[k] = v
-end
-
-local function RCC( com , arg )
-	RunConsoleCommand( com , arg )
 end
 
 local LiftSystem_SER
@@ -88,7 +83,7 @@ if CLIENT then
 			LDT.SButtons.Close:SetSize( 35 , 13 )   
 			LDT.SButtons.Close:SetType( "close" )
 			LDT.SButtons.Close.DoClick = function()
-												RCC( "SBEP_LiftCancelMenu_ser" )
+												RunConsoleCommand( "SBEP_LiftCancelMenu_ser" )
 												CL.LiftDes.SBEPLDDM = nil
 												LDT.Frame:Remove()
 												LDT.SFrame:Remove()
@@ -99,7 +94,7 @@ if CLIENT then
 			LDT.SButtons.finish:SetSize( 315 , 35 )
 			LDT.SButtons.finish:SetImage( "sbep_icons/Finish.vmt" )
 			LDT.SButtons.finish.DoClick = function()
-												RCC( "SBEP_LiftFinishSystem_ser" )
+												RunConsoleCommand( "SBEP_LiftFinishSystem_ser" )
 												LDT.Frame:Remove()
 												LDT.SFrame:Remove()
 											end
@@ -117,7 +112,7 @@ if CLIENT then
 				LDT.PButtons.Part[k]:SetPos( 5 + 80 * ((k - 1)%4) , 28 + 80 * math.floor((k - 1)/ 4))
 				LDT.PButtons.Part[k]:SetSize( 75 , 75 )
 				LDT.PButtons.Part[k].DoClick = function()
-														RCC( "SBEP_LiftSys_SetLiftPartType_ser" , v.type )
+														RunConsoleCommand( "SBEP_LiftSys_SetLiftPartType_ser" , v.type )
 													end
 		end
 		
@@ -140,7 +135,7 @@ if CLIENT then
 			LDT.PButtons.Special.Part[1].DoClick = function()
 													LDT.SFrame.visible = false
 													LDT.SFrame:SetVisible( LDT.SFrame.visible )
-													RCC( "SBEP_LiftSys_SetLiftPartType_ser" , SMT[1].type )
+													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartType_ser" , SMT[1].type )
 												end
 
 		LDT.PButtons.Special.Part[2] = vgui.Create("DImageButton", LDT.SFrame )
@@ -150,7 +145,7 @@ if CLIENT then
 			LDT.PButtons.Special.Part[2].DoClick = function()
 													LDT.SFrame.visible = false
 													LDT.SFrame:SetVisible( LDT.SFrame.visible )
-													RCC( "SBEP_LiftSys_SetLiftPartType_ser" , SMT[2].type )
+													RunConsoleCommand( "SBEP_LiftSys_SetLiftPartType_ser" , SMT[2].type )
 												end
 
 		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -164,9 +159,9 @@ if CLIENT then
 			LDT.BButtons.Construct:SetSize( 155 , 195 )
 			LDT.BButtons.Construct:SetImage( "sbep_icons/Construct.vmt" )
 			LDT.BButtons.Construct.DoClick = function()
-													local pos = GetConVarNumber( "sbep_lift_designer_activepart" )
+													local pos = CL.LiftDes.LiftSystem.dt.ActivePart
 													pos = pos + 1
-													RCC( "SBEP_LiftConstructPart_ser" , pos )
+													RunConsoleCommand( "SBEP_LiftConstructPart_ser" , pos )
 											end
 		
 		LDT.BButtons.up = vgui.Create("DImageButton", LDT.Frame )
@@ -174,11 +169,11 @@ if CLIENT then
 			LDT.BButtons.up:SetSize( 75 , 35 )   
 			LDT.BButtons.up:SetImage( "sbep_icons/ArrowUp.vmt" )
 			LDT.BButtons.up.DoClick = function()
-													local pos = GetConVarNumber( "sbep_lift_designer_activepart" )
+													local pos = CL.LiftDes.LiftSystem.dt.ActivePart
 													CL.LiftDes.DIR = "UP"
 													pos = math.Clamp( pos + 1 , 1 , CL.LiftDes.LiftSystem:GetNWInt( "SBEP_LiftPartCount" ) )
-													RCC( "sbep_lift_designer_activepart" , pos )
-													RCC( "SBEP_LiftGetCamHeight_ser" )
+													CL.LiftDes.LiftSystem.dt.ActivePart = pos
+													RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
 											end
 		
 		LDT.BButtons.down = vgui.Create("DImageButton", LDT.Frame )
@@ -186,14 +181,14 @@ if CLIENT then
 			LDT.BButtons.down:SetSize( 75 , 35 )   
 			LDT.BButtons.down:SetImage( "sbep_icons/ArrowDown.vmt" )
 			LDT.BButtons.down.DoClick = function()
-													local pos = GetConVarNumber( "sbep_lift_designer_activepart" )
+													local pos = CL.LiftDes.LiftSystem.dt.ActivePart
 													if pos == 1 then 
 														CL.LiftDes.DIR = "DOWN"
-														RCC( "SBEP_LiftConstructPart_ser" , 1 , "DOWN" )
+														RunConsoleCommand( "SBEP_LiftConstructPart_ser" , 1 , "DOWN" )
 													end
 													pos = math.Clamp( pos - 1 , 1 , CL.LiftDes.LiftSystem:GetNWInt( "SBEP_LiftPartCount" ) )
-													RCC( "sbep_lift_designer_activepart" , pos )
-													RCC( "SBEP_LiftGetCamHeight_ser" )
+													CL.LiftDes.LiftSystem.dt.ActivePart = pos
+													RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
 											end
 		
 		LDT.BButtons.inv = vgui.Create("DImageButton", LDT.Frame )
@@ -201,32 +196,32 @@ if CLIENT then
 			LDT.BButtons.inv:SetSize( 75 , 35 )   
 			LDT.BButtons.inv:SetImage( "sbep_icons/Invert.vmt" )
 			LDT.BButtons.inv.DoClick = function()
-														RCC( "SBEP_LiftSys_InvertLiftPart_ser" )
-													end
+											RunConsoleCommand( "SBEP_LiftSys_InvertLiftPart_ser" )
+										end
 
 		LDT.BButtons.RotC = vgui.Create("DImageButton", LDT.Frame )
 			LDT.BButtons.RotC:SetPos( 5 , 188 )   
 			LDT.BButtons.RotC:SetSize( 35 , 35 )
 			LDT.BButtons.RotC:SetImage( "sbep_icons/RotC.vmt" )
 			LDT.BButtons.RotC.DoClick = function()
-													RCC( "SBEP_LiftSys_SetLiftPartYaw_ser" , 270 )
-												end
+											RunConsoleCommand( "SBEP_LiftSys_SetLiftPartYaw_ser" , 270 )
+										end
 		
 		LDT.BButtons.RotAC = vgui.Create("DImageButton", LDT.Frame )
 			LDT.BButtons.RotAC:SetPos( 125 , 188 )   
 			LDT.BButtons.RotAC:SetSize( 35 , 35 )
 			LDT.BButtons.RotAC:SetImage( "sbep_icons/RotAC.vmt" )
 			LDT.BButtons.RotAC.DoClick = function()
-													RCC( "SBEP_LiftSys_SetLiftPartYaw_ser" , 90 )
-												end
+											RunConsoleCommand( "SBEP_LiftSys_SetLiftPartYaw_ser" , 90 )
+										end
 		
 		LDT.BButtons.Delete = vgui.Create("DImageButton", LDT.Frame )
 			LDT.BButtons.Delete:SetPos( 125 , 228 )   
 			LDT.BButtons.Delete:SetSize( 35 , 35 )
 			LDT.BButtons.Delete:SetImage( "sbep_icons/Delete.vmt" )
 			LDT.BButtons.Delete.DoClick = function()
-													RCC( "SBEP_LiftDeletePart_ser" )	
-												end
+											RunConsoleCommand( "SBEP_LiftDeletePart_ser" )	
+										end
 		
 		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		//					CAMERA CONTROLS
@@ -346,7 +341,7 @@ if CLIENT then
 		//					CLIENT FUNCTIONS
 		---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		
-		function LD.SBEP_OpenLiftDesignMenu( um )
+		function LD.SBEP_OpenLiftDesignMenu( entLift )
 			CL.LiftDes = {}
 			CL.LiftDes.SBEPLDDM = CreateSBEPLiftDesignerMenu()
 			CL.LiftDes.DIR = "UP"
@@ -354,7 +349,7 @@ if CLIENT then
 			CL.LiftDes.SBEPLDDM.Frame.visible = true
 			CL.LiftDes.SBEPLDDM.Frame:SetVisible( true )
 
-			CL.LiftDes.LiftSystem 	= um:ReadEntity()
+			CL.LiftDes.LiftSystem 	= entLift
 			CL.LiftDes.StartPos 	= (CL.LiftDes.LiftSystem:GetPos() + 60.45*CL.LiftDes.LiftSystem:GetUp()) || Vector(0,0,0)
 			
 			LD.SetBaseViewAngles()
@@ -370,7 +365,7 @@ if CLIENT then
 		
 			LD.SetBaseViewAngles()
 		end
-		usermessage.Hook("SBEP_OpenLiftDesignMenu_cl", LD.SBEP_OpenLiftDesignMenu)
+		--usermessage.Hook("SBEP_OpenLiftDesignMenu_cl", LD.SBEP_OpenLiftDesignMenu)
 		
 		function LD.SBEP_CloseLiftDesignMenu( um )
 			CL.LiftDes.SBEPLDDM.SFrame:Remove()
@@ -428,11 +423,11 @@ if CLIENT then
 		local function SBEP_LiftCalcView( ply, origin, angles, fov )
 			if CL.LiftDes.SBEPLDDM && CL.LiftDes.SBEPLDDM.Frame && CL.LiftDes.SBEPLDDM.Frame.visible then
 				local view = {}
-					CL.LiftDes.CVYaw   	= CL.LiftDes.CVYaw   	+ math.Clamp( CL.LiftDes.MVYaw   	- CL.LiftDes.CVYaw   	, -0.1  , 0.1  	)
-					CL.LiftDes.CVPitch 	= CL.LiftDes.CVPitch 	+ math.Clamp( CL.LiftDes.MVPitch 	- CL.LiftDes.CVPitch 	, -0.1  , 0.1  	)
-					CL.LiftDes.CVRange 	= CL.LiftDes.CVRange 	+ math.Clamp( CL.LiftDes.MVRange 	- CL.LiftDes.CVRange 	, -0.007, 0.007 )
-					CL.LiftDes.CBRange 	= CL.LiftDes.CBRange 	+ math.Clamp( CL.LiftDes.MBRange 	- CL.LiftDes.CBRange 	, -0.5  , 0.5 	)
-					CL.LiftDes.CHOffset = CL.LiftDes.CHOffset 	+ math.Clamp( CL.LiftDes.PHOffset 	- CL.LiftDes.CHOffset 	, -1 	, 1 	)
+					CL.LiftDes.CVYaw   	= CL.LiftDes.CVYaw   	+ math.Clamp( CL.LiftDes.MVYaw   	- CL.LiftDes.CVYaw   	, -2.5 	, 2.5	)
+					CL.LiftDes.CVPitch 	= CL.LiftDes.CVPitch 	+ math.Clamp( CL.LiftDes.MVPitch 	- CL.LiftDes.CVPitch 	, -2.5 	, 2.5	)
+					CL.LiftDes.CVRange 	= CL.LiftDes.CVRange 	+ math.Clamp( CL.LiftDes.MVRange 	- CL.LiftDes.CVRange 	, -5    , 5		)
+					CL.LiftDes.CBRange 	= CL.LiftDes.CBRange 	+ math.Clamp( CL.LiftDes.MBRange 	- CL.LiftDes.CBRange 	, -5    , 5 	)
+					CL.LiftDes.CHOffset = CL.LiftDes.CHOffset 	+ math.Clamp( CL.LiftDes.PHOffset 	- CL.LiftDes.CHOffset 	, -5 	, 5 	)
 					
 					CL.LiftDes.CRVec = Vector( 1 , 0 , 0 )
 						CL.LiftDes.CRAng = Angle( -1 * CL.LiftDes.CVPitch , CL.LiftDes.CVYaw , CL.LiftDes.CVPitch )
@@ -453,6 +448,31 @@ if CLIENT then
 				return pos, ang
 			end
 		end]]
+		
+		local function CLSendLift( entLift )
+			if entLift:GetNWBool( "Sendable" ) then
+				LD.SBEP_OpenLiftDesignMenu( entLift )
+				RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
+				return true
+			end
+		end
+		
+		local function CLDelayLift( entLift )
+			timer.Simple( 0.1 , function( entLift )
+									if !CLSendLift( entLift ) then
+										CLDelayLift( entLift )
+									end
+								end)
+		end
+		
+		local function CLNWLift( entLift )
+			if entLift:GetNWBool( "Sendable" ) then
+				LD.SBEP_OpenLiftDesignMenu( entLift )
+				RunConsoleCommand( "SBEP_LiftGetCamHeight_ser" )
+				return true
+			end
+		end
+		hook.Add("OnEntityCreated", "SBEPLiftCreateDelay", CLNWLift ) 
 end
 
 function TOOL:Think()
@@ -474,28 +494,28 @@ end
 if SERVER then
 
 	function SBEP_SetLiftPartType( ply , cmd , args )
-		local n = GetConVarNumber( "sbep_lift_designer_activepart" )
+		local n = LiftSystem_SER.dt.ActivePart
 		local type = tostring( args[1] )
 		if !LiftSystem_SER.PT[n] then return end
 		
-		RCC( "sbep_lift_designer_type" , type )
+		ply:ConCommand( "sbep_lift_designer_type "..type )
 		LiftSystem_SER.PT[n]:SetPartType( type )
 		LiftSystem_SER:RefreshParts( n )
 		
-		RCC( "SBEP_LiftGetCamHeight_ser" )
+		ply:ConCommand( "SBEP_LiftGetCamHeight_ser" )
 	end
 	concommand.Add( "SBEP_LiftSys_SetLiftPartType_ser" , SBEP_SetLiftPartType )
 	
 	function SBEP_InvertLiftPart( ply , cmd , args )
-		local n = GetConVarNumber( "sbep_lift_designer_activepart" )
+		local n = LiftSystem_SER.dt.ActivePart
 			if !LiftSystem_SER.PT[n] then return end
 		LiftSystem_SER.PT[n]:Invert()
-		RCC( "SBEP_LiftGetCamHeight_ser" )
+		ply:ConCommand( "SBEP_LiftGetCamHeight_ser" )
 	end
 	concommand.Add( "SBEP_LiftSys_InvertLiftPart_ser" , SBEP_InvertLiftPart )	
 
 	function SBEP_SetLiftPartYaw( ply , cmd , args )
-		local n = GetConVarNumber( "sbep_lift_designer_activepart" )
+		local n = LiftSystem_SER.dt.ActivePart
 			if !LiftSystem_SER.PT[n] then return end
 		LiftSystem_SER.PT[n]:RotatePartYaw( tonumber( args[1] ) )
 	end
@@ -503,14 +523,17 @@ if SERVER then
 	
 	function SBEP_LiftCancelMenu( ply , cmd , args )
 		LiftSystem_SER:Remove()
-		RCC( "sbep_lift_designer_editing" , 0 )
+		ply:ConCommand( "sbep_lift_designer_editing 0" )
 	end
 	concommand.Add( "SBEP_LiftCancelMenu_ser" , SBEP_LiftCancelMenu )	
 	
 	function SBEP_LiftGetCamHeight( ply , cmd , args )
-		local n = GetConVarNumber( "sbep_lift_designer_activepart" )
+		local n = LiftSystem_SER.dt.ActivePart
+		--print( n )
 		local C = LiftSystem_SER:GetPartCount()
+		--print( C )
 		umsg.Start("SBEP_SetPHOffsetLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
+			--PrintTable( LiftSystem_SER.PT[ n ].PD )
 			umsg.Float( LiftSystem_SER.PT[ n ].PD.HO )
 		umsg.End()
 		for k,v in ipairs( LiftSystem_SER.PT ) do
@@ -550,14 +573,14 @@ if SERVER then
 	concommand.Add( "SBEP_LiftGetCamHeight_ser" , SBEP_LiftGetCamHeight )	
 	
 	function SBEP_LiftConstructPart( ply , cmd , args )
-		local type = GetConVarString( "sbep_lift_designer_type" )
+		local type = ply:GetInfo( "sbep_lift_designer_type" )
 		local n = tonumber( args[1] )
 		local D = args[2]
 		--[[if n == 1 && D == "DOWN" then
 			local NP = LiftSystem_SER:CreatePart()
 		end]]
 		
-		RCC( "sbep_lift_designer_activepart" , n )
+		LiftSystem_SER.dt.ActivePart = n
 
 		local NP = LiftSystem_SER:CreatePart()
 		LiftSystem_SER:AddPartToTable( NP , n )
@@ -565,7 +588,7 @@ if SERVER then
 
 		LiftSystem_SER:RefreshParts( n )
 		
-		RCC( "SBEP_LiftGetCamHeight_ser" )
+		ply:ConCommand( "SBEP_LiftGetCamHeight_ser" )
 	end
 	concommand.Add( "SBEP_LiftConstructPart_ser" , SBEP_LiftConstructPart )
 	
@@ -573,12 +596,12 @@ if SERVER then
 		umsg.Start("SBEP_CloseLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
 			umsg.End()
 		LiftSystem_SER:FinishSystem()
-		RCC( "sbep_lift_designer_editing" , 0 )
+		ply:ConCommand( "sbep_lift_designer_editing 0" )
 	end
 	concommand.Add( "SBEP_LiftFinishSystem_ser" , SBEP_LiftFinishSystem )
 	
 	function SBEP_LiftDeletePart( ply , cmd , args )
-		local n = GetConVarNumber( "sbep_lift_designer_activepart" )
+		local n = LiftSystem_SER.dt.ActivePart
 		if n == 1 && BEM[LiftSystem_SER.PT[2]:GetPartType()] then return end
 
 		LiftSystem_SER:RemovePartFromTable( n )
@@ -586,43 +609,48 @@ if SERVER then
 		
 		local C = LiftSystem_SER:GetPartCount()
 		if n > C then
-			RCC( "sbep_lift_designer_activepart" , C )
+			LiftSystem_SER.dt.ActivePart = C
 		end
-		RCC( "SBEP_LiftGetCamHeight_ser" )
+		ply:ConCommand( "SBEP_LiftGetCamHeight_ser" )
 	end
 	concommand.Add( "SBEP_LiftDeletePart_ser" , SBEP_LiftDeletePart )
 	
-	--reset convars to defaults on load
+	/*reset convars to defaults on load
 	for k,v in pairs( ConVars ) do
-	RCC( "sbep_lift_designer_"..k , v )
-	end
+	ply:ConCommand( "sbep_lift_designer_"..k , v )
+	end*/
+
 end
 
 function TOOL:LeftClick( trace )
 
 	if CLIENT then return end
-	local Editing = GetConVarNumber( "sbep_lift_designer_editing" )
+	
+	local ply = self:GetOwner()
+	local Editing = ply:GetInfoNum( "sbep_lift_designer_editing" )
 	
 	if Editing == 0 then
 	
 		local startpos = trace.HitPos
-		local ply = self:GetOwner()
 	
 		LiftSystem_SER = ents.Create( "sbep_elev_system" )
 			LiftSystem_SER:SetPos( startpos + Vector(0,0,4.65))
 			LiftSystem_SER:SetAngles( Angle(0,-90,0) )
 			LiftSystem_SER:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" )
-			LiftSystem_SER.Skin = GetConVarNumber( "sbep_lift_designer_skin" )
+			LiftSystem_SER.Skin = ply:GetInfoNum( "sbep_lift_designer_skin" )
+			LiftSystem_SER:SetNWBool( "Sendable" , true )
+			--LiftSystem_SER.PLY		= ply
 			
-		LiftSystem_SER.Usable = GetConVarNumber( "sbep_lift_designer_enableuse" ) == 1
+		LiftSystem_SER.Usable = ply:GetInfoNum( "sbep_lift_designer_enableuse" ) == 1
 		
 		LiftSystem_SER:Spawn()
 		
-		LiftSystem_SER:SetSystemSize( GetConVarNumber( "sbep_lift_designer_size" ) )
+		LiftSystem_SER:SetSystemSize( ply:GetInfoNum( "sbep_lift_designer_size" ) )
 		
-		local hatchconvar = GetConVarNumber( "sbep_lift_designer_doors" )
+		local hatchconvar = ply:GetInfoNum( "sbep_lift_designer_doors" )
 		LiftSystem_SER.ST.UseHatches = hatchconvar == 2
-		LiftSystem_SER.ST.UseDoors   = hatchconvar == 3	
+		LiftSystem_SER.ST.UseDoors   = hatchconvar == 3
+		LiftSystem_SER.dt.ActivePart = 1
 		
 		undo.Create( "SBEP Lift System" )
 			undo.AddEntity( LiftSystem_SER )
@@ -634,83 +662,14 @@ function TOOL:LeftClick( trace )
 			NP:SetPartType( "M" )
 		LiftSystem_SER:RefreshParts( 1 )
 
-		RCC( "sbep_lift_designer_activepart" , 1 )
-		RCC( "sbep_lift_designer_editing" , 1 )
+		ply:ConCommand( "sbep_lift_designer_editing 1" )
 		
-		timer.Simple(0.1, function()
-							umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
-								umsg.Entity( LiftSystem_SER )
-							umsg.End()
-							
-							RCC( "SBEP_LiftGetCamHeight_ser" )
-						end)
-	
 		return true
 	end
 end
 
 function TOOL:RightClick( trace )
 
-	if CLIENT then return end
-
-	local Editing = GetConVarNumber( "sbep_lift_designer_editing" )
-	
-	if Editing == 0 then
-		local startent = trace.Entity
-			if !startent || !(startent:IsValid()) then return end
-		local ply = self:GetOwner()
-		local model = startent:GetModel()
-			if !LHMT[ model ] then return end
-		local type = LHMT[model][1]
-		local size = LHMT[model][2]
-		local pos  = startent:GetPos()
-		local ang  = startent:GetAngles()
-		local skin = startent:GetSkin()
-		if startent:SkinCount() > 5 then
-			if math.fmod( skin / 2 ) ~= 0 then skin = skin - 1 end
-			skin = skin / 2
-		end
-	
-		LiftSystem_SER = ents.Create( "sbep_elev_system" )
-			LiftSystem_SER:SetPos( pos - Vector(0,0,60.45))
-			LiftSystem_SER:SetAngles( ang )
-			LiftSystem_SER:SetModel( "models/SmallBridge/Elevators,Small/sbselevp3.mdl" )
-			LiftSystem_SER.Skin = skin
-			LiftSystem_SER.MDB  = true --Allow building downward
-			LiftSystem_SER.Usable = GetConVarNumber( "sbep_lift_designer_enableuse" ) == 1
-			LiftSystem_SER:SetSystemSize( size )
-		LiftSystem_SER:Spawn()
-		
-		local hatchconvar = GetConVarNumber( "sbep_lift_designer_doors" )
-		LiftSystem_SER.ST.UseHatches = hatchconvar == 2
-		LiftSystem_SER.ST.UseDoors   = hatchconvar == 3	
-		
-		undo.Create( "SBEP Lift System" )
-			undo.AddEntity( LiftSystem_SER )
-			undo.SetPlayer( ply )
-		undo.Finish()
-		
-		startent:Remove()
-		
-		local NP = LiftSystem_SER:CreatePart()
-			LiftSystem_SER:AddPartToTable( NP , 1 )
-			NP:SetPartType( type )
-		LiftSystem_SER:RefreshParts( 1 )
-
-		RCC( "sbep_lift_designer_activepart" , 1 )
-		RCC( "sbep_lift_designer_type" , type )
-		RCC( "SBEP_LiftConstructPart_ser" , 2 )
-	
-		umsg.Start("SBEP_OpenLiftDesignMenu_cl", RecipientFilter():AddPlayer( ply ) )
-			umsg.Entity( LiftSystem_SER )
-		umsg.End()
-		
-		RCC( "SBEP_LiftGetCamHeight_ser" )
-	
-		RCC( "sbep_lift_designer_editing" , 1 )
-	
-		return true
-	end
 end
 
 function TOOL:Reload( trace )
@@ -740,14 +699,14 @@ function TOOL.BuildCPanel(panel)
 		SLV.OnClickLine = function(parent, line, isselected)
 												parent:ClearSelection()
 												line:SetSelected( true )
-												RCC( "sbep_lift_designer_skin", line:GetID() - 1 )
+												RunConsoleCommand( "sbep_lift_designer_skin", line:GetID() - 1 )
 										end
 		 
 		for k,v in ipairs( SkinTable ) do
 			SLV:AddLine(v)
 		end
 		SLV:GetLine( 1 ):SetSelected( true )
-		RCC( "sbep_lift_designer_skin", 0 )
+		RunConsoleCommand( "sbep_lift_designer_skin", 0 )
 	panel:AddItem( SLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -766,14 +725,14 @@ function TOOL.BuildCPanel(panel)
 		DLV.OnClickLine = function(parent, line, isselected)
 												parent:ClearSelection()
 												line:SetSelected( true )
-												RCC( "sbep_lift_designer_doors", line:GetID() )
+												RunConsoleCommand( "sbep_lift_designer_doors", line:GetID() )
 										end
 		 
 		for k,v in ipairs( DoorTable ) do
 			DLV:AddLine(v)
 		end
 		DLV:GetLine( 1 ):SetSelected( true )
-		RCC( "sbep_lift_designer_doors", 1 )
+		RunConsoleCommand( "sbep_lift_designer_doors", 1 )
 	panel:AddItem( DLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -791,14 +750,14 @@ function TOOL.BuildCPanel(panel)
 		SiLV.OnClickLine = function(parent, line, isselected)
 												parent:ClearSelection()
 												line:SetSelected( true )
-												RCC( "sbep_lift_designer_size", line:GetID() )
+												RunConsoleCommand( "sbep_lift_designer_size", line:GetID() )
 										end
 		 
 		for k,v in ipairs( SizeTable ) do
 			SiLV:AddLine(v)
 		end
 		SiLV:GetLine( 1 ):SetSelected( true )
-		RCC( "sbep_lift_designer_size", 1 )
+		RunConsoleCommand( "sbep_lift_designer_size", 1 )
 	panel:AddItem( SiLV )
 	
 	--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -823,7 +782,7 @@ function TOOL.BuildCPanel(panel)
 		ResetButton:SetSize( 100, 20 )
 		ResetButton:SetText( "Reset" )
 		ResetButton.DoClick = function()
-							RCC( "sbep_lift_designer_editing" , 0 )
+							RunConsoleCommand( "sbep_lift_designer_editing" , 0 )
 						end
 	panel:AddItem( ResetButton )
 	

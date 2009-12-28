@@ -35,6 +35,8 @@ function ENT:Initialize()
 	self.ST.Usable = self.Usable || true
 	self.ST.Skin   = self.Skin || 0
 	
+	self.Entity:SetNWInt( "ActivePart" , 1 )
+	
 	--self:SetModel( PMT[self.Size[1]][5] ) 
 	
 	self.LiftActive = false
@@ -84,7 +86,7 @@ function ENT:PhysicsInitialize()
 		phys:Wake() 
 		phys:EnableGravity(false)
 		phys:EnableMotion(false)
-		phys:SetMass( 10000 )
+		phys:SetMass( 1000 )
 	end
 end
 
@@ -388,27 +390,25 @@ function ENT:FinishSystem()
 end
 
 function ENT:CreateHatches()		--Creating Hatches. Each Hatch is paired with the part below it, so the top part has no hatch associated.
+	--print( "Making Hatches" )
 	for k,V in ipairs(self.PT) do
 		local V1 = self.PT[k + 1]
 		if !(k == self:GetPartCount()) && !(V.PD.SD.IsShaft && V1.PD.SD.IsShaft) then
 			local NH = ents.Create( "sbep_base_door" )
-			NH:Spawn()
-			NH.HD = {} 	--Hatch Data
-			NH:SetDoorType( "Door_ElevHatch_"..self.Size[1] )
-			NH:SetAngles( V:GetAngles() )
+				--print( "Made Hatch" )
+				NH:Spawn()
+				NH.HD = {} 	--Hatch Data
+				NH:SetDoorType( "Door_ElevHatch_"..self.Size[1] )
+				NH:SetSkin( self.ST.Skin )
 			
-			local C3 = math.Clamp( V.PD.Roll , 0 , 1 )
-			local C4 = math.abs( C3 - 1 )
-				local S = 1
-				if V1.PD.SD.IsShaft then S = -1 end
-			NH.HD.PO = C3*V.PD.ZDD + C4*V.PD.ZUD + S*4.65	--Offset from paired part
-			NH.HD.HO = V.PD.HO + NH.HD.PO					--Offset from system origin
-			NH:SetPos( V:LocalToWorld( Vector(0,0,NH.HD.PO) ) )
-			constraint.Weld( NH, self.PT[k + math.Clamp( S,0,1 )] , 0, 0, 0, true )
-			NH:SetSkin( self.ST.Skin )
+					local C3 = math.Clamp( V.PD.Roll , 0 , 1 )
+					local C4 = math.abs( C3 - 1 )
+						local S = 1
+						if V1.PD.SD.IsShaft then S = -1 end
+				NH.HD.PO = C3*V.PD.ZDD + C4*V.PD.ZUD + S*4.65	--Offset from paired part
+				NH.HD.HO = V.PD.HO + NH.HD.PO					--Offset from system origin
+			NH:Attach( V , Vector(0,0,NH.HD.PO) , V:GetAngles() )
 
-			NH.OpenTrigger = false
-			self:DeleteOnRemove(NH)
 			table.insert( self.HT , NH )
 		end
 	end
@@ -517,14 +517,18 @@ function ENT:CalcPanelModel( PartNum )
 
 end
 
-function ENT:MakeWire() --Adds the appropriate wire inputs.
+function ENT:MakeWire( bAdjust ) --Adds the appropriate wire inputs.
 	self.SBEP_WireInputsTable = {}
 	self.SBEP_WireInputsTable[1] = "FloorNum"
 	for k,v in ipairs( self.FT ) do
 		table.insert( self.SBEP_WireInputsTable , ( "Floor "..tostring(k) ) )
 	end
 	table.insert( self.SBEP_WireInputsTable , ( "Hold" ) )
-	self.Inputs = Wire_CreateInputs(self.Entity, self.SBEP_WireInputsTable)
+	if bAdjust then
+		self.Inputs = Wire_AdjustInputs(self.Entity, self.SBEP_WireInputsTable )
+	else
+		self.Inputs = Wire_CreateInputs(self.Entity, self.SBEP_WireInputsTable)
+	end
 	
 	self.Outputs = WireLib.CreateOutputs(self.Entity,{"Floor","Holding"})
 end
@@ -617,6 +621,8 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 			self.HT[n].HD			= H.HD
 		end
 	end
+	
+	self:MakeWire()
 	
 	if(Ent.EntityMods && DT.WireData) then
 		WireLib.ApplyDupeInfo( pl, Ent, DT.WireData, function(id) return CreatedEntities[id] end)
