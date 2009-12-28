@@ -19,7 +19,8 @@ TOOL.ClientConVar[ "allowuse"   ] = 1
 function TOOL:LeftClick( tr )
 
 	if CLIENT then return end
-	local model = self:GetClientInfo( "model" )
+	local ply = self:GetOwner()
+	local model = ply:GetInfo( "sbep_docking_clamp_model" )
 	local Data = MST[ string.lower( model ) ]
 	
 	local pos = tr.HitPos
@@ -38,13 +39,13 @@ function TOOL:LeftClick( tr )
 	end
 	
 	DockEnt:SetPos( pos - Vector(0,0,DockEnt:OBBMins().z) )
-	DockEnt.Usable = self:GetOwner():GetInfoNum( "sbep_docking_clamp_allowuse" ) == 1
+	DockEnt.Usable = ply:GetInfoNum( "sbep_docking_clamp_allowuse" ) == 1
 	
 	DockEnt:AddDockDoor()
 	
 	undo.Create("SBEP Docking Clamp")
 		undo.AddEntity( DockEnt )
-		undo.SetPlayer( self:GetOwner() )
+		undo.SetPlayer( ply )
 	undo.Finish()
 
 	return true
