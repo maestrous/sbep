@@ -66,7 +66,7 @@ function TOOL:LeftClick( tr )
 		
 		DoorController:AddDoors()
 
-		DoorController:MakeWire( ply:GetInfoNum( "sbep_door_wire" )) == 1 )
+		DoorController:MakeWire( ply:GetInfoNum( "sbep_door_wire" ) == 1 )
 
 	
 	undo.Create("SBEP Door")
