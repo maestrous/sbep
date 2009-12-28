@@ -256,22 +256,23 @@ function ENT:Close()
 end
 
 function ENT:Think()
-	--self.inc = self.inc || 1
 	if !(self.OpenTrigger == nil) then
 		if self.OpenTrigger && !self.Entity:IsOpen() && !self.OpenStatus then
 			self.Entity:Open()
 		elseif !self.OpenTrigger && self.Entity:IsOpen() && self.OpenStatus then
 			self.Entity:Close()
 		end
-		/*if self.inc > 8 then
-			print( "Trigger = "..tostring( self.OpenTrigger ) )
-			print( "Status = "..tostring( self.OpenStatus ).."\n" )
-			self.inc = 1
-		end
-		self.inc = self.inc + 1*/
 	end
 	if (self.ATEnt && self.ATEnt:IsValid() ) && (!self.ATWeld || !self.ATWeld:IsValid()) then
-		self:Attach( self.ATEnt , self.VecOff , self.AngOff )
+		local wt = constraint.FindConstraints( self.Entity , "Weld" )
+		for n,C in ipairs( wt ) do
+			if C.Ent2 == self.ATEnt || C.Ent1 == self.ATEnt then
+				self.ATWeld = C.Constraint
+			end
+		end
+		if !self.ATWeld || !self.ATWeld:IsValid() then
+			self:Attach( self.ATEnt , self.VecOff , self.AngOff )
+		end
 	end
 	if self.Cont then
 		if self.Entity:GetSkin() != self.Cont.Skin then
@@ -320,9 +321,6 @@ function ENT:PreEntityCopy()
 	DI.ATEnt	= self.ATEnt:EntIndex()
 	DI.VecOff	= self.VecOff
 	DI.AngOff	= self.AngOff
-	if self.ATWeld then
-		DI.ATWeld	= self.ATWeld:Remove() --EntIndex()
-	end
 	duplicator.StoreEntityModifier(self, "SBEPD", DI)
 end
 duplicator.RegisterEntityModifier( "SBEPD" , function() end)
@@ -335,9 +333,6 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	self.ATEnt	= CreatedEntities[ DI.ATEnt ]
 	self.VecOff	= DI.VecOff
 	self.AngOff	= DI.AngOff
-	if DI.ATWeld then
-		self.ATWeld = CreatedEntities[ DI.ATWeld ]
-	end
 	if Ent.EntityMods.SBEPD.Cont then
 		self.Entity:SetController( CreatedEntities[ DI.Cont ] )
 	end
