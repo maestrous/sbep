@@ -32,6 +32,7 @@ function ENT:Initialize()
 	self.Hovering = false
 	self.Turbo = 1
 	self.StrafeSpeed = 0
+	self.TRDist = 0
 
 end
 
@@ -142,9 +143,11 @@ function ENT:Think()
 			local tr = util.TraceLine( trace )
 			if tr.Hit then
 				local HVPos = tr.HitPos + (tr.HitNormal * 100)
-				if HVPos.z > tr.HitPos.z + 50 then --This controls the maximum incline the jets will function on.
+				--if HVPos.z > tr.HitPos.z + 50 then --This controls the maximum incline the jets will function on.
 					self.Hovering = true
-					self.TargetZ = tr.HitNormal * (50 + HOffset)
+					--self.TargetZ = tr.HitNormal * (50 + HOffset)
+					self.TRDist = (50 + HOffset) - (tr.Fraction * 420) -- I swear traces used to return their length... Ah well, better to just calculate the length manually than run a distance function.
+					
 					
 					FSpeed = FSpeed * self.Entity:GetPhysicsObject():GetMass()
 					SSpeed = SSpeed * self.Entity:GetPhysicsObject():GetMass()
@@ -156,7 +159,7 @@ function ENT:Think()
 					self.Pod:GetPhysicsObject():ApplyForceOffset( self.Entity:GetRight() * SSpeed, self.Pod:GetPos() + self.Entity:GetForward() * 300 )
 					physi:SetVelocity( physi:GetVelocity() * 0.75 )
 					physi:AddAngleVelocity(physi:GetAngleVelocity() * -0.75)
-				end
+				--end
 			else
 				self.Hovering = false
 			end
@@ -214,19 +217,21 @@ end
 function ENT:PhysicsSimulate( phys, deltatime )
 
 	if !self.Hovering then return SIM_NOTHING end
-
+	
+	/*
 	if ( self.ZVelocity != 0 ) then
 	
 		self.TargetZ = self.TargetZ + (self.ZVelocity * deltatime * self.HSpeed)
 		self.Entity:GetPhysicsObject():Wake()
 	
 	end
-	
+	*/
 	phys:Wake()
 	
 	local Pos = phys:GetPos()
-	local Vel = phys:GetVelocity()
-	local Distance = self.TargetZ - Pos.z
+	--local Vel = phys:GetVelocity()
+	local Distance = self.TRDist --self:GetUp():DotProduct( Pos - self.TargetZ )
+	--print(Distance)
 	
 	if ( Distance == 0 ) then return end
 	
@@ -239,7 +244,8 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	Exponent = Exponent * deltatime * 300
 	
 	local physVel = phys:GetVelocity()
-	local zVel = physVel.z
+	local zVel = self:GetUp():DotProduct( physVel )
+	--local zVel = physVel.z
 	
 	Exponent = Exponent - ( zVel * deltatime * 600 )
 	// The higher you make this 300 the less it will flop about
@@ -248,10 +254,10 @@ function ENT:PhysicsSimulate( phys, deltatime )
 	
 	Exponent = math.Clamp( Exponent, -5000, 5000 )
 	
-	local Linear = Vector(0,0,0)
+	local Linear = self:GetUp() * Exponent --Vector(0,0,0)
 	local Angular = Vector(0,0,0)
 	
-	Linear.z = Exponent
+	--Linear.z = Exponent
 	
 	return Angular, Linear, SIM_GLOBAL_ACCELERATION
 	
