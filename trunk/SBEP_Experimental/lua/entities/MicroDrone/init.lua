@@ -70,7 +70,7 @@ function ENT:Initialize()
 	self.Yaw = 0
 	
 	self.NextScan = 0
-	
+		
 	self.Cont 			= self.Entity
 	self.HasHardpoints 	= true
 	self.HPC			= 2
@@ -188,7 +188,7 @@ function ENT:Think()
 							--print("They're in a squad")
 							local OurDroneCount = table.Count(self.Squad.Members)
 							local TheirCount = table.Count(e.Squad.Members)
-							if OurDroneCount >= TheirCount then
+							if OurDroneCount >= TheirCount && OurDroneCount + TheirCount <= self.Squad.MaxSize then
 								--print("Our squad is bigger than theirs. They're joining us.")
 								for k2,e2 in pairs(e.Squad.Members) do
 									--print(e2, e2:IsValid())
@@ -204,9 +204,12 @@ function ENT:Think()
 							end
 						else
 							--print("They have no squad. They're joining us.")
-							e.Squad = self.Squad
-							table.insert(self.Squad.Members,e)
-							e.SquadNumber = table.Count(self.Squad.Members)
+							local OurDroneCount = table.Count(self.Squad.Members)
+							if OurDroneCount < self.Squad.MaxSize then
+								e.Squad = self.Squad
+								table.insert(self.Squad.Members,e)
+								e.SquadNumber = table.Count(self.Squad.Members)
+							end
 						end
 					end
 					if self:TargetCriteria(e) then
@@ -245,10 +248,12 @@ function ENT:Think()
 		end
 		
 		if self.Squad.ObjectiveType == 1 then
-			self.MVec = self.Squad.ObjectiveVec
-			self.MAngle.y = self:GetAngles().y
-			self.MAngle.p = 0
-			self.MAngle.r = 0
+			if self.Squad.MVec && self.Squad.MVec != Vector(0,0,0) then
+				self.MVec = self.Squad.MVec
+				self.MAngle.y = self:GetAngles().y
+				self.MAngle.p = 0
+				self.MAngle.r = 0
+			end
 		end
 	else
 		if self.Squad.Alpha && self.Squad.Alpha:IsValid() then
@@ -289,7 +294,7 @@ function ENT:Think()
 			self.Angling = true
 			self.MAngle = self.Squad.Alpha:GetAngles()
 		else -- If the alpha is dead, we step in as the new alpha
-			print("The king is dead. Long live the king.")
+			--print("The king is dead. Long live the king.")
 			self.Squad.Alpha = self
 			self:AttachSquad(self.Squad)
 		end
@@ -309,8 +314,10 @@ function ENT:Think()
 						self.Roll = math.AngleDifference(self.Entity:GetAngles().r,self.MAngle.r) * -0.01
 						self.Yaw = math.AngleDifference(self.Entity:GetAngles().y,self.MAngle.y) * -0.01
 					end
-					if MDist > self.WPRad * 0.01 then
+					if MDist > self.WPRad * 0.001 then
 						self.Entity:StrafeFinder( self.MVec, self.Entity:GetPos(), self.Entity:GetUp(), self.Entity:GetRight(), self.Entity:GetForward() )
+					else
+						self.MVec = Vector(0,0,0)
 					end
 				else
 					self.Entity:Orient( self.MVec, self.Entity:GetPos(), self.Entity:GetUp(), self.Entity:GetRight() )
@@ -498,9 +505,9 @@ function ENT:Orient( Vec, Pos, Up, Right )
 end
 
 function ENT:StrafeFinder( Vec, Pos, Up, Right, Forward )
-	self.Lat = math.Clamp(self:GetRight():DotProduct( Vec - Pos ),0,self.SpeedClamp)
-	self.Forward = math.Clamp(self:GetForward():DotProduct( Vec - Pos ),0,self.SpeedClamp)
-	self.Vert = math.Clamp(self:GetUp():DotProduct( Vec - Pos ),0,self.SpeedClamp)	
+	self.Lat = math.Clamp(self:GetRight():DotProduct( Vec - Pos ) * 2,-self.SpeedClamp,self.SpeedClamp)
+	self.Forward = math.Clamp(self:GetForward():DotProduct( Vec - Pos )* 2,-self.SpeedClamp,self.SpeedClamp)
+	self.Vert = math.Clamp(self:GetUp():DotProduct( Vec - Pos )* 2,-self.SpeedClamp,self.SpeedClamp)	
 end
 
 
@@ -539,6 +546,11 @@ function ENT:TargetCriteria(ent)
 	if ent:IsNPC() then 
 		return true
 	end
+	--if ent:GetClass() == "microdrone" then
+	--	if ent.Squad != self.Squad then
+	--		return true
+	--	end
+	--end
 	return false
 end
 
@@ -547,9 +559,9 @@ function ENT:OnRemove()
 	if self.Squad && self.Squad:IsValid() then
 		if table.Count(self.Squad.Members) > 1 then
 			for k,e in pairs(self.Squad.Members) do
-				print("Checking members...")
+				--print("Checking members...")
 				if e && e:IsValid() && e != self then
-					print("They're valid, and they're not us...")
+					--print("They're valid, and they're not us...")
 					e:AttachSquad(self.Squad)
 					break
 				end
