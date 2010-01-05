@@ -2,6 +2,27 @@ list.Set( "ButtonModels", "models/SmallBridge/Other/SBconsolelow.mdl", {} )
 list.Set( "ButtonModels", "models/SmallBridge/Other/SBconsole.mdl", {} )
 list.Set( "ButtonModels", "models/Slyfo/powercrystal.mdl", {} )
 
+-- Wire Screen models
+list.Set( "WireScreenModels" , "models/slyfo/consolescreenbig.mdl", {} )
+list.Set( "WireScreenModels" , "models/slyfo/consolescreenmed.mdl", {} )
+list.Set( "WireScreenModels" , "models/slyfo/consolescreensmall.mdl", {} )
+if CLIENT then
+	local function defineWireScreens(tries)
+		if	WireGPU_AddMonitor then
+			WireGPU_AddMonitor("Slyfo Large Console Screen", "models/slyfo/consolescreenbig.mdl", 0.25, 0, 0, 0.055, 18, -18, 13, -13)
+			WireGPU_AddMonitor("Slyfo Medium Console Screen", "models/slyfo/consolescreenmed.mdl", 0.25, 0, 0, 0.040, 18, -18, 13, -13)
+			WireGPU_AddMonitor("Slyfo Small Console Screen", "models/slyfo/consolescreensmall.mdl", 0.25, 0, 0, 0.03, 18, -18, 13, -13)
+		else
+			if tries <= 10 then
+				timer.Simple(1, defineWireScreens, tries+1)
+			else
+				ErrorNoHalt"SBEP: Failed to define Wire Screens\n"
+			end
+		end
+	end
+	defineWireScreens(1)
+end
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --SMALLBRIDGE TEXTURES
