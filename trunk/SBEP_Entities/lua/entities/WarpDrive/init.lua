@@ -43,7 +43,7 @@ function ENT:Initialize()
 	self.JumpCoords.Dest = Vector(0,0,0)
 	self.SearchRadius = 512
 	self.Constrained = 1
-	self.Inputs = WireLib.CreateSpecialInputs( self.Entity, { "Radius", "UnConstrained", "Destination X", "Destination Y", "Destination Z", "Destination", "Warp" }, { "NORMAL", "NORMAL", "NORMAL", "NORMAL", "NORMAL", "VECTOR", "NORMAL" } );
+	self.Inputs = WireLib.CreateSpecialInputs( self.Entity, { "Radius", "UnConstrained", "Destination X", "Destination Y", "Destination Z", "Destination", "Warp" }, { [6] = "VECTOR"} );
 end
 
 function ENT:TriggerInput(iname, value)
@@ -130,4 +130,18 @@ local WarpDrivePos = self.Entity:GetPos()
 		phys:EnableMotion(false)
 	end 
 	phys:Wake()
+end
+
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
+	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	if WireAddon then
+		local emods = ent.EntityMods
+		if not emods then return end
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
 end
