@@ -12,11 +12,15 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	local inNames = {"Fire","GuidanceType","X","Y","Z","Vector","WireGuidanceOnly"}
-	local inTypes = {"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","VECTOR","NORMAL"}
-	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
-	self.Outputs = Wire_CreateOutputs( self.Entity, { "ShotsLeft", "CanFire" })
-		
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateSpecialInputs( self,
+			{"Fire","GuidanceType","X","Y","Z","Vector","WireGuidanceOnly"},
+			{[6] = "VECTOR"}
+		)
+		self.Outputs = WireLib.CreateOutputs( self, { "ShotsLeft", "CanFire" })
+	end
+
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
@@ -25,7 +29,7 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 	end
 	self.Entity:SetKeyValue("rendercolor", "255 255 255")
-	self.PhysObj = self.Entity:GetPhysicsObject()
+	self.PhysObj = phys
 	
 	--self.val1 = 0
 	--RD_AddResource(self.Entity, "Munitions", 0)
@@ -204,10 +208,17 @@ function ENT:FFire( CCD )
 	self.CDL[CCD.."r"] = false
 end
 
-function ENT:PostEntityPaste(Player,Ent,CreatedEntities)
-	local phys = Ent:GetPhysicsObject()
-	if (phys:IsValid()) then
-		phys:EnableGravity(false)
-		phys:EnableDrag(false)
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
 	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	local emods = ent.EntityMods
+	if not emods then return end
+	if WireAddon then
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
+	ent.SPL = ply
 end

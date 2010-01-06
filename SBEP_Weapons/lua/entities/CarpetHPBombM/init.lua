@@ -14,7 +14,7 @@ function ENT:Initialize()
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	--self.Entity:SetMaterial("models/props_combine/combinethumper002")
 	if WireAddon then
-		self.Inputs = Wire_CreateInputs( self.Entity, { "Drop" } )
+		self.Inputs = WireLib.CreateInputs( self, { "Drop" } )
 	end
 	
 	local phys = self.Entity:GetPhysicsObject()

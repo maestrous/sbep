@@ -8,11 +8,14 @@ include( 'shared.lua' )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Slyfo/rover_stinger.mdl" ) 
-	self.Entity:SetName("ArtilleryCannon")
+	self.Entity:SetName("Stinger Mortar")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	self.Inputs = Wire_CreateInputs( self.Entity, { "Fire" } )
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateInputs( self, { "Fire" } )
+	end
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -144,4 +147,19 @@ function ENT:FFire( CCD )
 	self.MCDown = CurTime() + 0.1 + math.Rand(0,0.2)
 	self.CDL[CCD] = CurTime() + 6
 	self.CDL[CCD.."r"] = false
+end
+
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
+	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	local emods = ent.EntityMods
+	if not emods then return end
+	if WireAddon then
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
+	ent.SPL = ply
 end

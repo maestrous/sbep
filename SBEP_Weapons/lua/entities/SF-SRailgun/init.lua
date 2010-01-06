@@ -11,10 +11,12 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	self.Inputs = Wire_CreateInputs( self.Entity, { "Fire" } )
-	self.Outputs = Wire_CreateOutputs( self.Entity, { "Charge", "Ready" })
-	
-	
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateInputs( self, { "Fire" } )
+		self.Outputs = WireLib.CreateOutputs( self, { "Charge", "Ready" })
+	end
+
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
@@ -186,4 +188,19 @@ end
 
 function ENT:OnRemove()
 	self.ChSound:Stop()
+end
+
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
+	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	local emods = ent.EntityMods
+	if not emods then return end
+	if WireAddon then
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
+	ent.SPL = ply
 end

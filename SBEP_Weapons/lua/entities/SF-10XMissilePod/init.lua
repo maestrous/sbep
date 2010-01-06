@@ -8,14 +8,18 @@ include( 'shared.lua' )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Slyfo/missile_pod_10.mdl" ) 
-	self.Entity:SetName("ArtilleryCannon")
+	self.Entity:SetName("MissilePodx10")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	local inNames = {"Fire","GuidanceType","X","Y","Z","Vector","WireGuidanceOnly"}
-	local inTypes = {"NORMAL","NORMAL","NORMAL","NORMAL","NORMAL","VECTOR","NORMAL"}
-	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
-	self.Outputs = Wire_CreateOutputs( self.Entity, { "ShotsLeft", "CanFire" })
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateSpecialInputs( self,
+			{"Fire","GuidanceType","X","Y","Z","Vector","WireGuidanceOnly"},
+			{[6] = "VECTOR"}
+		)
+		self.Outputs = WireLib.CreateOutputs( self, { "ShotsLeft", "CanFire" })
+	end
 		
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -218,4 +222,19 @@ function ENT:FFire( CCD )
 	self.MCDown = CurTime() + 0.1 + math.Rand(0,0.2)
 	self.CDL[CCD] = CurTime() + 10
 	self.CDL[CCD.."r"] = false
+end
+
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
+	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	local emods = ent.EntityMods
+	if not emods then return end
+	if WireAddon then
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
+	ent.SPL = ply
 end

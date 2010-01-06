@@ -7,11 +7,14 @@ util.PrecacheSound( "SB/Charging.wav" )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Slyfo/mcpcannon.mdl" ) 
-	self.Entity:SetName("ArtilleryCannon")
+	self.Entity:SetName("MCP Cannon")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	self.Inputs = Wire_CreateInputs( self.Entity, { "Fire" } )
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateInputs( self, { "Fire" } )
+	end
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -140,4 +143,19 @@ function ENT:FFire( CCD )
 	effectdata:SetOrigin(self.Entity:GetPos() +  self.Entity:GetForward() * 150)
 	effectdata:SetStart(self.Entity:GetPos() +  self.Entity:GetForward() * 150)
 	util.Effect( "Explosion", effectdata )
+end
+
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
+	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	local emods = ent.EntityMods
+	if not emods then return end
+	if WireAddon then
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
+	ent.SPL = ply
 end

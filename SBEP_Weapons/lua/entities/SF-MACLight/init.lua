@@ -8,12 +8,15 @@ util.PrecacheSound( "SB/Charging.wav" )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Spacebuild/Nova/macbig.mdl" ) 
-	self.Entity:SetName("ArtilleryCannon")
+	self.Entity:SetName("Light MAC")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	self.Inputs = Wire_CreateInputs( self.Entity, {  "ChargeCannon", "Fire" } )
-	self.Outputs = Wire_CreateOutputs( self.Entity, { "ChargeLevel", "CanFire" })
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateInputs( self, {  "ChargeCannon", "Fire" } )
+		self.Outputs = WireLib.CreateOutputs( self, { "ChargeLevel", "CanFire" })
+	end
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -194,4 +197,19 @@ function ENT:MACFire()
 	--util.Effect( "Explosion", effectdata )
 	self.Entity:EmitSound("SB/RailgunLight.wav", 500)
 --end
+end
+
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
+	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	local emods = ent.EntityMods
+	if not emods then return end
+	if WireAddon then
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
+	ent.SPL = ply
 end

@@ -5,13 +5,15 @@ include( 'shared.lua' )
 function ENT:Initialize()
 	
 	self.Entity:SetModel( "models/Slyfo/torpedoship1.mdl" ) 
-	self.Entity:SetName("TorpedoLauncher")
+	self.Entity:SetName("LargeTorpedoLauncher")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	--self.Entity:SetMaterial("models/props_wasteland/tugboat02")
-	self.Inputs = Wire_CreateInputs( self.Entity, { "Fire", "Reload" } )
-	self.Outputs = Wire_CreateOutputs( self.Entity, { "Loaded", "ReloadProgress" })
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateInputs( self, { "Fire", "Reload" } )
+		self.Outputs = WireLib.CreateOutputs( self, { "Loaded", "ReloadProgress" })
+	end
 
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -171,4 +173,5 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SBEPTorpL.WireData, function(id) return CreatedEntities[id] end)
 	end
 
+	self.SPL = pl
 end
