@@ -6,12 +6,14 @@ list.Set( "ButtonModels", "models/Slyfo/powercrystal.mdl", {} )
 list.Set( "WireScreenModels" , "models/slyfo/consolescreenbig.mdl", {} )
 list.Set( "WireScreenModels" , "models/slyfo/consolescreenmed.mdl", {} )
 list.Set( "WireScreenModels" , "models/slyfo/consolescreensmall.mdl", {} )
+list.Set( "WireScreenModels" , "models/smallbridge/other parts/sbscreen1.mdl", {} )
 if CLIENT then
 	local function defineWireScreens(tries)
 		if	WireGPU_AddMonitor then
 			WireGPU_AddMonitor("Slyfo Large Console Screen", "models/slyfo/consolescreenbig.mdl", 0.25, 0, 0, 0.055, 18, -18, 13, -13)
 			WireGPU_AddMonitor("Slyfo Medium Console Screen", "models/slyfo/consolescreenmed.mdl", 0.25, 0, 0, 0.040, 18, -18, 13, -13)
 			WireGPU_AddMonitor("Slyfo Small Console Screen", "models/slyfo/consolescreensmall.mdl", 0.25, 0, 0, 0.03, 18, -18, 13, -13)
+			WireGPU_AddMonitor("SMB Square Screen", "models/smallbridge/other parts/sbscreen1.mdl", 1.25, 0, 0, 0.08, 20, -20, 20, -20)
 		else
 			if tries <= 10 then
 				timer.Simple(1, defineWireScreens, tries+1)
