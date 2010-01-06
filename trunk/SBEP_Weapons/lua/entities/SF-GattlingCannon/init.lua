@@ -7,12 +7,15 @@ util.PrecacheSound( "SB/Gattling2.wav" )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Spacebuild/medbridge2_gatling_cannon.mdl" ) 
-	self.Entity:SetName("ArtilleryCannon")
+	self.Entity:SetName("GattlingCannon")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	self.Inputs = Wire_CreateInputs( self.Entity, { "Fire" } )
-	
+
+	if WireAddon then
+		self.Inputs = WireLib.CreateInputs( self, { "Fire" } )
+	end
+
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
 		phys:Wake()
@@ -126,4 +129,19 @@ function ENT:Touch( ent )
 	if ent.HasHardpoints then
 		if ent.Cont && ent.Cont:IsValid() then HPLink( ent.Cont, ent.Entity, self.Entity ) end
 	end
+end
+
+function ENT:PreEntityCopy()
+	if WireAddon then
+		duplicator.StoreEntityModifier(self,"WireDupeInfo",WireLib.BuildDupeInfo(self.Entity))
+	end
+end
+
+function ENT:PostEntityPaste(ply, ent, createdEnts)
+	local emods = ent.EntityMods
+	if not emods then return end
+	if WireAddon then
+		WireLib.ApplyDupeInfo(ply, ent, emods.WireDupeInfo, function(id) return createdEnts[id] end)
+	end
+	ent.SPL = ply
 end
