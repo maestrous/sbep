@@ -100,7 +100,7 @@ function ENT:Splode()
 	if(!self.Exploded) then
 		--self.Exploded = true
 		util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 1500, 1500)
-		cbt_hcgexplode( self.Entity:GetPos(), 8000, math.random(3000,7000), 8)
+		cbt_hcgexplode( self.Entity:GetPos(), 800, math.random(3000,7000), 8)
 		local targets = ents.FindInSphere( self.Entity:GetPos(), 1000)
 	
 		for _,i in pairs(targets) do
