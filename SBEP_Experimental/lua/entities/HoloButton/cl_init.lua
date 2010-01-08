@@ -13,6 +13,7 @@ function ENT:Initialize()
 	self.CVal = ""
 	self.PulseTime = 0
 	self.PulseLength = 1
+	self.R,self.G,self.B = 230,200,200
 end
 
 function ENT:DrawTranslucent()
@@ -33,8 +34,8 @@ function ENT:DrawTranslucent()
 			self:LocalToWorld( Vector( inc * incZ /  15 , inc * incZ / -15 , incZ ) )
 						}
 		
-		local BCol = Color(200,200,210,140)
-		local SCol = Color(200,200,210,170)
+		local BCol = Color(self.R,self.G,self.B,140)
+		local SCol = Color(self.R,self.G,self.B,170)
 		render.SetMaterial( SMat )	
 		render.DrawSprite( Origin, 5, 5, SCol )
 		for n, Pos in ipairs( Square ) do
@@ -64,10 +65,10 @@ function ENT:DrawTranslucent()
 
 			cam.Start3D2D( self:GetPos() + self:GetUp() * (incZ + 0.1), self:GetAngles(), 0.1 )
                                 
-                draw.RoundedBox( 6, -90, -90, 180, 180, Color(150,150,180,self.Alpha * 90) )
+                draw.RoundedBox( 6, -90, -90, 180, 180, Color(self.R-50,self.G-50,self.B-50,self.Alpha * 90) )
                 
-                local KCol = Color( 180, 180, 210, self.Alpha * 150 )
-                local KColH = Color( 210, 210, 235, self.Alpha * 200 )
+                local KCol = Color( self.R-30 , self.G-30 , self.B-30 , self.Alpha * 150 )
+                local KColH = Color( self.R,self.G,self.B, self.Alpha * 200 )
                 
                 local Boxes = {
 							[-22.5] = {
@@ -93,13 +94,13 @@ function ENT:DrawTranslucent()
 			local PTime = math.Clamp((CurTime() - self.PulseTime),0,1) / self.PulseLength
 			local PCol = Color(Lerp(PTime,KColH.r,KCol.r),Lerp(PTime,KColH.g,KCol.g),Lerp(PTime,KColH.b,KCol.b),Lerp(PTime,KColH.a,KCol.a))
 			draw.RoundedBox( 6, -85, -85, 170, 35, PCol )
-			draw.DrawText( self.CString , "DefaultLarge", 80, -74, Color(230, 230, 255, 255), TEXT_ALIGN_RIGHT )
+			draw.DrawText( self.CString , "TargetID", 80, -79, Color(self.R,self.G,self.B, 255), TEXT_ALIGN_RIGHT )
 			self:SetHighlighted( 12 )
 			for y,Row in pairs( Boxes ) do
 				for label,x in pairs( Row ) do
 					if RX >= x-17.5 && RX <= x+17.5 && RY >= y-17.5 && RY <= y+17.5 then
 						draw.RoundedBox( 12, x-17.5, y-17.5, 35, 35, KColH )
-						draw.DrawText( label , "DefaultLarge", x, y-9, Color(30, 30, 55, 255), TEXT_ALIGN_CENTER )
+						draw.DrawText( label , "TargetID", x, y-9, Color( 255-self.R , 255-self.G , 255-self.B , 255), TEXT_ALIGN_CENTER )
 						local val = label
 						if label == " Clear" then
 							val = 10
@@ -109,7 +110,7 @@ function ENT:DrawTranslucent()
 						self:SetHighlighted( val )
 					else
 						draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
-						draw.DrawText( label , "DefaultLarge", x, y-9, Color(230, 230, 255, 255), TEXT_ALIGN_CENTER )
+						draw.DrawText( label , "TargetID", x, y-9, Color(self.R,self.G,self.B, 255), TEXT_ALIGN_CENTER )
 					end
 					
 				end
