@@ -11,6 +11,8 @@ function ENT:Initialize()
 	self.Alpha = 0
 	self.CString = ""
 	self.CVal = ""
+	self.PulseTime = 0
+	self.PulseLength = 1
 end
 
 function ENT:DrawTranslucent()
@@ -87,8 +89,12 @@ function ENT:DrawTranslucent()
 						 [" Clear"] =  67.5
 									}
 							}
-
-			draw.RoundedBox( 6, -85, -85, 170, 35, KCol )
+							
+			local PTime = math.Clamp((CurTime() - self.PulseTime),0,1) / self.PulseLength
+			local PCol = Color(Lerp(PTime,KColH.r,KCol.r),Lerp(PTime,KColH.g,KCol.g),Lerp(PTime,KColH.b,KCol.b),Lerp(PTime,KColH.a,KCol.a))
+			draw.RoundedBox( 6, -85, -85, 170, 35, PCol )
+			local PCol = Color(Lerp(PTime,255,KCol.r),Lerp(PTime,255,KCol.g),Lerp(PTime,255,KCol.b),Lerp(PTime,255,KCol.a))
+			draw.DrawText( self.CString , "DefaultLarge", 80, -74, Color(230, 230, 255, 255), TEXT_ALIGN_RIGHT )
 			self:SetHighlighted( 12 )
 			for y,Row in pairs( Boxes ) do
 				for label,x in pairs( Row ) do
@@ -109,9 +115,7 @@ function ENT:DrawTranslucent()
 					
 				end
 			end
-			
-			draw.DrawText( self.CString , "DefaultLarge", 80, -74, Color(230, 230, 255, 255), TEXT_ALIGN_RIGHT )
-			
+						
 			cam.End3D2D()
 		end
 	end
@@ -160,6 +164,7 @@ function ENT:Think()
 				--					end)
 				self.CVal = self.CString
 				self.Adding = false
+				self.PulseTime = CurTime()
 			else
 				--self:AddHValue( val )
 				if val >= 0 && val <= 9 then
