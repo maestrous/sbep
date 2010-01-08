@@ -2,19 +2,22 @@ include('shared.lua')
 
 local BMat = Material( "tripmine_laser" )
 local SMat = Material( "sprites/light_glow02_add" )
-local QMat = Material( "spacebuild/Hazard2" )
+
+ENT.RenderGroup = RENDERGROUP_BOTH
 
 function ENT:Initialize()
 	self.IncZ = 0
 	self.Inc = 0
 	self.Alpha = 0
+	self.CString = ""
+	self.CVal = ""
 end
 
-function ENT:Draw()
+function ENT:DrawTranslucent()
 	
 	self:DrawModel()
 	
-	if self:GetActive() || self.IncZ > 0 then
+	if self.IncZ > 0 then
 		local incZ = self.IncZ --Z increment for transition
 		local inc = self.Inc --increment for transition
 		local selfpos = self:GetPos()
@@ -81,7 +84,7 @@ function ENT:Draw()
 								[7] = -67.5,
 								[8] = -22.5,
 								[9] =  22.5,
-							   Cncl =  67.5
+						 [" Clear"] =  67.5
 									}
 							}
 
@@ -90,10 +93,10 @@ function ENT:Draw()
 			for y,Row in pairs( Boxes ) do
 				for label,x in pairs( Row ) do
 					if RX >= x-17.5 && RX <= x+17.5 && RY >= y-17.5 && RY <= y+17.5 then
-						draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KColH )
-						draw.DrawText( label , "ScoreboardText", x, y-9, Color(30, 30, 55, 255), TEXT_ALIGN_CENTER )
+						draw.RoundedBox( 12, x-17.5, y-17.5, 35, 35, KColH )
+						draw.DrawText( label , "DefaultLarge", x, y-9, Color(30, 30, 55, 255), TEXT_ALIGN_CENTER )
 						local val = label
-						if label == "Cncl" then
+						if label == " Clear" then
 							val = 10
 						elseif label == "OK" then
 							val = 11
@@ -101,13 +104,13 @@ function ENT:Draw()
 						self:SetHighlighted( val )
 					else
 						draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
-						draw.DrawText( label , "ScoreboardText", x, y-9, Color(230, 230, 255, 255), TEXT_ALIGN_CENTER )
+						draw.DrawText( label , "DefaultLarge", x, y-9, Color(230, 230, 255, 255), TEXT_ALIGN_CENTER )
 					end
 					
 				end
 			end
 			
-			draw.DrawText( self:GetHValue() , "DefaultLarge", 80, -74, Color(230, 230, 255, 255), TEXT_ALIGN_RIGHT )
+			draw.DrawText( self.CString , "DefaultLarge", 80, -74, Color(230, 230, 255, 255), TEXT_ALIGN_RIGHT )
 			
 			cam.End3D2D()
 		end
@@ -115,7 +118,17 @@ function ENT:Draw()
 end
 
 function ENT:Think()
-	if self:GetActive() then
+	local Dist = math.abs(self:GetPos().x - LocalPlayer():GetShootPos().x) + math.abs(self:GetPos().y - LocalPlayer():GetShootPos().y) + math.abs(self:GetPos().y - LocalPlayer():GetShootPos().y) -- relatively cheap and crappy way of calculating distance
+	local Vec = LocalPlayer():GetAimVector():DotProduct((self:GetPos() - LocalPlayer():GetShootPos()):Normalize())
+	--print(Dist, Vec)
+	if Dist <= 300 && Vec > 0.85 then
+		--print("Here's looking at you, kid")
+		self.LocalActive = true
+	else
+		self.LocalActive = false
+	end
+	if self.LocalActive then
+		--print("Active")
 		self.IncZ = math.Approach(self.IncZ, 15, .3)
 		if self.IncZ >= 15 then
 			self.Inc = math.Approach(self.Inc, 10, .2)
@@ -123,18 +136,40 @@ function ENT:Think()
 		if self.Inc >= 10 then
 			self.Alpha = math.Approach(self.Alpha, 1, .05)
 		end
+		if self.Alpha >= 1 then
+			if !self.PreActive then
+				self.CString = self.CVal
+				self.PreActive = true
+				self.Adding = false
+			end
+		else
+			self.PreActive = false
+		end
 		
-		if self.dt.eowner:KeyPressed( IN_USE ) then
+		if LocalPlayer():KeyPressed( IN_USE ) then
 			local val = self:GetHighlighted()
 			if val == 10 then
-				self:ClearValue()
+				--self:ClearValue()
+				self.CString = ""
+				self.Adding = false
 			elseif val == 11 then
-				self:SendValue()
-				timer.Simple( 1, function()
-									self:ClearValue()
-									end)
+				--self:SendValue()
+				LocalPlayer():ConCommand("HoloPadSetVar "..self:EntIndex().." "..self.CString)
+				--timer.Simple( 1, function()
+				--					self:ClearValue()
+				--					end)
+				self.CVal = self.CString
+				self.Adding = false
 			else
-				self:AddHValue( val )
+				--self:AddHValue( val )
+				if val >= 0 && val <= 9 then
+					if self.Adding then
+						self.CString = self.CString..tostring(val)
+					else
+						self.CString = tostring(val)
+						self.Adding = true
+					end
+				end
 			end
 		end
 	elseif self.IncZ > 0 then

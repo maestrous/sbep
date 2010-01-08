@@ -10,7 +10,8 @@ function ENT:Initialize()
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetSolid( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
-	self.Inputs = Wire_CreateInputs( self, { "Active" } )
+	--self.Inputs = Wire_CreateInputs( self, { "Active" } )
+	self.Outputs = Wire_CreateOutputs( self, { "Value" })
 	
 	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -23,9 +24,9 @@ function ENT:Initialize()
 end
 
 function ENT:TriggerInput(iname, value)
-	if iname == "Active" then
-		self:SetActive( value > 0 )
-	end	
+	--if iname == "Active" then
+	--	self:SetActive( value > 0 )
+	--end	
 end
 
 function ENT:SpawnFunction( ply, tr )
@@ -43,7 +44,16 @@ end
 
 function ENT:Use( activator, caller )
 
-	if !self:GetActive() then
-		self:SetActive( true )
-	end
+	--if !self:GetActive() then
+	--	self:SetActive( true )
+	--end
 end
+
+function HoloPadSetVar(player,commandName,args)
+	local Pad = ents.GetByIndex(tonumber(args[1]))
+	if Pad && Pad:IsValid() then
+		Pad.KeyValue = tonumber(args[2])
+		Wire_TriggerOutput( Pad, "Value", Pad.KeyValue )
+	end	 
+end 
+concommand.Add("HoloPadSetVar",HoloPadSetVar) 
