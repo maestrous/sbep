@@ -93,7 +93,6 @@ function ENT:DrawTranslucent()
 			local PTime = math.Clamp((CurTime() - self.PulseTime),0,1) / self.PulseLength
 			local PCol = Color(Lerp(PTime,KColH.r,KCol.r),Lerp(PTime,KColH.g,KCol.g),Lerp(PTime,KColH.b,KCol.b),Lerp(PTime,KColH.a,KCol.a))
 			draw.RoundedBox( 6, -85, -85, 170, 35, PCol )
-			local PCol = Color(Lerp(PTime,255,KCol.r),Lerp(PTime,255,KCol.g),Lerp(PTime,255,KCol.b),Lerp(PTime,255,KCol.a))
 			draw.DrawText( self.CString , "DefaultLarge", 80, -74, Color(230, 230, 255, 255), TEXT_ALIGN_RIGHT )
 			self:SetHighlighted( 12 )
 			for y,Row in pairs( Boxes ) do
@@ -122,10 +121,14 @@ function ENT:DrawTranslucent()
 end
 
 function ENT:Think()
-	local Dist = math.abs(self:GetPos().x - LocalPlayer():GetShootPos().x) + math.abs(self:GetPos().y - LocalPlayer():GetShootPos().y) + math.abs(self:GetPos().y - LocalPlayer():GetShootPos().y) -- relatively cheap and crappy way of calculating distance
-	local Vec = LocalPlayer():GetAimVector():DotProduct((self:GetPos() - LocalPlayer():GetShootPos()):Normalize())
-	--print(Dist, Vec)
-	if Dist <= 300 && Vec > 0.85 then
+	local SDir = (self:GetPos() - LocalPlayer():GetShootPos()):Angle()
+	local PDir = LocalPlayer():GetAimVector():Angle() -- Best to get rid of the roll on both angles, just to make sure they're compared fairly.
+	--print(SDir,PDir)
+	local PDif = math.abs(math.AngleDifference(SDir.p, PDir.p))
+	local YDif = math.abs(math.AngleDifference(SDir.y, PDir.y))
+	--print(PDif,YDif)
+	local plypos = self:WorldToLocal( LocalPlayer():GetShootPos() )
+	if plypos.x >= -100 && plypos.x <= 100 && plypos.y >= -100 && plypos.y <= 100 && plypos.z >= 0 && plypos.z <= 100 && YDif <= 20 && PDif <= 20 then
 		--print("Here's looking at you, kid")
 		self.LocalActive = true
 	else
