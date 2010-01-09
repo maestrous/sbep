@@ -11,7 +11,7 @@ function ENT:Initialize()
 		self:SetSolid( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
 	--self.Inputs = Wire_CreateInputs( self, { "Active" } )
-	self.Outputs = Wire_CreateOutputs( self, { "Value" })
+	self.Outputs = Wire_CreateOutputs( self, { "Value", "CorrectCode", "IncorrectCode" })
 	
 	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -21,6 +21,9 @@ function ENT:Initialize()
 		phys:EnableCollisions(false)
 	end
 	
+	self.RHoldLength = 1
+	self.WHoldLength = 1
+	self.InputTime = 0
 end
 
 function ENT:TriggerInput(iname, value)
@@ -29,11 +32,47 @@ function ENT:TriggerInput(iname, value)
 	--end	
 end
 
+function ENT:Think()
+	if self.Code == self.StrValue && CurTime() - self.InputTime <= self.RHoldLength then
+		Wire_TriggerOutput( self, "CorrectCode", 1 )
+		Wire_TriggerOutput( self, "IncorrectCode", 0 )
+	elseif self.Code != self.StrValue && CurTime() - self.InputTime <= self.WHoldLength then
+		Wire_TriggerOutput( self, "IncorrectCode", 1 )
+		Wire_TriggerOutput( self, "CorrectCode", 0 )
+	else
+		Wire_TriggerOutput( self, "CorrectCode", 0 )
+		Wire_TriggerOutput( self, "IncorrectCode", 0 )
+	end
+end
+
+function ENT:SpawnFunction( ply, tr )
+	if ( !tr.Hit ) then return end
+	
+	local ent = ents.Create( "HoloButton" )
+		ent:Spawn()
+		ent:Initialize()
+		ent:Activate()
+	ent:SetPos( tr.HitPos + tr.HitNormal * -1 * ent:OBBMins().z )
+	ent.dt.eowner = ply
+	
+	return ent
+end
+
+function ENT:Use( activator, caller )
+	return false
+	--if !self:GetActive() then
+	--	self:SetActive( true )
+	--end
+end
+
 function HoloPadSetVar(player,commandName,args)
 	local Pad = ents.GetByIndex(tonumber(args[1]))
 	if Pad && Pad:IsValid() then
 		Pad.KeyValue = tonumber(args[2])
+		Pad.StrValue = args[2]
+		Pad.InputTime = CurTime()
 		Wire_TriggerOutput( Pad, "Value", Pad.KeyValue )
+					
 	end	 
 end 
 concommand.Add("HoloPadSetVar",HoloPadSetVar) 
