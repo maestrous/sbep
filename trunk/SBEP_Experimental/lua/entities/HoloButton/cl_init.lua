@@ -206,7 +206,7 @@ function ENT:Think()
 				self.Adding = false
 			elseif val == 11 then
 				--self:SendValue()
-				RunConsoleCommand("HoloPadSetVar "..self:EntIndex().." "..self.CString)
+				RunConsoleCommand( "HoloPadSetVar" , self:EntIndex() , self.CString )
 				--timer.Simple( 1, function()
 				--					self:ClearValue()
 				--					end)
