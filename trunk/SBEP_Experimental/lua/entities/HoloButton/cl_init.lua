@@ -15,6 +15,8 @@ function ENT:Initialize()
 	self.CVal = ""
 	self.PulseTime = 0
 	self.PulseLength = 1
+	self.HighClear = 0 --No idea why this is needed, but it is.
+	self.R,self.G,self.B = 200,200,210
 	self:SetColors( 200, 200, 230 )
 	self.Encrypt = self.Encrypt || true
 	
@@ -40,6 +42,9 @@ function ENT:Initialize()
 				}
 end
 
+function ENT:Draw()
+	self:DrawModel()
+end
 function ENT:SetColors( R, G, B )
 
 	self.R = R
@@ -62,9 +67,7 @@ function ENT:ScaleColor( fSc )
 end
 
 function ENT:DrawTranslucent()
-	
-	self:DrawModel()
-	
+		
 	if self.IncZ > 0 then
 		local incZ = self.IncZ --Z increment for transition
 		local inc = self.Inc --increment for transition
@@ -99,7 +102,12 @@ function ENT:DrawTranslucent()
 			
 			local W = eyepos - (selfpos + up * 15)
 			local N = up
-			local U = LocalPlayer():GetAimVector()
+			local AVec = LocalPlayer():GetAimVector()
+			local mx,my = gui.MousePos()
+			if mx > 0 || my > 0 then
+				AVec = gui.ScreenToVector( gui.MousePos() )
+			end
+			local U = AVec--LocalPlayer():GetAimVector()
 			--(-(self:up.(playershootpos - self:pos)) / (self:up.player:aimvec))
 			local Upper = N:DotProduct(W)
 			local Lower = N:DotProduct(U)
@@ -137,7 +145,18 @@ function ENT:DrawTranslucent()
 				else
 					Value = self.CString
 				end
-				draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255), TEXT_ALIGN_RIGHT )
+				 && RX <= 85 && RY >= -85 && RY <= -50 then
+					draw.RoundedBox( 6, -85, -85, 170, 35, KColH )
+					draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255), TEXT_ALIGN_RIGHT )
+					self.ManualInput = true
+				else
+					local PTime = math.Clamp((CurTime() - self.PulseTime),0,1) / self.PulseLength
+					local PCol = Color(Lerp(PTime,KColH.r,KCol.r),Lerp(PTime,KColH.g,KCol.g),Lerp(PTime,KColH.b,KCol.b),Lerp(PTime,KColH.a,KCol.a))
+					draw.RoundedBox( 6, -85, -85, 170, 35, PCol )
+					draw.DrawText( self.CString , "TrebuchetH", 80, -74, Color(self.R,self.G,self.B, 255), TEXT_ALIGN_RIGHT )
+					self.ManualInput = false
+				end
+				--draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255), TEXT_ALIGN_RIGHT )
 				self:SetHighlighted( 12 )
 				for y,Row in pairs( self.Boxes ) do
 					for label,x in pairs( Row ) do
@@ -157,7 +176,22 @@ function ENT:DrawTranslucent()
 							draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
 							draw.DrawText( label , "TrebuchetH", x, y-13, Color( R, G, B, 255), TEXT_ALIGN_CENTER )
 						end
-						
+						Highlight = val
+					else
+						draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
+						draw.DrawText( label , "TargetID", x, y-9, Color(self.R,self.G,self.B, 255), TEXT_ALIGN_CENTER )
+					end
+					if Highlight == -1 then --This bit just stops it from clearing the highlighted button even while you're looking at it.
+						self.HighClear = self.HighClear + 1
+						if self.HighClear > 15 then
+							self:SetHighlighted( -1 )
+						end
+					else
+						self.HighClear = 0
+					end					
+					
+					if Highlight != self:GetHighlighted() && Highlight != -1 then
+						self:SetHighlighted( Highlight )
 					end
 				end
 			cam.End3D2D()
@@ -190,7 +224,7 @@ function ENT:Think()
 		end
 		if self.Alpha >= 1 then
 			if !self.PreActive then
-				self.CString = self.CVal
+				if !self.SecureMode then self.CString = self.CVal end
 				self.PreActive = true
 				self.Adding = false
 			end
@@ -198,7 +232,8 @@ function ENT:Think()
 			self.PreActive = false
 		end
 		
-		if LocalPlayer():KeyPressed( IN_USE ) then
+		if LocalPlayer():KeyPressed( IN_USE ) || (input.IsMouseDown(MOUSE_FIRST) && !self.MTog) then
+			self.MTog = true
 			local val = self:GetHighlighted()
 			if val == 10 then
 				--self:ClearValue()
@@ -210,19 +245,31 @@ function ENT:Think()
 				--timer.Simple( 1, function()
 				--					self:ClearValue()
 				--					end)
-				self.CVal = self.CString
+				if !self.SecureMode then self.CVal = self.CString end
+				if self.SecureMode then self.CString = "" end
 				self.Adding = false
 				self.PulseTime = CurTime()
 			else
 				--self:AddHValue( val )
 				if val >= 0 && val <= 9 then
 					if self.Adding then
-						self.CString = self.CString..tostring(val)
+						if string.len( self.CString ) <= 22 then -- 22 seems a reasonable length. Quite generous, in fact...
+							self.CString = self.CString..tostring(val)
+						end
 					else
 						self.CString = tostring(val)
 						self.Adding = true
 					end
 				end
+			end
+		elseif !input.IsMouseDown(MOUSE_FIRST) then
+			self.MTog = false
+		end
+		
+		if self.ManualInput then
+			local Key = -1
+			for n = 1,10 do
+				--print(n)
 			end
 		end
 	elseif self.IncZ > 0 then
