@@ -1,4 +1,5 @@
-local holo = {}
+
+holo = {}
 
 holo.Register = function( sName , tObject , sParent )
 					holo.Classes = holo.Classes || {}
@@ -38,6 +39,7 @@ AccessorFunc(  OBJ,  "Panel"	,  "Panel"	 )
 
 function OBJ:Initialize()
 	
+	self.Rad  = 6
 	self.OrX  = 0
 	self.OrY  = 0
 	self.Wide = 10
@@ -49,13 +51,13 @@ function OBJ:Initialize()
 end
 
 function OBJ:Draw()
+	self:Think()
+
 	local w,t, C = self.Wide, self.Tall, self.Col
 	if self:GetHL() then
 		C = self.HCol
 	end
 	draw.RoundedBox( self.Rad , self.OrX - 0.5*w , self.OrY - 0.5*t , w, t, self.Col )
-	
-	self:Think()
 end
 
 function OBJ:Think()
