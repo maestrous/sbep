@@ -1,7 +1,7 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
 ENT.PrintName		= "Holo Input"
-ENT.Author			= "Paradukes + SlyFo"
+ENT.Author			= "Paradukes + Hysteria + SlyFo"
 ENT.Category		= "SBEP - Other"
 
 ENT.Spawnable		= false
