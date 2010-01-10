@@ -145,10 +145,11 @@ function ENT:DrawTranslucent()
 				else
 					Value = self.CString
 				end
-				 && RX <= 85 && RY >= -85 && RY <= -50 then
+				if RX >= -85 && RX <= 85 && RY >= -85 && RY <= -50 then
 					draw.RoundedBox( 6, -85, -85, 170, 35, KColH )
 					draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255), TEXT_ALIGN_RIGHT )
 					self.ManualInput = true
+					self:SetHighlighted( 12 )
 				else
 					local PTime = math.Clamp((CurTime() - self.PulseTime),0,1) / self.PulseLength
 					local PCol = Color(Lerp(PTime,KColH.r,KCol.r),Lerp(PTime,KColH.g,KCol.g),Lerp(PTime,KColH.b,KCol.b),Lerp(PTime,KColH.a,KCol.a))
@@ -157,7 +158,8 @@ function ENT:DrawTranslucent()
 					self.ManualInput = false
 				end
 				--draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255), TEXT_ALIGN_RIGHT )
-				self:SetHighlighted( 12 )
+				local Highlight = -1
+				
 				for y,Row in pairs( self.Boxes ) do
 					for label,x in pairs( Row ) do
 						if RX >= x-17.5 && RX <= x+17.5 && RY >= y-17.5 && RY <= y+17.5 then
@@ -166,21 +168,23 @@ function ENT:DrawTranslucent()
 								r,g,b = self:ScaleColor( 1/mc )
 							draw.DrawText( label , "TrebuchetH", x, y-13, Color( r , g , b , 255), TEXT_ALIGN_CENTER )
 							local val = label
-							if label == " Clear" then
+							if label == "CL" then
 								val = 10
 							elseif label == "OK" then
 								val = 11
 							end
 							self:SetHighlighted( val )
+							Highlight = val
 						else
 							draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
 							draw.DrawText( label , "TrebuchetH", x, y-13, Color( R, G, B, 255), TEXT_ALIGN_CENTER )
 						end
-						Highlight = val
-					else
-						draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
-						draw.DrawText( label , "TargetID", x, y-9, Color(self.R,self.G,self.B, 255), TEXT_ALIGN_CENTER )
 					end
+					
+					--else
+					--	draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
+					--	draw.DrawText( label , "TargetID", x, y-9, Color(self.R,self.G,self.B, 255), TEXT_ALIGN_CENTER )
+					--end
 					if Highlight == -1 then --This bit just stops it from clearing the highlighted button even while you're looking at it.
 						self.HighClear = self.HighClear + 1
 						if self.HighClear > 15 then
@@ -188,7 +192,9 @@ function ENT:DrawTranslucent()
 						end
 					else
 						self.HighClear = 0
-					end					
+					end
+					
+					--print(Highlight,self:GetHighlighted())
 					
 					if Highlight != self:GetHighlighted() && Highlight != -1 then
 						self:SetHighlighted( Highlight )
