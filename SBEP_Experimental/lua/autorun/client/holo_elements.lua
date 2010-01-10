@@ -1,4 +1,4 @@
-holo = {}
+local holo = {}
 
 holo.Register = function( sName , tObject , sParent )
 					holo.Classes = holo.Classes || {}
@@ -12,11 +12,14 @@ holo.Register = function( sName , tObject , sParent )
 					return true
 				end
 
-holo.Create = function( sName, ePanel )
+holo.Create = function( sName , tParent )
 					if !holo.Classes || !holo.Classes.sName then return end
 					
 					local Obj = table.Copy( holo.Classes.sName )
-						Obj:Initialize(ePanel)
+						Obj:Initialize()
+						if tParent then
+							Obj:SetParent( tParent )
+						end
 					return Obj
 				end
 
@@ -25,44 +28,37 @@ holo.Create = function( sName, ePanel )
 ---------------------------------------------------------------------------------------------------
 local OBJ = {}
 
-function OBJ:Initialize(ePanel)
+AccessorFunc(  OBJ,  "HL"		,  "HL"		,  FORCE_BOOL 	)
+AccessorFunc(  OBJ,  "Wide"		,  "Wide"	,  FORCE_NUMBER )
+AccessorFunc(  OBJ,  "Tall"		,  "Tall"	,  FORCE_NUMBER )
+AccessorFunc(  OBJ,  "Color"	,  "Col"	 )
+AccessorFunc(  OBJ,  "HColor"	,  "HCol"	 )
+AccessorFunc(  OBJ,  "Parent"	,  "Parent"	 )
+AccessorFunc(  OBJ,  "Panel"	,  "Panel"	 )
 
-	self:SetParent(ePanel)
-	self.Rad = 6
+function OBJ:Initialize()
+	
 	self.OrX  = 0
 	self.OrY  = 0
 	self.Wide = 10
 	self.Tall = 10
 	self.Col  = Color(255,255,255,255)
+	self.HCol = Color(255,255,255,255)
+	self.HL   = false
 	
-end
-
-function OBJ:SetParent(ePanel)
-	if ePanel && ePanel:IsValid() then
-		self.Parent = ePanel
-	end
 end
 
 function OBJ:Draw()
-	local w,t = self.Wide, self.Tall
+	local w,t, C = self.Wide, self.Tall, self.Col
+	if self:GetHL() then
+		C = self.HCol
+	end
 	draw.RoundedBox( self.Rad , self.OrX - 0.5*w , self.OrY - 0.5*t , w, t, self.Col )
+	
+	self:Think()
 end
 
 function OBJ:Think()
-	
-end
-
-function OBJ:Think()
-	
-end
-
-function OBJ:SetSize( x , y )
-	if type(x) == "number" && x > 0 then
-		self.Wide = x
-	end
-	if type(y) == "number" && y > 0 then
-		self.Tall = y
-	end
 end
 
 function OBJ:SetPos( x , y )
@@ -74,18 +70,21 @@ function OBJ:SetPos( x , y )
 	end
 end
 
-function OBJ:SetColor( cCol )
-	if type( cCol ) == "table" && cCol.r && cCol.g && cCol.b && cCol.a then
-		self.Col = cCol
+function OBJ:GetPos()
+	return { x = self.OrX , y = self.OrY }
+end
+
+function OBJ:SetSize( x , y )
+	if type(x) == "number" && x > 0 then
+		self.Wide = x
+	end
+	if type(y) == "number" && y > 0 then
+		self.Tall = y
 	end
 end
 
-function OBJ:MouseCheck( MX, MY )
-	local x,y,w,t = self.OrX, self.OrY, self.Wide, self.Tall
-	if MX >= x - 0.5 * w && MX <= x + 0.5 * w && MY >= y - 0.5*t && MY <= y + 0.5*t then
-		return true
-	end
-	return false
+function OBJ:GetSize()
+	return self.Wide, self.Tall
 end
 
 function OBJ:OnPressed()
@@ -95,5 +94,3 @@ function OBJ:OnReleased()
 end
 
 holo.Register( "HRect" , OBJ )
-
----------------------------------------------------------------------------------------------------
