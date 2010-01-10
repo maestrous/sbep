@@ -1,4 +1,3 @@
-
 holo = {}
 
 holo.Register = function( sName , tObject , sParent )
@@ -61,6 +60,14 @@ function OBJ:Draw()
 end
 
 function OBJ:Think()
+end
+
+function OBJ:MouseCheck( MX, MY )
+	local x,y,w,t = self.OrX, self.OrY, self.Wide, self.Tall
+	if MX >= x - 0.5 * w && MX <= x + 0.5 * w && MY >= y - 0.5*t && MY <= y + 0.5*t then
+		return true
+	end
+	return false
 end
 
 function OBJ:SetPos( x , y )
