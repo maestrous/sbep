@@ -12,11 +12,11 @@ holo.Register = function( sName , tObject , sParent )
 					return true
 				end
 
-holo.Create = function( sName )
+holo.Create = function( sName, ePanel )
 					if !holo.Classes || !holo.Classes.sName then return end
 					
 					local Obj = table.Copy( holo.Classes.sName )
-						Obj:Initialize()
+						Obj:Initialize(ePanel)
 					return Obj
 				end
 
@@ -25,8 +25,9 @@ holo.Create = function( sName )
 ---------------------------------------------------------------------------------------------------
 local OBJ = {}
 
-function OBJ:Initialize()
-	
+function OBJ:Initialize(ePanel)
+
+	self:SetParent(ePanel)
 	self.Rad = 6
 	self.OrX  = 0
 	self.OrY  = 0
@@ -34,6 +35,12 @@ function OBJ:Initialize()
 	self.Tall = 10
 	self.Col  = Color(255,255,255,255)
 	
+end
+
+function OBJ:SetParent(ePanel)
+	if ePanel && ePanel:IsValid() then
+		self.Parent = ePanel
+	end
 end
 
 function OBJ:Draw()
@@ -71,6 +78,14 @@ function OBJ:SetColor( cCol )
 	if type( cCol ) == "table" && cCol.r && cCol.g && cCol.b && cCol.a then
 		self.Col = cCol
 	end
+end
+
+function OBJ:MouseCheck( MX, MY )
+	local x,y,w,t = self.OrX, self.OrY, self.Wide, self.Tall
+	if MX >= x - 0.5 * w && MX <= x + 0.5 * w && MY >= y - 0.5*t && MY <= y + 0.5*t then
+		return true
+	end
+	return false
 end
 
 function OBJ:OnPressed()
