@@ -32,8 +32,8 @@ local OBJ = {}
 AccessorFunc(  OBJ,  "HL"		,  "HL"		,  FORCE_BOOL 	)
 AccessorFunc(  OBJ,  "Wide"		,  "Wide"	,  FORCE_NUMBER )
 AccessorFunc(  OBJ,  "Tall"		,  "Tall"	,  FORCE_NUMBER )
-AccessorFunc(  OBJ,  "Color"	,  "Col"	 )
-AccessorFunc(  OBJ,  "HColor"	,  "HCol"	 )
+AccessorFunc(  OBJ,  "Col"		,  "Color"	 )
+AccessorFunc(  OBJ,  "HCol"		,  "HColor"	 )
 AccessorFunc(  OBJ,  "Parent"	,  "Parent"	 )
 AccessorFunc(  OBJ,  "Panel"	,  "Panel"	 )
 
