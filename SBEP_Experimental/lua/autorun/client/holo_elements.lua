@@ -119,6 +119,10 @@ function OBJ:MPos()
 	return 0,0
 end
 
+function OBJ:MouseHoverHL()
+	self:SetHL( self:MouseCheck( self:MPos() ) )
+end
+
 function OBJ:SetAlpha( iA )
 	self.Col.a = iA
 end
