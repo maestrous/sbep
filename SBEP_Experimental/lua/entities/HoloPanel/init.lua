@@ -11,7 +11,7 @@ function ENT:Initialize()
 		self:SetSolid( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
 	--self.Inputs = Wire_CreateInputs( self, { "Active" } )
-	--self.Outputs = Wire_CreateOutputs( self, { "Value", "CorrectCode", "IncorrectCode" })
+	self.Outputs = Wire_CreateOutputs( self, { "TestValue1" , "TestValue2" , "TestValue3"})
 	
 	local phys = self:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -51,14 +51,11 @@ function ENT:Use( activator, caller )
 	--end
 end
 
-function HoloPanelTrigger(player,commandName,args)
-	local Pad = ents.GetByIndex(tonumber(args[1]))
-	if Pad && Pad:IsValid() then
-		Pad.KeyValue = tonumber(args[2])
-		Pad.StrValue = args[2]
-		Pad.InputTime = CurTime()
-		Wire_TriggerOutput( Pad, "Value", Pad.KeyValue )
-					
-	end	 
+function HoloEleOut(player,commandName,args)
+	local Panel = ents.GetByIndex(tonumber(args[1]))
+	if Panel && Panel:IsValid() then
+		Wire_TriggerOutput( Panel, args[2], tonumber(args[3]) )
+	end
+	--print(args[1],args[2],args[3])
 end 
-concommand.Add("HoloPanelTrigger",HoloPanelTrigger) 
+concommand.Add("HoloEleOut",HoloEleOut) 

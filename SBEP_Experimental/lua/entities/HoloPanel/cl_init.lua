@@ -1,4 +1,7 @@
 include('shared.lua')
+--include('holo_elements.lua')
+
+
 
 local BMat = Material( "tripmine_laser" )
 local SMat = Material( "sprites/light_glow02_add" )
@@ -13,17 +16,73 @@ function ENT:Initialize()
 	self.Alpha = 0
 	self.PulseTime = 0
 	self.PulseLength = 0
+	self.MX = 0
+	self.MY = 0
 	
 	self.PermaA = true
 	
-	self.X = 50
-	self.Y = 50
+	self.X = 20
+	self.Y = 20
 	self.Z = 15
 	
-	self.Elements = self.Elements or { holo.Create("HRect") }
+	self:LoadInterface()
+	
+	--PrintTable(self.Elements)
 	
 	self.R,self.G,self.B = 200,200,210
 	self:SetColors( 200, 200, 230 )
+end
+
+function ENT:LoadInterface()
+	self.Elements = {}
+	local Base = holo.Create("HRect")
+	Base:SetPanel(self)
+	Base:SetSize((self.X * 10) - 20,(self.Y * 10) - 20)
+	Base:SetColor(Color(150,150,170,100))
+	
+	local Hov = holo.Create("HButton", Base)
+	
+	Hov:SetSize(20,20)
+	Hov:SetColor(Color(180,180,200,100))
+	Hov:SetHColor(Color(220,220,240,150))
+	Hov:SetPos(0,0)
+	Hov.sOutput = "TestValue1"
+	Hov.Toggled = true
+		
+	local VSB = holo.Create("HSBar", Base)
+	
+	VSB:SetSize(10,100)
+	VSB:SetColor(Color(180,180,200,100))
+	VSB:SetHColor(Color(220,220,240,150))
+	VSB:SetPos(55,0)
+	VSB.Min = 60
+	VSB.Max = -60
+	VSB.Vert = true
+	VSB.sOutput = "TestValue2"
+	
+	local HSB = holo.Create("HSBar", Base)
+	
+	HSB:SetSize(100,10)
+	HSB:SetColor(Color(180,180,200,100))
+	HSB:SetHColor(Color(220,220,240,150))
+	HSB:SetPos(0,55)
+	HSB.Min = 60
+	HSB.Max = -60
+	HSB.Vert = false
+	HSB.sOutput = "TestValue3"
+	
+	table.insert(self.Elements, Base)
+	table.insert(self.Elements, Hov)
+	table.insert(self.Elements, VSB)
+	table.insert(self.Elements, HSB)
+end
+
+function ENT:MouseInfo()
+	return self.MX, self.MY
+end
+
+function ENT:GetAlpha()
+	return self.Alpha
 end
 
 function ENT:SetColors( R, G, B )
@@ -87,7 +146,7 @@ function ENT:DrawTranslucent()
 			--render.DrawQuad(Vec2,Vec1,Vec4,Vec3)
 			local eyepos = LocalPlayer():GetShootPos()
 			
-			local W = eyepos - (selfpos + up * 15)
+			local W = eyepos - (selfpos + up * self.Z)
 			local N = up
 			local AVec = LocalPlayer():GetAimVector()
 			local mx,my = gui.MousePos()
@@ -104,7 +163,7 @@ function ENT:DrawTranslucent()
 			local RPos = eyepos + U * RDist
 			
 			local R = self:WorldToLocal( RPos )
-			local RX, RY = R.x * 10, R.y * -10
+			self.MX, self.MY = R.x * 10, R.y * -10
 			
 			-------------------------------------			3D2D Start					-------------------------------------
 			cam.Start3D2D( selfpos + up * (incZ * self.Z), self:GetAngles(), 0.1 )
@@ -115,8 +174,8 @@ function ENT:DrawTranslucent()
 				local Alpha = self.Alpha
 			
 				r,g,b = self:ScaleColor( 15/20 )
-				local Edge = 20
-				draw.RoundedBox( 6, (-self.X * 5 + Edge), (-self.Y * 5) + Edge, (self.X * 10) - (Edge * 2), (self.Y * 10) - (Edge * 2), Color( r , g , b , Alpha * 90) ) -- The basic square
+				--local Edge = 20
+				--draw.RoundedBox( 6, (-self.X * 5 + Edge), (-self.Y * 5) + Edge, (self.X * 10) - (Edge * 2), (self.Y * 10) - (Edge * 2), Color( r , g , b , Alpha * 90) ) -- The basic square
 
 				r,g,b = self:ScaleColor( 17/20 )
                 local KCol = Color( r , g , b , Alpha * 150 )
@@ -126,10 +185,9 @@ function ENT:DrawTranslucent()
 				
 				local PCol = Color(Lerp(PTime,R,r),Lerp(PTime,G,g),Lerp(PTime,B,b),Lerp(PTime,KColH.a,KCol.a))
 				
-				
+				--draw.DrawText( "^" , "TrebuchetH", 0, -185, Color(255,255,255, self.Alpha * 255), TEXT_ALIGN_RIGHT )
 				
 				for k,e in pairs( self.Elements ) do
-					e:Think()
 					e:Draw()
 				end
 				
