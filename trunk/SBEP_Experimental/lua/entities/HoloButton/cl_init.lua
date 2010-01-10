@@ -12,13 +12,10 @@ function ENT:Initialize()
 	self.Inc = 0
 	self.Alpha = 0
 	self.CString = ""
-	self.CVal = ""
+	self.CLDelay = 1
 	self.PulseTime = 0
 	self.PulseLength = 1
 	self.HighClear = 0 --No idea why this is needed, but it is.
-	self.R,self.G,self.B = 200,200,210
-	self:SetColors( 200, 200, 230 )
-	self.Encrypt = self.Encrypt || true
 	
 	self.Boxes = {
 			[-22.5] = {
@@ -37,14 +34,37 @@ function ENT:Initialize()
 				[7] = -67.5,
 				[8] = -22.5,
 				[9] =  22.5,
-			CL =  67.5
+				 CL =  67.5
 					}
 				}
+				
+	self:SetColors( 200, 200, 230 )
 end
 
 function ENT:Draw()
+
 	self:DrawModel()
+	
 end
+
+function ENT:SetupButtons()
+	local r,g,b = self:ScaleColor( 17/20 )
+    local KCol = Color( r , g , b , self.Alpha * 150 )
+    local KColH = Color( self.R , self.G , self.B , self.Alpha * 200 )
+	
+	self.Buttons = {}
+	for y,Row in pairs( self.Boxes ) do
+		for label,x in pairs( Row ) do
+			local B = holo.Create( "HRect" )
+				B:SetSize( 35,35 )
+				B:SetColor( KCol )
+				B:SetHColor( KColH )
+				B:SetPos( x , y )
+			self.Buttons[label] = B
+		end
+	end
+end
+
 function ENT:SetColors( R, G, B )
 
 	self.R = R
@@ -54,16 +74,16 @@ function ENT:SetColors( R, G, B )
 	self.BCol = Color( self.R, self.G, self.B , 140 )
 	self.SCol = Color( self.R, self.G, self.B , 180 )
 
+	self:SetupButtons()
+	
 end
 
 function ENT:ScaleColor( fSc )
-	
 	local r = math.Clamp( self.R*fSc, 0, 255)
 	local g = math.Clamp( self.G*fSc, 0, 255)
 	local b = math.Clamp( self.B*fSc, 0, 255)
-	--print( r,g,b )
-	return r,g,b
 	
+	return r,g,b
 end
 
 function ENT:DrawTranslucent()
@@ -147,26 +167,54 @@ function ENT:DrawTranslucent()
 				end
 				if RX >= -85 && RX <= 85 && RY >= -85 && RY <= -50 then
 					draw.RoundedBox( 6, -85, -85, 170, 35, KColH )
-					draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255), TEXT_ALIGN_RIGHT )
+						local mc = math.Max( self.R, self.G, self.B)
+						r,g,b = self:ScaleColor( 1/mc )
+					draw.DrawText( Value , "TrebuchetH", 80, -81, Color(r,g,b, 255*Alpha), TEXT_ALIGN_RIGHT )
 					self.ManualInput = true
 					self:SetHighlighted( 12 )
 				else
 					local PTime = math.Clamp((CurTime() - self.PulseTime),0,1) / self.PulseLength
 					local PCol = Color(Lerp(PTime,KColH.r,KCol.r),Lerp(PTime,KColH.g,KCol.g),Lerp(PTime,KColH.b,KCol.b),Lerp(PTime,KColH.a,KCol.a))
 					draw.RoundedBox( 6, -85, -85, 170, 35, PCol )
-					draw.DrawText( self.CString , "TrebuchetH", 80, -74, Color(self.R,self.G,self.B, 255), TEXT_ALIGN_RIGHT )
+
+					draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255*Alpha), TEXT_ALIGN_RIGHT )
 					self.ManualInput = false
 				end
 				--draw.DrawText( Value , "TrebuchetH", 80, -81, Color(R,G,B, 255), TEXT_ALIGN_RIGHT )
 				local Highlight = -1
 				
-				for y,Row in pairs( self.Boxes ) do
+				for label,B in pairs( self.Buttons ) do
+					local XY = B:GetPos()
+					if RX >= XY.x-17.5 && RX <= XY.x+17.5 && RY >= XY.y-17.5 && RY <= XY.y+17.5 then
+						B:SetHL( true )
+						B:SetHAlpha( Alpha * 200 )
+						B:Draw()
+							local mc = math.Max( self.R, self.G, self.B)
+							r,g,b = self:ScaleColor( 1/mc )
+						draw.DrawText( label , "TrebuchetH", XY.x, XY.y-13, Color( r , g , b , 255*Alpha), TEXT_ALIGN_CENTER )
+						local val = label
+						if label == "CL" then
+							val = 10
+						elseif label == "OK" then
+							val = 11
+						end
+						self:SetHighlighted( val )
+						Highlight = val
+					else
+						B:SetHL( false )
+						B:SetAlpha( Alpha * 150 )
+						B:Draw()
+						draw.DrawText( label , "TrebuchetH", XY.x, XY.y-13, Color( R, G, B, 255*Alpha), TEXT_ALIGN_CENTER )
+					end
+				end
+				
+				/*for y,Row in pairs( self.Boxes ) do
 					for label,x in pairs( Row ) do
 						if RX >= x-17.5 && RX <= x+17.5 && RY >= y-17.5 && RY <= y+17.5 then
 							draw.RoundedBox( 12, x-17.5, y-17.5, 35, 35, KColH )
 								local mc = math.Max( self.R, self.G, self.B)
 								r,g,b = self:ScaleColor( 1/mc )
-							draw.DrawText( label , "TrebuchetH", x, y-13, Color( r , g , b , 255), TEXT_ALIGN_CENTER )
+							draw.DrawText( label , "TrebuchetH", x, y-13, Color( r , g , b , 255*Alpha), TEXT_ALIGN_CENTER )
 							local val = label
 							if label == "CL" then
 								val = 10
@@ -177,9 +225,9 @@ function ENT:DrawTranslucent()
 							Highlight = val
 						else
 							draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
-							draw.DrawText( label , "TrebuchetH", x, y-13, Color( R, G, B, 255), TEXT_ALIGN_CENTER )
+							draw.DrawText( label , "TrebuchetH", x, y-13, Color( R, G, B, 255*Alpha), TEXT_ALIGN_CENTER )
 						end
-					end
+					end*/
 					
 					--else
 					--	draw.RoundedBox( 6, x-17.5, y-17.5, 35, 35, KCol )
@@ -199,7 +247,7 @@ function ENT:DrawTranslucent()
 					if Highlight != self:GetHighlighted() && Highlight != -1 then
 						self:SetHighlighted( Highlight )
 					end
-				end
+				--end
 			cam.End3D2D()
 		end
 	end
@@ -208,63 +256,45 @@ end
 function ENT:Think()
 	local SDir = (self:GetPos() - LocalPlayer():GetShootPos()):Angle()
 	local PDir = LocalPlayer():GetAimVector():Angle() -- Best to get rid of the roll on both angles, just to make sure they're compared fairly.
-	--print(SDir,PDir)
+
 	local PDif = math.abs(math.AngleDifference(SDir.p, PDir.p))
 	local YDif = math.abs(math.AngleDifference(SDir.y, PDir.y))
-	--print(PDif,YDif)
+
 	local plypos = self:WorldToLocal( LocalPlayer():GetShootPos() )
+
 	if plypos.x >= -100 && plypos.x <= 100 && plypos.y >= -100 && plypos.y <= 100 && plypos.z >= 0 && plypos.z <= 100 && YDif <= 30 && PDif <= 30 then
-		--print("Here's looking at you, kid")
-		self.LocalActive = true
-	else
-		self.LocalActive = false
-	end
-	if self.LocalActive then
-		--print("Active")
-		self.IncZ = math.Approach(self.IncZ, 15, .3)
-		if self.IncZ >= 15 then
-			self.Inc = math.Approach(self.Inc, 10, .2)
-		end
-		if self.Inc >= 10 then
-			self.Alpha = math.Approach(self.Alpha, 1, .05)
-		end
-		if self.Alpha >= 1 then
-			if !self.PreActive then
-				if !self.SecureMode then self.CString = self.CVal end
-				self.PreActive = true
-				self.Adding = false
-			end
+		if self.PermA then
+			self.IncZ = 15
+			self.Inc  = 10
 		else
-			self.PreActive = false
+			if self.IncZ < 15 then
+				self.IncZ = math.Approach(self.IncZ, 15, .3)
+			elseif self.Inc < 10 then
+				self.Inc = math.Approach(self.Inc, 10, .2)
+			end
+		end
+		if self.IncZ >= 15 && self.Inc >= 10 && self.Alpha < 1 then
+			self.Alpha = math.Approach(self.Alpha, 1, .05)
+			if !self.Persist then
+				self.CString = ""
+			end
 		end
 		
 		if LocalPlayer():KeyPressed( IN_USE ) || (input.IsMouseDown(MOUSE_FIRST) && !self.MTog) then
 			self.MTog = true
 			local val = self:GetHighlighted()
 			if val == 10 then
-				--self:ClearValue()
 				self.CString = ""
-				self.Adding = false
 			elseif val == 11 then
-				--self:SendValue()
 				RunConsoleCommand( "HoloPadSetVar" , self:EntIndex() , self.CString )
-				--timer.Simple( 1, function()
-				--					self:ClearValue()
-				--					end)
-				if !self.SecureMode then self.CVal = self.CString end
-				if self.SecureMode then self.CString = "" end
-				self.Adding = false
+					if self.CLDelay || self.CLDelay < 0 then
+						timer.Simple( self.CLDelay, function() self.CString = "" end)
+					end
 				self.PulseTime = CurTime()
 			else
-				--self:AddHValue( val )
 				if val >= 0 && val <= 9 then
-					if self.Adding then
-						if string.len( self.CString ) <= 22 then -- 22 seems a reasonable length. Quite generous, in fact...
-							self.CString = self.CString..tostring(val)
-						end
-					else
-						self.CString = tostring(val)
-						self.Adding = true
+					if string.len( self.CString ) <= 22 then -- 22 seems a reasonable length. Quite generous, in fact...
+						self.CString = self.CString..tostring(val)
 					end
 				end
 			end
@@ -280,15 +310,23 @@ function ENT:Think()
 		end
 	elseif self.IncZ > 0 then
 		self.Alpha = math.Approach(self.Alpha, 0, .05)
-		if self.Alpha <= 0 then
+		if self.PermA then
+			self.IncZ = 15
+			self.Inc  = 10
+		elseif self.Alpha <= 0 then
 			self.Inc = math.Approach(self.Inc, 0, .2)
-		end
-		if self.Inc <= 0 then
-			self.IncZ = math.Approach(self.IncZ, 0, .3)
+			if self.Inc <= 0 then
+				self.IncZ = math.Approach(self.IncZ, 0, .3)
+			end
 		end
 	else
-		self.IncZ = 0
-		self.Inc = 0
+		if self.PermA then
+			self.IncZ = 15
+			self.Inc  = 10
+		else
+			self.IncZ = 0
+			self.Inc = 0
+		end
 		self.Alpha = 0
 	end
 end

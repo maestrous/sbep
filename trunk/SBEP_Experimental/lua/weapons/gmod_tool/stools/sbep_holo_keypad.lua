@@ -16,6 +16,9 @@ TOOL.ClientConVar[ "B"  		] = 230
 TOOL.ClientConVar[ "bright" 	] = 255
 TOOL.ClientConVar[ "pass"   	] = 1234
 TOOL.ClientConVar[ "encrypt"	] = 0
+TOOL.ClientConVar[ "persist"	] = 0
+TOOL.ClientConVar[ "perma"		] = 0
+TOOL.ClientConVar[ "cldelay"	] = 1
 
 local TName = "sbep_holo_keypad"
 
@@ -27,11 +30,14 @@ if CLIENT then
 	
 	local function SetColors( um )
 		local HK = um:ReadEntity()
-			local r,g,b = um:ReadFloat(),um:ReadFloat(),um:ReadFloat()
-			local cry = um:ReadBool()
+			local r,g,b, cldel = um:ReadFloat(),um:ReadFloat(),um:ReadFloat(), um:ReadFloat()
+			local cry, per, perma = um:ReadBool(), um:ReadBool(), um:ReadBool()
 			timer.Simple( 0.1, function()
 									HK:SetColors( r,g,b )
 									HK.Encrypt = cry
+									HK.Persist = per
+									HK.CLDelay = cldel
+									HK.PermA = perma
 								end)
 	end
 	usermessage.Hook( "SBEPHoloKeypad_SetColors" , SetColors )
@@ -63,7 +69,13 @@ function TOOL:LeftClick( tr )
 			umsg.Float( r )
 			umsg.Float( g )
 			umsg.Float( b )
+			local cldel = self:GetClientNumber( "cldelay" )
+			if cldel >= 0 then
+				umsg.Float( cldel )
+			end
 			umsg.Bool( self:GetClientNumber( "encrypt" ) == 1 )
+			umsg.Bool( self:GetClientNumber( "persist" ) == 1 )
+			umsg.Bool( self:GetClientNumber( "perma" ) == 1 )
 		umsg.End()
 		
 	undo.Create("SBEP Holo Keypad")
@@ -91,7 +103,7 @@ function TOOL.BuildCPanel( panel )
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	local DCC = vgui.Create( "DColorCircle" )
-		DCC:SetSize( 100 , 3.5*panel:GetWide() )
+		DCC:SetSize( 100 , 3.4*panel:GetWide() )
 		DCC.TranslateValues = function( self, x, y )
 									x = x - 0.5
 									y = y - 0.5
@@ -122,17 +134,17 @@ function TOOL.BuildCPanel( panel )
 		BNS:SetDecimals( 0 )
 		BNS:SetConVar( TName.."_bright" )
 	panel:AddItem( BNS )
-	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	local PS = vgui.Create( "DPropertySheet" )
-		PS:SetSize( 50, 400 )
+		PS:SetSize( 50, 250 )
 	panel:AddItem( PS )
+	
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	local KP = vgui.Create( "DPanelList" )
 		KP:SetSpacing( 5 )
 		KP:SetPadding( 5 )
-	
 	PS:AddSheet( "Keypad" , KP , "gui/silkicons/plugin"	, false , false , "Keypad" )
 	
 	local PassL = vgui.Create( "DLabel" )
@@ -149,5 +161,42 @@ function TOOL.BuildCPanel( panel )
 		Cry:SetText( "Encrypt Display" )
 		Cry:SetConVar( TName.."_encrypt" )
 	KP:AddItem( Cry )
+	
+	local Perma = vgui.Create( "DCheckBoxLabel" )
+		Perma:SetText( "Always open" )
+		Perma:SetConVar( TName.."_perma" )
+	KP:AddItem( Perma )
+	
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	local IN = vgui.Create( "DPanelList" )
+		IN:SetSpacing( 5 )
+		IN:SetPadding( 5 )
+	PS:AddSheet( "InputPad" , IN , "gui/silkicons/plugin"	, false , false , "InputPad" )
+	
+	local Cry = vgui.Create( "DCheckBoxLabel" )
+		Cry:SetText( "Encrypt Display" )
+		Cry:SetConVar( TName.."_encrypt" )
+	IN:AddItem( Cry )
+	
+	local Per = vgui.Create( "DCheckBoxLabel" )
+		Per:SetText( "Persist Value" )
+		Per:SetConVar( TName.."_persist" )
+	IN:AddItem( Per )
+	
+	local Perma = vgui.Create( "DCheckBoxLabel" )
+		Perma:SetText( "Always open" )
+		Perma:SetConVar( TName.."_perma" )
+	IN:AddItem( Perma )
+	
+	local CCD = vgui.Create( "DNumSlider" )
+		CCD:SetText( "Confirm Clear Delay (-1 to never clear)" )
+		CCD:SetMin( -1 )
+		CCD:SetMax( 10 )
+		CCD:SetValue( 1 )
+		CCD:SetDecimals( 0 )
+		CCD:SetConVar( TName.."_cldelay" )
+	IN:AddItem( CCD )
 	
  end  

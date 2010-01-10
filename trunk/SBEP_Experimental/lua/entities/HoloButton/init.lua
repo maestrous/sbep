@@ -45,19 +45,6 @@ function ENT:Think()
 	end
 end
 
-function ENT:SpawnFunction( ply, tr )
-	if ( !tr.Hit ) then return end
-	
-	local ent = ents.Create( "HoloButton" )
-		ent:Spawn()
-		ent:Initialize()
-		ent:Activate()
-	ent:SetPos( tr.HitPos + tr.HitNormal * -1 * ent:OBBMins().z )
-	ent.dt.eowner = ply
-	
-	return ent
-end
-
 function ENT:Use( activator, caller )
 	return false
 	--if !self:GetActive() then
