@@ -11,6 +11,7 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self:SetUseType(3)
 	self.Inputs = Wire_CreateInputs( self.Entity, { "Length", "Unhook", "Speed", "Disconnect" } )
 	self.Outputs = Wire_CreateOutputs( self.Entity, { "CurrentLength" })
 		
@@ -117,7 +118,9 @@ function ENT:OnTakeDamage( dmginfo )
 end
 
 function ENT:Use( activator, caller )
-
+	self.Coupling = true
+	self.DLength = 10
+	self.LChange = CurTime()
 end
 
 function ENT:Touch( ent )

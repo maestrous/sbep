@@ -453,6 +453,93 @@ local SBEP_SWeps = {
 					Wep:StandardIronSight(Prime)
 				end
 				},
+	[ "MW2 FAMAS"	] = {
+				Model = "models/mw2/famas.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,12,-10),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(.01,7,-9.2),
+				IronSAng = Angle(-2.1,.3,0),
+				MuzzlePos = Vector(0,7.9,5.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366), 
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = 1,
+				RecoilVulnerability = 2,
+				Refire = 0.55, 
+				Auto = false,
+				Bullets = 1,
+				Damage = 30,
+				Sound = "Weapon_FAMAS.Single",
+				Cone = 0.01,
+				AkimboPenalty = .6,
+				ClipSize = 24,
+				Crosshair = true,
+				ReloadLength = 1.6,
+				AmmoType = "AR2",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomPrimary = function(Wep,Ply,Prime,Data)
+					if Wep:FireCheck(Prime) then
+						if Wep.Bursting <= 0 then
+							Wep.Bursting = 3
+						end
+					else
+						Wep:EmitSound( "Weapon_Pistol.Empty" )
+						Wep:Reload()
+					end
+					Wep:SetNextPrimaryFire( CurTime() + Data.Refire )
+				end,
+				CustomThink = function(Wep,Ply,Prime,Data)
+					if SERVER then
+						Wep.Bursting = Wep.Bursting or 0
+						if Wep.Bursting > 0 then
+							if Wep:FireCheck(Prime) then
+								Wep.NBurst = Wep.NBurst or 0
+								if CurTime() > Wep.NBurst then
+									local Side = 1
+									if !Prime then
+										Side = -1
+									end
+									
+									local CrouchMod = 1
+									if Ply:Crouching() then
+										CrouchMod = 0.5
+									end
+									local AkimboPenalty = 1
+									if (Prime && Ply.Slots.Secondary[Ply.CSlot] > 0) || (!Prime && Ply.Slots.Primary[Ply.CSlot] > 0) then
+										AkimboPenalty = self.PData.AkimboPenalty * 1
+									end
+									local ISMod = 1
+									if Ply.IronSightMode then
+										ISMod = Wep.ISAccMod
+									end
+									Wep:ShootBullet( Data.Damage, Data.Bullets, math.Clamp((Data.Cone * CrouchMod * AkimboPenalty * ISMod) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1),0,0.3) )
+									
+									Wep:EmitSound("Weapon_XM1014.Single")
+									
+									Wep:StandardMuzzleFlash(Prime)
+									
+									if Prime then Wep:SetNetworkedFloat( "PFTime", CurTime(), true ) else Wep:SetNetworkedFloat( "SFTime", CurTime(), true ) end
+					
+									Wep:Recoil(Data.Recoil * .5 * CrouchMod * AkimboPenalty)
+									
+									Wep:ConsumeAmmo(Prime, 1)
+									Wep.NBurst = CurTime() + 0.08
+									Wep.Bursting = Wep.Bursting - 1
+								end
+							else
+								Wep:EmitSound( "Weapon_Pistol.Empty" )
+								Wep.Bursting = false
+								Wep:Reload()
+							end
+						end
+					end
+				end,
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
 	[ "FRG-1 Grenade" ] = {
 				Model = "models/Dts Stuff/BF2142 weapons/unl_grenade_frag_1.mdl", 
 				LVec = Vector(0,0,0), 
@@ -763,12 +850,6 @@ local SBEP_SWeps = {
 					
 									Wep:Recoil(Data.Recoil * .5 * CrouchMod * AkimboPenalty)
 									
-									if Prime then
-										Wep:TakePrimaryAmmo( 1 )
-									else
-										Wep:TakeSecondaryAmmo( 1 )
-									end
-									
 									Wep:ConsumeAmmo(Prime, 1)
 									Wep.NBurst = CurTime() + 0.1
 								end
@@ -778,6 +859,364 @@ local SBEP_SWeps = {
 								Wep:Reload()
 							end
 						end
+					end
+				end
+				},
+	[ "SI-HTR Assault"	] = {
+				Model = "models/Slyfo_2/swep_assault_rifle1base.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,12,-5),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-1.61),
+				IronSAng = Angle(.5,0,0),
+				MuzzlePos = Vector(0,7.2,2.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366), 
+				Crosshair = true,
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = 1,
+				RecoilVulnerability = 1,
+				Refire = 0.1, 
+				Auto = true,
+				Bullets = 1,
+				Damage = 30,
+				Sound = "Weapon_Pistol.Single",
+				Cone = 0.01,
+				AkimboPenalty = 3,
+				ClipSize = 25,
+				ReloadLength = 1.6,
+				AmmoType = "AR2",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
+	[ "SI-HTR Carbine"	] = {
+				Model = "models/Slyfo_2/swep_assault_rifle2.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,12,-7.5),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-4.5),
+				IronSAng = Angle(0,0,0),
+				MuzzlePos = Vector(0,5,2.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366),
+				Crosshair = true,
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = 1,
+				RecoilVulnerability = 2,
+				Refire = 0.075, 
+				Auto = true,
+				Bullets = 1,
+				Damage = 25,
+				Sound = "Weapon_MP5Navy.Single",
+				Cone = 0.02,
+				AkimboPenalty = 1,
+				ClipSize = 25,
+				ReloadLength = 1.2,
+				AmmoType = "AR2",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
+	[ "SI-HTR Carbine Drum-Mag"	] = {
+				Model = "models/Slyfo_2/swep_assault_rifle2drum.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,12,-7.5),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-4.5),
+				IronSAng = Angle(0,0,0),
+				MuzzlePos = Vector(0,5,2.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366),
+				Crosshair = true,
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = 1.2,
+				RecoilVulnerability = 2,
+				Refire = 0.075, 
+				Auto = true,
+				Bullets = 1,
+				Damage = 25,
+				Sound = "Weapon_MP5Navy.Single",
+				Cone = 0.022,
+				AkimboPenalty = 1.4,
+				ClipSize = 80,
+				ReloadLength = 1.7,
+				AmmoType = "AR2",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
+	[ "SI-HTR MP1"	] = {
+				Model = "models/Slyfo_2/swep_machinepistol1.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,12,-7.5),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-4.5),
+				IronSAng = Angle(0,0,0),
+				MuzzlePos = Vector(0,5,2.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366),
+				Crosshair = true,
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = .4,
+				RecoilVulnerability = .4,
+				Refire = 0.15, 
+				Auto = false,
+				Bullets = 1,
+				Damage = 15,
+				Sound = "Weapon_Glock.Single",
+				Cone = 0.02,
+				AkimboPenalty = 1,
+				ClipSize = 18,
+				ReloadLength = 0.7,
+				AmmoType = "SMG1",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomPrimary = function(Wep,Ply,Prime,Data)
+					if Wep:FireCheck(Prime) then
+						if Wep.Bursting <= 0 then
+							Wep.Bursting = 3
+						end
+					else
+						Wep:EmitSound( "Weapon_Pistol.Empty" )
+						Wep:Reload()
+					end
+					Wep:SetNextPrimaryFire( CurTime() + Data.Refire )
+				end,
+				CustomThink = function(Wep,Ply,Prime,Data)
+					if SERVER then
+						Wep.Bursting = Wep.Bursting or 0
+						if Wep.Bursting > 0 then
+							if Wep:FireCheck(Prime) then
+								Wep.NBurst = Wep.NBurst or 0
+								if CurTime() > Wep.NBurst then
+									local Side = 1
+									if !Prime then
+										Side = -1
+									end
+									
+									local CrouchMod = 1
+									if Ply:Crouching() then
+										CrouchMod = 0.5
+									end
+									local AkimboPenalty = 1
+									if (Prime && Ply.Slots.Secondary[Ply.CSlot] > 0) || (!Prime && Ply.Slots.Primary[Ply.CSlot] > 0) then
+										AkimboPenalty = Data.AkimboPenalty * 1
+									end
+									local ISMod = 1
+									if Ply.IronSightMode then
+										ISMod = Wep.ISAccMod
+									end
+									Wep:ShootBullet( Data.Damage, Data.Bullets, math.Clamp((Data.Cone * CrouchMod * AkimboPenalty * ISMod) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1),0,0.3) )
+									
+									Wep:EmitSound("Weapon_XM1014.Single")
+									
+									Wep:StandardMuzzleFlash(Prime)
+									
+									if Prime then Wep:SetNetworkedFloat( "PFTime", CurTime(), true ) else Wep:SetNetworkedFloat( "SFTime", CurTime(), true ) end
+					
+									Wep:Recoil(Data.Recoil * .5 * CrouchMod * AkimboPenalty)
+									
+									Wep:ConsumeAmmo(Prime, 1)
+									Wep.NBurst = CurTime() + 0.05
+									Wep.Bursting = Wep.Bursting - 1
+								end
+							else
+								Wep:EmitSound( "Weapon_Pistol.Empty" )
+								Wep.Bursting = false
+								Wep:Reload()
+							end
+						end
+					end
+				end,
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
+	[ "SI-HTR MP2"	] = {
+				Model = "models/Slyfo_2/swep_machinepistol2.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,12,-7.5),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-4.5),
+				IronSAng = Angle(0,0,0),
+				MuzzlePos = Vector(0,5,2.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366),
+				Crosshair = true,
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = .3,
+				RecoilVulnerability = .3,
+				Refire = 0.3, 
+				Auto = false,
+				Bullets = 1,
+				Damage = 20,
+				Sound = "Weapon_Glock.Single",
+				Cone = 0.015,
+				AkimboPenalty = 1,
+				ClipSize = 18,
+				ReloadLength = 0.8,
+				AmmoType = "SMG1",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomPrimary = function(Wep,Ply,Prime,Data)
+					if Wep:FireCheck(Prime) then
+						if Wep.Bursting <= 0 then
+							Wep.Bursting = 3
+						end
+					else
+						Wep:EmitSound( "Weapon_Pistol.Empty" )
+						Wep:Reload()
+					end
+					Wep:SetNextPrimaryFire( CurTime() + Data.Refire )
+				end,
+				CustomThink = function(Wep,Ply,Prime,Data)
+					if SERVER then
+						Wep.Bursting = Wep.Bursting or 0
+						if Wep.Bursting > 0 then
+							if Wep:FireCheck(Prime) then
+								Wep.NBurst = Wep.NBurst or 0
+								if CurTime() > Wep.NBurst then
+									local Side = 1
+									if !Prime then
+										Side = -1
+									end
+									
+									local CrouchMod = 1
+									if Ply:Crouching() then
+										CrouchMod = 0.5
+									end
+									local AkimboPenalty = 1
+									if (Prime && Ply.Slots.Secondary[Ply.CSlot] > 0) || (!Prime && Ply.Slots.Primary[Ply.CSlot] > 0) then
+										AkimboPenalty = Data.AkimboPenalty * 1
+									end
+									local ISMod = 1
+									if Ply.IronSightMode then
+										ISMod = Wep.ISAccMod
+									end
+									Wep:ShootBullet( Data.Damage, Data.Bullets, math.Clamp((Data.Cone * CrouchMod * AkimboPenalty * ISMod) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1),0,0.3) )
+									
+									Wep:EmitSound("Weapon_XM1014.Single")
+									
+									Wep:StandardMuzzleFlash(Prime)
+									
+									if Prime then Wep:SetNetworkedFloat( "PFTime", CurTime(), true ) else Wep:SetNetworkedFloat( "SFTime", CurTime(), true ) end
+					
+									Wep:Recoil(Data.Recoil * .5 * CrouchMod * AkimboPenalty)
+									
+									Wep:ConsumeAmmo(Prime, 1)
+									Wep.NBurst = CurTime() + 0.075
+									Wep.Bursting = Wep.Bursting - 1
+								end
+							else
+								Wep:EmitSound( "Weapon_Pistol.Empty" )
+								Wep.Bursting = false
+								Wep:Reload()
+							end
+						end
+					end
+				end,
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
+	[ "SI-HTR SMG1"	] = {
+				Model = "models/Slyfo_2/swep_smg1.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,12,-7.5),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-4.5),
+				IronSAng = Angle(0,0,0),
+				MuzzlePos = Vector(0,5,2.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366),
+				Crosshair = true,
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = .5,
+				RecoilVulnerability = .5,
+				Refire = 0.075, 
+				Auto = true,
+				Bullets = 1,
+				Damage = 15,
+				Sound = "Weapon_USP.Single",
+				Cone = 0.025,
+				AkimboPenalty = 1,
+				ClipSize = 40,
+				ReloadLength = 2,
+				AmmoType = "SMG1",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
+	[ "SI-HTR SMG2"	] = {
+				Model = "models/Slyfo_2/swep_stowablesmg1.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(5,15,-7),
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-4.5),
+				IronSAng = Angle(0,0,0),
+				MuzzlePos = Vector(0,1,0.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366),
+				Crosshair = true,
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = .4,
+				RecoilVulnerability = .4,
+				Refire = 0.1, 
+				Auto = true,
+				Bullets = 1,
+				Damage = 10,
+				Sound = "Weapon_UMP45.Single",
+				Cone = 0.025,
+				AkimboPenalty = 1,
+				ClipSize = 35,
+				ReloadLength = 2,
+				AmmoType = "SMG1",
+				RecPos = Vector(0,-3,0),
+				Description = "The EU's primary sidearm, while accurate over short range, it should only be considered a last resort in today's confrontation.",
+				CustomSecondary = function(Wep,Ply,Prime)
+					Wep:StandardIronSight(Prime)
+				end
+				},
+	[ "SI-HTR RD-Sight"	] = {
+				Model = "models/Slyfo_2/swep_acc_sight2.mdl", 
+				Equipable = false,
+				ModType = "HTR-Sight",
+				AVec = Vector(0,0,-0.5),
+				RDPos = Vector(0,0,
+				IVec = Vector(0,7,0),
+				IronSPos = Vector(0,11,-4.5),
+				IronSAng = Angle(0,0,0),
+				Description = "Standard Red-dot sight for the SI-HTR range of weapons.",
+				CustomDraw = function(Wep,Ply,Prime,Data)
+					if !Wep.RDMat then
+						Wep.RDMat = Material( "sprites/light_glow02_add" )
+					end
+					if Ply.IronSightMode then
+						local RDPos = Data.RDPos or Vector(0,0,0)
+						local DVec = Vector(0,0,0)
+						local Mdl = nil
+						if Prime then
+							Mdl = Wep.PModel
+						else
+							Mdl = Wep.SModel
+						end
+						if Mdl && Mdl:IsValid() then
+							DVec = Mdl:GetPos() + (Mdl:GetRight() * RDPos.x) + (Mdl:GetForward() * RDPos.y) + (Mdl:GetUp() * RDPos.z)
+							--print(Mdl:GetUp())
+						end
+						render.SetMaterial( Wep.RDMat )
+						local color = Color( 255, 0, 0, 255 )
+						render.DrawSprite( DVec, .2, .2, color )
+						--print("Drawing")
 					end
 				end
 				}

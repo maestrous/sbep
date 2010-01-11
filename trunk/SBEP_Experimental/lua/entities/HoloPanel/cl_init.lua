@@ -42,10 +42,10 @@ function ENT:LoadInterface()
 	
 	local Hov = holo.Create("HButton", Base)
 	
-	Hov:SetSize(20,20)
+	Hov:SetSize(20,100)
 	Hov:SetColor(Color(180,180,200,100))
 	Hov:SetHColor(Color(220,220,240,150))
-	Hov:SetPos(0,0)
+	Hov:SetPos(-65,0)
 	Hov.sOutput = "TestValue1"
 	Hov.Toggled = true
 		
@@ -54,21 +54,22 @@ function ENT:LoadInterface()
 	VSB:SetSize(10,100)
 	VSB:SetColor(Color(180,180,200,100))
 	VSB:SetHColor(Color(220,220,240,150))
-	VSB:SetPos(55,0)
-	VSB.Min = 60
-	VSB.Max = -60
+	VSB:SetPos(65,0)
+	VSB.Min = 1000
+	VSB.Max = 5000
 	VSB.Vert = true
 	VSB.sOutput = "TestValue2"
 	
-	local HSB = holo.Create("HSBar", Base)
+	local HSB = holo.Create("HDSBar", Base)
 	
-	HSB:SetSize(100,10)
+	HSB:SetSize(100,100)
 	HSB:SetColor(Color(180,180,200,100))
 	HSB:SetHColor(Color(220,220,240,150))
-	HSB:SetPos(0,55)
-	HSB.Min = 60
-	HSB.Max = -60
-	HSB.Vert = false
+	HSB:SetPos(0,0)
+	HSB.XMin = 180
+	HSB.XMax = -180
+	HSB.YMin = 20
+	HSB.YMax = -60
 	HSB.sOutput = "TestValue3"
 	
 	table.insert(self.Elements, Base)
@@ -327,3 +328,12 @@ function ENT:Think()
 		self.Alpha = 0
 	end
 end
+
+function HoloEleIn( um )
+	local Type = um:ReadShort()
+	LocalPlayer().Inventory = LocalPlayer().Inventory or {}
+	table.insert(LocalPlayer().Inventory, { Type = um:ReadString(), Ammo = um:ReadFloat() } )
+	--print("LocalPlayer() Inventory:")
+	--PrintTable(LocalPlayer().Inventory)
+end
+usermessage.Hook("HoloEleIn", HoloEleIn)

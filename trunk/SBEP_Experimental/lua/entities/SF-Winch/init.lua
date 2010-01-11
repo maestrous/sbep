@@ -41,6 +41,7 @@ function ENT:SpawnFunction( ply, tr )
 	
 	local ent = ents.Create( "SF-Winch" )
 	ent:SetPos( SpawnPos )
+	ent:Initialize()
 	ent:Spawn()
 	ent:Activate()
 	ent.SPL = ply
