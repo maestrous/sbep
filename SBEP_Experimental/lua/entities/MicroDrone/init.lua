@@ -329,7 +329,7 @@ function ENT:Think()
 			end
 		elseif self.Stance == 3 && self.TFound then
 			local MDist = self.Entity:GetPos():Distance(self.TVec)
-			if MDist > 1000 then
+			if MDist > 500 then
 				self.Entity:Orient( self.TVec, self.Entity:GetPos(), self.Entity:GetUp(), self.Entity:GetRight() )
 				self.Entity:SpeedFinder( self.TVec, self.Entity:GetPos(), self.Entity:GetForward() )
 			else
@@ -445,7 +445,7 @@ function ENT:Think()
 	
 	Phys:SetVelocity((self.Entity:GetForward() * self.Forward) + (self.Entity:GetRight() * self.Lat) + (self.Entity:GetUp() * self.Vert))
 	
-	if self.TFound && self.Stance > 1 then
+	if self.TFound && self.Stance > 1 && self.Squad.Alpha != self then
 		local AVDir = Vector(0,0,0)
 		for k,e in pairs(self.Squad.Members) do
 			--print("Checking members...")

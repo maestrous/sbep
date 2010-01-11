@@ -16,6 +16,7 @@ ENT.CDown2			= 0
 ENT.HPType			= "Tiny"
 ENT.APPos			= Vector(0,0,0)
 ENT.WInfo			= "Swarmer Missiles"
+ENT.Range 			= 1000
 
 function ENT:SetShots( val )
 	local CVal = self.Entity:GetNetworkedInt( "Shots" )

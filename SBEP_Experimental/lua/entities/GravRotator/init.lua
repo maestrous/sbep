@@ -65,17 +65,19 @@ function ENT:Think()
 		if self.CPL.GravCon != self || (self.CPL:GetVehicle() && self.CPL:GetVehicle():IsValid()) || self.CPL:GetMoveType() == 8 then
 			self:Remove()
 		end
-		--print(self.CPL:GetMoveType())
+		--print(self.CPL:GetPhysicsObject():IsValid())
 		self.CPL:SetMoveType(MOVETYPE_NONE)
-		self.CPL:SetParent(self)
+		--self.CPL:SetParent(self)
 		--self.PWeld = self.PWeld or constraint.Weld(self,self.CPL)
 		--self.CPL:GetPhysicsObject():EnableGravity(false)
 		--self.CPL:SetAngles(self:GetAngles())
 		--self.CPL:SetPos(self:GetPos())
 		local PVec = self:GetPos() + (self:GetUp() * 65) + Vector(0,0,-65)
-		self.CPL:SetPos(self:GetPos())
-		--self.CPL:SetLocalAngles(Angle(0.1,0.1,180.1))
-		self.CPL:SetLocalPos(self:WorldToLocal(PVec))
+		--self.CPL:SetPos(self:GetPos())
+		self.CPL:SetAngles(Angle(0.01,0.01,180.1))
+		print(self.CPL:GetAngles())
+		--self.CPL:AddAngleVelocity(Angle(0,0,100))--:AddAngleVelocity(Angle(100,100,10))--:SetAngle(Angle(0,0,180))
+		--self.CPL:SetLocalPos(self:WorldToLocal(PVec))
 		local trace = {}
 		trace.start = self:GetPos() + self:GetUp() * 20
 		trace.endpos = self:GetPos() + self:GetUp() * -20

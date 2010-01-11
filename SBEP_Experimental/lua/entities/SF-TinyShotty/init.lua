@@ -49,6 +49,9 @@ end
 function ENT:TriggerInput(iname, value)		
 	if (iname == "Fire") then
 		if (value > 0) then
+			if !(self.Active == true || self.FTime > CurTime()) then
+				self.NFTime = CurTime() + math.Rand(0,0.6)
+			end
 			self.Active = true
 		else
 			self.Active = false
@@ -77,6 +80,7 @@ function ENT:Think()
 		Bullet.TracerName = "Tracer"
 		Bullet.Attacker = self.SPL
 		Bullet.Damage = 20
+		/*
 		Bullet.Callback = function (attacker, tr, dmginfo)
 			if (tr.Entity and tr.Entity:IsValid()) then
 				local  gdmg = math.random(5,10)
@@ -100,6 +104,7 @@ function ENT:Think()
 				end
 			end
 		end
+		*/
 		
 		local effectdata = EffectData()
 		effectdata:SetOrigin(self:GetPos() + (self:GetForward() * 20) + (self:GetUp() * 2))
@@ -136,5 +141,8 @@ function ENT:Touch( ent )
 end
 
 function ENT:HPFire()
+	if !(self.Active == true || self.FTime > CurTime()) then
+		self.NFTime = CurTime() + math.Rand(0,0.6)
+	end
 	self.FTime = CurTime() + 0.1
 end

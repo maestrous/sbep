@@ -1,14 +1,14 @@
-
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
-include('entities/base_wire_entity/init.lua')
+--include('entities/base_wire_entity/init.lua')
 include( 'shared.lua' )
-util.PrecacheSound( "SB/Gattling2.wav" )
+util.PrecacheSound( "NPC_Ministrider.FireMinigun" )
+util.PrecacheSound( "WeaponDissolve.Dissolve" )
 
 function ENT:Initialize()
 
-	self.Entity:SetModel( "models/Slyfo_2/mini_turret_flamer.mdl" ) 
-	self.Entity:SetName("SmallFlamer")
+	self.Entity:SetModel( "models/Slyfo_2/mini_turret_pulselaser.mdl" ) 
+	self.Entity:SetName("TinyPulseCannon")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
@@ -26,17 +26,19 @@ function ENT:Initialize()
 	
 	--self.val1 = 0
 	--RD_AddResource(self.Entity, "Munitions", 0)
-
+	
+	self.FTime = 0
 	self.NFTime = 0
+	
 end
 
 function ENT:SpawnFunction( ply, tr )
 
 	if ( !tr.Hit ) then return end
 	
-	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
+	local SpawnPos = tr.HitPos + tr.HitNormal * 16
 	
-	local ent = ents.Create( "SF-TinyFlamer" )
+	local ent = ents.Create( "SF-TinyPulseCannon" )
 	ent:SetPos( SpawnPos )
 	ent:Spawn()
 	ent:Activate()
@@ -49,11 +51,14 @@ end
 function ENT:TriggerInput(iname, value)		
 	if (iname == "Fire") then
 		if (value > 0) then
+			if !(self.Active == true || self.FTime > CurTime()) then
+				self.NFTime = CurTime() + math.Rand(0,0.1)
+			end
 			self.Active = true
 		else
 			self.Active = false
 		end
-			
+
 	end
 end
 
@@ -62,35 +67,24 @@ function ENT:PhysicsUpdate()
 end
 
 function ENT:Think()
+	if ((self.Active == true || self.FTime > CurTime()) && CurTime() >= self.NFTime ) then
 	
-	if (self.Active == true || self.FTime > CurTime() ) then
-		self:SetActive(true)
-		if CurTime() >= self.NFTime then
-			/*
-			NewShell = ents.Create( "FlameGout" )
-			if ( !NewShell:IsValid() ) then return end
-			NewShell:SetPos( self.Entity:GetPos() + (self:GetForward() * 30) )
-			NewShell:SetName("FlamingDeath")
-			NewShell.SPL = self.SPL
-			NewShell:Spawn()
-			NewShell:Initialize()
-			NewShell:Activate()
-			local SSpeed = 10
-			NewShell:GetPhysicsObject():SetVelocity((self.Entity:GetPhysicsObject():GetVelocity() * 0.25) + (self.Entity:GetRight() * math.random(-SSpeed,SSpeed)) + (self.Entity:GetUp() * math.random(-SSpeed,SSpeed))  + (self.Entity:GetForward() * 500)  )
-			*/
-			for i = 1,6 do
-				local Dist = i * math.Rand(65,85)
-				util.BlastDamage(self.SPL, self.SPL, self:GetPos() + (self:GetForward() * Dist), (Dist * 0.3) + 40, math.Clamp((320 - Dist) * 0.1,1,100))
-				--print((320 - Dist) * 0.1)
-				print((Dist * 0.3) + 40)
-			end
-			self.NFTime = CurTime() + 0.1
-		end
-	else
-		self:SetActive(false)
+		local NewShell = ents.Create( "SF-TinyPulseShot" )
+		if ( !NewShell:IsValid() ) then return end
+		NewShell:SetPos( self.Entity:GetPos() + (self.Entity:GetForward() * 20 ) + self:GetVelocity() )
+		NewShell:SetAngles( self.Entity:GetForward():Angle() )
+		NewShell.SPL = self.SPL
+		NewShell:Spawn()
+		NewShell:Initialize()
+		NewShell:Activate()
+		NewShell.PhysObj:SetVelocity(self.Entity:GetForward() * 5000)
+		NewShell:Fire("kill", "", 1)
+		NewShell.ParL = self.Entity
+				
+		self.Entity:EmitSound("NPC_Ministrider.FireMinigun")
+		
+		self.NFTime = CurTime() + 0.15
 	end
-	
-	
 	self.Entity:NextThink( CurTime() + 0.01 )
 	return true
 end
@@ -114,5 +108,8 @@ function ENT:Touch( ent )
 end
 
 function ENT:HPFire()
+	if !(self.Active == true || self.FTime > CurTime()) then
+		self.NFTime = CurTime() + math.Rand(0,0.1)
+	end
 	self.FTime = CurTime() + 0.1
 end

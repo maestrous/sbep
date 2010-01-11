@@ -12,6 +12,7 @@ ENT.HPType			= "Tiny"
 ENT.APPos			= Vector(0,0,0)
 ENT.FTime			= 0
 ENT.WInfo			= "Tiny Flamer"
+ENT.Range 			= 400
 
 function ENT:SetActive( val )
 	if val != self.Entity:GetNetworkedBool("ClActive") then

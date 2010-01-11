@@ -144,7 +144,7 @@ function ENT:Think()
 	
 	if self.Standalone && self.ParL && self.ParL:IsValid() then
 		if self.ParL.LChange > self.ITime && self.Rope && self.Rope:IsValid() then
-			math.Approach(self.CLength,self.DLength,self.ParL.ReelRate)
+			self.CLength = math.Approach(self.CLength,self.ParL.DLength,self.ParL.ReelRate)
 			self.Elastic:Fire("SetSpringLength",self.CLength,0)
 			self.Rope:Fire("SetLength",self.CLength,0)
 		end
