@@ -73,6 +73,10 @@ DTT[ "Door_ModBridge_11a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door
 		OS = { [0] = "Doors.FullOpen8" , [0.50] = "Doors.Move14"    , [1.50] = "Doors.FullOpen8" , [3.40] = "Doors.FullOpen9" } ,
 		CS = { [0] = "Doors.Move14" 	  , [1.50] = "Doors.FullOpen8" , [2.30] = "Doors.FullOpen9" , [3.00] = "Doors.Move14" , [3.60] = "Doors.FullOpen8" } } }
 		
+DTT[ "Door_ModBridge_11b"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door11b_anim.mdl" 	,	UD = 1.4 , OD = 0.52 , CD = 0.88 	,
+		OS = { [0] = "TriggerSuperArmor.DoneCharging" , [0.40] = "Doors.FullOpen8" , [0.95] = "Doors.FullOpen9" } ,
+		CS = { [0] = "Doors.Move14" , [0.40] = "Doors.FullOpen8" , [0.95] = "TriggerSuperArmor.DoneCharging" } } }
+		
 DTT[ "Door_ModBridge_12a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door12a_anim.mdl" 	,	UD = 3.0 , OD = 1.5 , CD = 1.5 	,
 		OS = { [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } ,
 		CS = { [0] = "Doors.Move14" , [0.90] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen8" , [2.70] = "Doors.FullOpen9" } } }
@@ -89,9 +93,15 @@ DTT[ "Door_ModBridge_33a"]	= { { model = "models/Cerus/Modbridge/Misc/Doors/door
 		OS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } ,
 		CS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen8" , [1.90] = "Doors.FullOpen9" } } }
 		
+
+		
+
+		
+		
+		
 DTT[ "ACC_Furnace1"]	= { { model = "models/Cerus/Modbridge/Misc/Accessories/acc_furnace1_anim.mdl" 	,	UD = 1 , OD = 0.2 , CD = 0.8 	,
-		OS = { [0] = "Doors.Move14" 	, [1.00] = "Doors.FullOpen9" } , 
-		CS = { [0] = "Doors.Fullopen8" 	, [1.00] = "Doors.FullOpen9" } } }
+		OS = { [0] = "Doors.Move14" , [1.00] = "Doors.FullOpen9" } , 
+		CS = { [0] = "Doors.Fullopen8" 	, [1.00] = "Doors.Move14" } } }
 
 function ENT:Initialize()
 	self.D					= {}

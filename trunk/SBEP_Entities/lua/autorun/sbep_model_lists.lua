@@ -81,6 +81,7 @@ local DTT = {}
 	DTT.ModBridge = {}
 		DTT.ModBridge["ModBridge"] = {
 			"models/Cerus/Modbridge/Misc/Doors/door11a.mdl"			,
+			"models/Cerus/Modbridge/Misc/Doors/door11b.mdl"			,
 			"models/Cerus/Modbridge/Misc/Doors/door12a.mdl"			,
 			"models/Cerus/Modbridge/Misc/Doors/door13a.mdl"			,
 			"models/Cerus/Modbridge/Misc/Doors/door23a.mdl"			,
@@ -118,6 +119,7 @@ local DCT = {}
 	DCT[ "models/slyfo/slypaneldoor1.mdl"						] = { { type = "Door_Sly1"  	} }
 	
 	DCT[ "models/cerus/modbridge/misc/doors/door11a.mdl"			] = { { type = "Door_ModBridge_11a" } }
+	DCT[ "models/cerus/modbridge/misc/doors/door11b.mdl"			] = { { type = "Door_ModBridge_11b" } }
 	DCT[ "models/cerus/modbridge/misc/doors/door12a.mdl"			] = { { type = "Door_ModBridge_12a" } }
 	DCT[ "models/cerus/modbridge/misc/doors/door13a.mdl"			] = { { type = "Door_ModBridge_13a" } }
 	DCT[ "models/cerus/modbridge/misc/doors/door23a.mdl"			] = { { type = "Door_ModBridge_23a" } }
