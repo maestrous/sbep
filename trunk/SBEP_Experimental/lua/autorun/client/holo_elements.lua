@@ -136,6 +136,12 @@ function OBJ:Output(Output)
 	end
 end
 
+function OBJ:Input(Input)
+	if type(Input) == "number" then
+		self.Val = tonumber(Input)
+	end
+end
+
 function OBJ:GetPanel()
 	if self.Panel && self.Panel:IsValid() then
 		--print("We have an assigned panel. Lets use that.")
@@ -221,27 +227,24 @@ local OBJ = {}
 function OBJ:Think()
 	self:MouseHoverHL()
 	
+	self.Val = self.Val or 0
+	
 	if self.Toggled then
 		if self:MouseCheck( self:MPos() ) && (LocalPlayer():KeyPressed( IN_USE ) || (input.IsMouseDown(MOUSE_FIRST) && !self.MTog)) then
-			self.Value = !self.Value
+			self.Val = math.fmod(self.Val + 1,2)
 			self.MTog = true
 		elseif !input.IsMouseDown(MOUSE_FIRST) then
 			self.MTog = false
 		end
 	else
 		if self:MouseCheck( self:MPos() ) && (LocalPlayer():KeyDown( IN_USE ) || (input.IsMouseDown(MOUSE_FIRST))) then
-			self.Value = true
+			self.Val = 1
 		else
-			self.Value = false
+			self.Val = 0
 		end
 	end
 	
-	--print(self.Value)
-	if self.Value then
-		self:Output(1)
-	else
-		self:Output(0)
-	end
+	self:Output(self.Val)
 end
 
 function OBJ:Draw()
@@ -251,8 +254,7 @@ function OBJ:Draw()
 	if self:GetHL() then
 		C = self.HCol
 	end
-	local o = 1
-	if self.Value then o = 0 end
+	local o = math.fmod(self.Val + 1,2)
 	local Col = Color(C.r, C.g, C.b, C.a * A)
 	local ColD = Color(math.Clamp(C.r - 200,0,255),math.Clamp(C.r - 200,0,255),math.Clamp(C.r - 200,0,255),C.a * A)
 	draw.RoundedBox( self.Rad , (self.OrX - 0.5*w) + 1 , (self.OrY - 0.5*t) + 1 , w + 1, t + 1, ColD )
