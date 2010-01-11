@@ -10,9 +10,13 @@ function ENT:Initialize()
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:SetSolid( SOLID_VPHYSICS )
 		self:SetUseType( SIMPLE_USE )
-	--self.Inputs = Wire_CreateInputs( self, { "Active" } )
-	--self.Outputs = Wire_CreateOutputs( self, { "TestValue1" , "TestValue2" , "TestValue3"})
+	
 	local V,N,A = "VECTOR","NORMAL","ANGLE"
+	
+	local inNames = {"TestValue1","TestValue2","TestValue3"}
+	local inTypes = {N,N,V}
+	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
+	
 	local outNames = {"TestValue1","TestValue2","TestValue3"}
 	local outTypes = {N,N,V}
 	local outDescs = {}
@@ -32,16 +36,19 @@ function ENT:TriggerInput(iname, value)
 	local rp = RecipientFilter()
 	rp:AddAllPlayers()
 	umsg.Start("HoloEleIn", rp )
+	umsg.Entity( self )
+	umsg.String( iname )
 	local T = type(value)
-	if T = "number" then
+	if T == "number" then
 		umsg.Short( 1 )
-	elseif T = "Vector" then
+		umsg.Short( value )
+	elseif T == "Vector" then
 		umsg.Short( 2 )
+		umsg.Vector( value )
 	end
 	umsg.End()
-	--if iname == "Active" then
-	--	self:SetActive( value > 0 )
-	--end	
+	
+	--print("Input triggered...")
 end
 
 function ENT:Think()
@@ -79,6 +86,6 @@ function HoloEleOut(player,commandName,args)
 			Wire_TriggerOutput( Panel, args[2], Vec )
 		end
 	end
-	print(args[1],args[2],args[3],args[4],args[5],args[6])
+	--print(args[1],args[2],args[3],args[4],args[5],args[6])
 end 
 concommand.Add("HoloEleOut",HoloEleOut) 
