@@ -33,83 +33,89 @@ function ENT:Initialize()
 	self:SetColors( 200, 200, 230 )
 end
 
-function ENT:LoadInterface()
+function ENT:AddElement( heElement )
+	self.Elements = self.Elements or {}
+	
+	if heElement then
+		table.insert( self.Elements, heElement )
+	end
+end
+
+function ENT:ClearElements()
 	self.Elements = {}
+end
+
+function ENT:LoadInterface()
+	self:ClearElements()
+	
 	local Base = holo.Create("HRect")
-	Base:SetPanel(self)
-	Base:SetSize((self.X * 10) - 20,(self.Y * 10) - 20)
-	Base:SetColor(Color(120,120,140,100))
+		Base:SetPanel(self)
+		Base:SetSize((self.X * 10) - 20,(self.Y * 10) - 20)
+		Base:SetColor(Color(120,120,140,100))
+		Base:SetAlphaFromParent( true )
+	self:AddElement( Base )
 	
 	local Hov = holo.Create("HButton", Base)
-	
-	Hov:SetSize(20,100)
-	Hov:SetColor(Color(180,180,200,100))
-	Hov:SetHColor(Color(220,220,240,150))
-	Hov:SetPos(-65,0)
-	Hov.sOutput = "TestValue1"
-	Hov.Toggled = false
-	
-	local Hov2 = holo.Create("HButton", Base)
-	
-	Hov2:SetSize(20,100)
-	Hov2:SetColor(Color(180,180,200,100))
-	Hov2:SetHColor(Color(220,220,240,150))
-	Hov2:SetPos(65,0)
-	Hov2.sOutput = "TestValue2"
-	Hov2.Toggled = false
-	
-	local Hov3 = holo.Create("HButton", Base)
-	
-	Hov3:SetSize(100,20)
-	Hov3:SetColor(Color(180,180,200,100))
-	Hov3:SetHColor(Color(220,220,240,150))
-	Hov3:SetPos(0,65)
-	Hov3.sOutput = "TestValue4"
-	Hov3.Toggled = true
-		
-	local VSB = holo.Create("HSBar", Base)
-	
-	VSB:SetSize(10,100)
-	VSB:SetColor(Color(200,200,220,200))
-	VSB:SetHColor(Color(220,220,240,250))
-	VSB:SetPos(87,0)
-	VSB.Min = 0
-	VSB.Max = 5000
-	VSB.Vert = true
-	--VSB.sOutput = "TestValue2"
-	
-	local VSB2 = holo.Create("HSBar", Base)
-	
-	VSB2:SetSize(10,100)
-	VSB2:SetColor(Color(200,200,220,200))
-	VSB2:SetHColor(Color(220,220,240,250))
-	VSB2:SetPos(-87,0)
-	VSB2.Min = 0
-	VSB2.Max = 5000
-	VSB2.Vert = true
-	--VSB2.sOutput = "TestValue2"
-	
-	local HSB = holo.Create("HDSBar", Base)
-	
-	HSB:SetSize(100,100)
-	HSB:SetColor(Color(230,230,250,150))
-	HSB:SetHColor(Color(230,230,250,200))
-	HSB:SetPos(0,0)
-	HSB.XMin = 180
-	HSB.XMax = -180
-	HSB.YMin = 20
-	HSB.YMax = -60
-	HSB.sOutput = "TestValue3"
-	
-	table.insert(self.Elements, Base)
+		Hov:SetSize(20,100)
+		Hov:SetColor(Color(180,180,200,100))
+		Hov:SetPos(-65,0)
+		Hov:SetAlphaFromParent( true )
+		Hov:SetOutput( "Button1" )
+		Hov:SetToggle( false )
 	table.insert(self.Elements, Hov)
-	table.insert(self.Elements, VSB)
+
+	local Hov2 = holo.Create("HButton", Base)
+		Hov2:SetSize(20,100)
+		Hov2:SetColor(Color(180,180,200,100))
+		Hov2:SetPos(65,0)
+		Hov:SetAlphaFromParent( true )
+		Hov2:SetOutput( "TestValue2" )
+		Hov2:SetToggle( false )
 	table.insert(self.Elements, Hov2)
-	table.insert(self.Elements, VSB2)
+
+	local Hov3 = holo.Create("HButton", Base)
+		Hov3:SetSize(100,20)
+		Hov3:SetColor(Color(180,180,200,100))
+		Hov3:SetPos(0,65)
+		Hov:SetAlphaFromParent( true )
+		Hov3:SetOutput( "TestValue4" )
+		Hov3:SetToggle( true )
 	table.insert(self.Elements, Hov3)
-	table.insert(self.Elements, HSB)
-	
-	
+
+	local VSB = holo.Create("HSBar", Base)
+		VSB:SetSize(10,100)
+		VSB:SetColor(Color(200,200,220,200))
+		VSB:SetPos(87,0)
+		Hov:SetAlphaFromParent( true )
+		VSB:SetMin( 0 )
+		VSB:SetMax( 5000 )
+		VSB:SetVertical( true )
+		--VSB.sOutput = "TestValue2"
+	table.insert(self.Elements, VSB)
+
+	/*local VSB2 = holo.Create("HSBar", Base)
+		VSB2:SetSize(10,100)
+		VSB2:SetColor(Color(200,200,220,200))
+		VSB2:SetHColor(Color(220,220,240,250))
+		VSB2:SetPos(-87,0)
+		VSB2.Min = 0
+		VSB2.Max = 5000
+		VSB2.Vert = true
+		--VSB2.sOutput = "TestValue2"
+	table.insert(self.Elements, VSB2)
+
+	local HSB = holo.Create("HDSBar", Base)
+		HSB:SetSize(100,100)
+		HSB:SetColor(Color(230,230,250,150))
+		HSB:SetHColor(Color(230,230,250,200))
+		HSB:SetPos(0,0)
+		HSB.XMin = 180
+		HSB.XMax = -180
+		HSB.YMin = 20
+		HSB.YMax = -60
+		HSB.sOutput = "TestValue3"
+	table.insert(self.Elements, HSB)*/
+		
 	self.InTriggers = {}
 	self.InTriggers["TestValue1"] = VSB
 	self.InTriggers["TestValue2"] = VSB2
@@ -232,9 +238,10 @@ function ENT:DrawTranslucent()
 				
 				--draw.DrawText( "^" , "TrebuchetH", 0, -185, Color(255,255,255, self.Alpha * 255), TEXT_ALIGN_RIGHT )
 				
-				for k,e in pairs( self.Elements ) do
+				holo.Render( self.Elements[1] )
+				/*for k,e in pairs( self.Elements ) do
 					e:Draw()
-				end
+				end*/
 				
 				
 				/*
