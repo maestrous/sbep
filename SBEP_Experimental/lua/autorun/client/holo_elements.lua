@@ -176,6 +176,12 @@ function OBJ:GetSize()
 	return self:GetWide(), self:GetTall()
 end
 
+function OBJ:SetRadius( nR )
+	nR = math.Round( nR )
+	nR = nR - math.fmod( nR, 2 )
+	self.nRad = nR
+end
+
 function OBJ:SetColor( cC )
 	self.cCol = ClampColor( cC )
 
@@ -323,13 +329,64 @@ function OBJ:AddComponent( heComp )
 	table.insert( self.Components, heComp)
 end
 
-function OBJ:OnPressed()
+/*function OBJ:OnPressed()
 end
 
 function OBJ:OnReleased()
-end
+end*/
 
 holo.Register( "HRect" , OBJ )
+
+---------------------------------------------------------------------------------------------------
+//	HCircle										//
+---------------------------------------------------------------------------------------------------
+local OBJ = {}
+
+function OBJ:Initialize()
+
+	self:SetPos(0,0) 
+	self:SetRadius( 10 )
+	self:SetValue( 0 )
+	self:SetOutput( "" )
+	self:SetHLFromColor( true )
+	self:SetColor( Color(255,255,255,255) )
+	
+end
+
+function OBJ:Draw()
+	self:Think()
+
+	local R = self:GetRadius()
+	local x, y = self:GetWorldPos()
+	local C
+	if self:GetAlphaFromElement() or self:GetAlphaFromParent() then
+		C = self:ModColorAlpha()
+	else
+		C = self:GetHL() and self:GetHLColor() or self:GetColor()
+	end
+	
+	draw.RoundedBox( R , x - R , y - R , 2*R, 2*R, C )
+end
+
+function OBJ:SetSize( x , y )
+	self:SetRadius( x )
+end
+
+function OBJ:GetSize()
+	self:GetRadius()
+end
+
+function OBJ:MouseCheck( MX, MY )
+	local R = self:GetRadius()
+	if R then
+		if MX >= -R and MX <= R and MY >= -R and MY <= R then
+			return true
+		end
+	end
+	return false
+end
+
+holo.Register( "HCircle" , OBJ , "HRect" )
 
 ---------------------------------------------------------------------------------------------------
 //	HLabel										//
@@ -802,3 +859,111 @@ function OBJ:SetYValue( nVal )
 end
 
 holo.Register( "HDSBar" , OBJ , "HRect" )
+
+---------------------------------------------------------------------------------------------------
+//	HRotator										//
+---------------------------------------------------------------------------------------------------
+local OBJ = {}
+
+AccessorFunc( OBJ, "bDrag"	, "Dragging"	, FORCE_BOOL )
+AccessorFunc( OBJ, "nVal"	, "Value"		, FORCE_NUMBER )
+AccessorFunc( OBJ, "nMax"	, "Max"			, FORCE_NUMBER )
+AccessorFunc( OBJ, "nMin"	, "Min"			, FORCE_NUMBER )
+AccessorFunc( OBJ, "nIRad"	, "InnerRadius" , FORCE_NUMBER )
+
+function OBJ:Initialize()
+
+	self.BaseClass.Initialize( self )
+
+	self:SetMin( 0 )
+	self:SetMax( 1 )
+	self:SetCheckHL( false )
+	
+	local H = holo.Create( "HCircle" )
+		H:SetElement( self )
+		H:SetAlphaFromElement( true )
+	self.Disp = H
+	
+	H = holo.Create( "HCircle" )
+		H:SetElement( self )
+		H:SetAlphaFromElement( true )
+		H:SetCheckHL( true )
+	self.Rot = H
+	
+	self:SetRadius( 12 )
+	self:SetValue( 0.5 )
+	self:SetColor( Color(255,255,255,255) )
+end
+
+function OBJ:Draw()
+	self:Think()
+	
+	self.Disp:Draw()
+	self.Rot:Draw()
+end
+
+function OBJ:Think()
+	local D = false
+	if LocalPlayer():KeyDown( IN_USE ) or input.IsMouseDown(MOUSE_FIRST) then
+		local M, Ro = false, self.Rot
+		local x, y = self:MPos()
+		if Ro then
+			M = Ro:MouseCheck( x, y )
+		end
+		
+		if M or self:GetDragging() then
+			D = true
+			
+			local ang = math.atan2( y, x )
+			if !self.oang then self.oang = ang end
+			local d = self.oang + math.abs( ang )
+			
+			self:SetValue( Lerp( math.EaseInOut( math.Clamp( d/6.28 ,0,1 ), 0.5, 0.5 ) , self:GetMin(), self:GetMax() ) )
+			self.oang = ang
+		end
+	end
+	self:SetDragging( D )
+end
+
+function OBJ:SetRadius( nR )
+	local R = tonumber( nR )
+	self.nRad = R > 12 and R or 12
+	self:SetInnerRadius()
+end
+
+function OBJ:SetInnerRadius()
+	local IR = math.Clamp( math.Round( self:GetRadius()/2.5 ) , 6 , 18 )
+	IR = IR - math.fmod( IR, 2 )
+	self.nIRad = IR
+	local R = self.Rot
+	if R then
+		R:SetRadius( IR )
+	end
+	self:SetValue( self:GetValue() )
+end
+
+function OBJ:SetColor( cC )
+	local H = self:GetHL()
+	
+	self.cCol = cC
+	local R, D = self.Rot, self.Disp
+	if D then 
+		D:SetColor( cC )
+		D:SetColorBright( math.fmod( D:GetColorBright() - 0.25 , 0 , 1 ) )
+	end
+	if R then R:SetColor( cC ) end
+end
+
+function OBJ:SetValue( nVal )
+	if type( nVal ) ~= "number" then return end
+	self.nVal = nVal
+	if self.Disp then
+		local R, IR = self:GetRadius(), self:GetInnerRadius()
+		local f = ( nVal - self:GetMin() ) / ( self:GetMax() - self:GetMin() )
+
+		self.Disp:SetRadius( IR + f*(R - IR) )
+	end
+	self:Output( nVal )
+end
+
+holo.Register( "HRotator" , OBJ , "HCircle" )
