@@ -113,7 +113,7 @@ function ENT:LoadInterface()
 		HSB:SetXMax( -180 )
 		HSB:SetYMin( 20 )
 		HSB:SetYMax( -60 )
-		HSB:SetOutput( "TestValue3" )--*/
+		HSB:SetOutput( "TestValue3" )
 	self:AddElement( HSB )
 		
 	self.InTriggers = {}

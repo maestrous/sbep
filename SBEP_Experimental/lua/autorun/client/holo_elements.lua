@@ -253,9 +253,16 @@ function OBJ:MPos()
 	return 0,0
 end
 
+function OBJ:Input( nInput )
+	if type(nInput) == "number" then
+		self:SetValue( nInput )
+	end
+end
+
 function OBJ:Output(Output)
 	local P = self:GetPanel()
 	if !P then return end
+	
 	local OPType, sO = type(Output), self:GetOutput()
 	--Check that the output is different to whatever was outputted last, so we don't keep sending the same value.
 	if Output ~= self.LOutput and sO and sO ~= "" then
@@ -265,12 +272,6 @@ function OBJ:Output(Output)
 			RunConsoleCommand( "HoloEleOut" , P:EntIndex() , sO, OPType , Output.x, Output.y, Output.z )
 		end
 		self.LOutput = Output
-	end
-end
-
-function OBJ:Input( nInput )
-	if type(nInput) == "number" then
-		self:SetValue( nInput )
 	end
 end
 
@@ -543,7 +544,6 @@ function OBJ:Think()
 			D = true
 			
 			local V, l = self:GetVertical(), self:GetLength()
-			print( V )
 			local m = V and y or x
 			
 			self:SetValue( Lerp( math.Clamp( 0.5 + m/l ,0,1 ) , self:GetMin(), self:GetMax() ) )
@@ -754,7 +754,7 @@ function OBJ:SetValue( nXVal , nYVal )
 		if YB then
 			YB:SetPos( x , 0  )
 		end
-	--self:Output( nVal )
+	self:Output( Vector( nXVal, nYVal, 0 ) )
 end
 
 function OBJ:GetValue()
@@ -778,7 +778,7 @@ function OBJ:SetXValue( nVal )
 		if YB then
 			YB:SetPos( x , 0  )
 		end
-	--self:Output( nVal )
+	self:Output( Vector( nXVal, self:GetYValue(), 0 ) )
 end
 
 function OBJ:SetYValue( nVal )
@@ -798,7 +798,7 @@ function OBJ:SetYValue( nVal )
 		if XB then
 			XB:SetPos( 0 , y )
 		end
-	--self:Output( nVal )
+	self:Output( Vector( self:GetXValue() , nYVal, 0 ) )
 end
 
 holo.Register( "HDSBar" , OBJ , "HRect" )

@@ -74,16 +74,17 @@ function ENT:Use( activator, caller )
 	--end
 end
 
-function HoloEleOut(player,commandName,args)
-	local Panel = ents.GetByIndex(tonumber(args[1]))
+local function HoloEleOut(player,commandName,args)
+	local index, name, type, x,y,z = unpack( args )
+	local Panel = ents.GetByIndex(tonumber(index))
 	if Panel && Panel:IsValid() then
-		if args[3] == "number" then
+		if type == "number" then
 			--print(tonumber(args[4]))
-			Wire_TriggerOutput( Panel, args[2], tonumber(args[4]) )
-		elseif args[3] == "Vector" then
-			local Vec = Vector(tonumber(args[4]),tonumber(args[5]),tonumber(args[6]))
+			Wire_TriggerOutput( Panel, name, tonumber(x) )
+		elseif type == "Vector" then
+			local Vec = Vector(tonumber(x),tonumber(y),tonumber(z))
 			--print(Vec)
-			Wire_TriggerOutput( Panel, args[2], Vec )
+			Wire_TriggerOutput( Panel, name, Vec )
 		end
 	end
 	--print(args[1],args[2],args[3],args[4],args[5],args[6])
