@@ -62,6 +62,10 @@ function TOOL:LeftClick( trace )
 	local ent = trace.Entity
 	if !ent || !ent:IsValid() || ent:GetClass() ~= "sbep_base_sprite" then return end
 	
+	if CPPI then
+        if !ent:CPPICanTool(ply,"constraint") then return end
+    end
+	
 	if self.E1 && self.E1:IsValid() && self:GetStage() == 1 then
 		if self.E1:GetSpriteType() ~= SPD[ ent:GetSpriteType() ] then return end
 		
@@ -160,9 +164,13 @@ if SERVER then
 		local ply = self:GetOwner()
 		local trace = ply:GetEyeTrace()
 		if !trace.Hit || trace.HitWorld || trace.HitSky then return end
-
+		
 		local ent = trace.Entity
 		if !ent || !ent:IsValid() then return end
+		
+		if CPPI then
+			if !ent:CPPICanTool(ply,"constraint") then return end
+		end
 		
 		local model = string.lower( ent:GetModel() )
 		local data = PAD[ model ]
@@ -175,7 +183,11 @@ if SERVER then
 			if ent:GetClass() == "sbep_elev_housing" && (v.type == "ESML" || v.type == "ELRG") then break end
 			local sprite = ents.Create( "sbep_base_sprite" )
 			sprite:Spawn()
-
+			
+			if (CPPI) then
+                sprite:CPPISetOwner(ply)
+            end
+			
 			sprite:SetSpriteType( v.type )
 			sprite.Offset = v.pos
 			sprite.Dir = v.dir
