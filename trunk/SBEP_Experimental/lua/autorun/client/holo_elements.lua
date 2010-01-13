@@ -37,7 +37,8 @@ holo.Render = function( heObject ) --or eHoloPanel
 local FORCE_TABLE, FORCE_COLOR, FORCE_ENTITY, FORCE_HELEMENT	= 4, 5, 6, 7
 
 local AccessorFunc = function ( tOBJ , sVar , sMethod , enFT )
-
+						if type( tOBJ ) ~= "table" then return end
+						
 						tOBJ[ "Get"..sMethod ] = function( self ) return self[ sVar ] end
 
 						if enFT == FORCE_BOOL then
@@ -111,7 +112,7 @@ function OBJ:Draw()
 	self:Think()
 
 	local w,t = self:GetSize()
-	local P   = self:GetPos()
+	local x, y = self:GetWorldPos()
 	local C
 	if self:GetAlphaFromElement() or self:GetAlphaFromParent() then
 		C = self:ModColorAlpha()
@@ -119,7 +120,7 @@ function OBJ:Draw()
 		C = self:GetHL() and self:GetHLColor() or self:GetColor()
 	end
 	
-	draw.RoundedBox( self:GetRadius() , P.x - 0.5*w , P.y - 0.5*t , w, t, C )
+	draw.RoundedBox( self:GetRadius() , x - 0.5*w , y - 0.5*t , w, t, C )
 end
 
 function OBJ:Think()
@@ -130,22 +131,36 @@ end
 
 function OBJ:SetPos( x , y )
 	local X, Y = tonumber(x) or 0, tonumber(y) or 0
-	if !self.tPos or type( self.tPos ) ~= "table" then self.tPos = { x = 0, y = 0 } end
 	
-	local HE = self:GetElement() or self:GetParent()
-	if HE then
-		local Ph = HE:GetPos()
-			X = X + Ph.x
-			Y = Y + Ph.y
-	end
-	self.tPos.x = X
-	self.tPos.y = Y
+	self.nXPos = X
+	self.nYPos = Y
+
+	self:SetWorldPos()
 	
 	if self.Components then
 		for n,E in ipairs( self.Components ) do
 			E:SetPos( E:GetPos() )
 		end
 	end
+end
+
+function OBJ:GetPos()
+	return self.nXPos, self.nYPos
+end
+
+function OBJ:SetWorldPos()
+	local X, Y = self:GetPos()
+	
+	local HE = self:GetElement() or self:GetParent()
+	local PX, PY = 0, 0
+	if HE then
+		PX, PY = HE:GetWorldPos()
+	end
+	self.nWXPos, self.nWYPos = X + PX , Y + PY
+end
+	
+function OBJ:GetWorldPos()
+	return self.nWXPos, self.nWYPos
 end
 
 function OBJ:SetSize( x , y )
@@ -232,8 +247,8 @@ function OBJ:MPos()
 	local panel = self:GetPanel()
 	if panel then
 		local mx, my = panel:MouseInfo()
-		local P = self:GetPos()		
-		return P.x - mx, P.y - my
+		local x, y = self:GetWorldPos()		
+		return x - mx, y - my
 	end
 	return 0,0
 end
@@ -339,8 +354,8 @@ end
 function OBJ:Draw()
 	self:Think()
 	
-	local P = self:GetPos()
-	draw.DrawText( self:GetText() , self:GetFont(), P.x, P.y-13, self:GetColor() , self:GetAlign() )
+	local x, y = self:GetPos()
+	draw.DrawText( self:GetText() , self:GetFont(), x, y-13, self:GetColor() , self:GetAlign() )
 end
 
 function OBJ:SetAlign( enA )
@@ -406,7 +421,7 @@ function OBJ:Think()
 		end
 	elseif (LocalPlayer():KeyDown( IN_USE ) or (input.IsMouseDown(MOUSE_FIRST))) and  self:MouseCheck( self:MPos() ) then
 		self:SetPressed( true )
-	else
+	elseif self:GetPressed() then
 		self:SetPressed( false )
 	end
 end
@@ -528,6 +543,7 @@ function OBJ:Think()
 			D = true
 			
 			local V, l = self:GetVertical(), self:GetLength()
+			print( V )
 			local m = V and y or x
 			
 			self:SetValue( Lerp( math.Clamp( 0.5 + m/l ,0,1 ) , self:GetMin(), self:GetMax() ) )
@@ -547,8 +563,20 @@ function OBJ:SetSize( x, y )
 	self:SetTall( y )
 	
 	local B, S = self.Bar, self.Slider
-	if B then B:SetSize( V and x-4 or x    , V and y-4  or y ) end
-	if S then S:SetSize( V and x   or x/15 , V and y/15 or y ) end
+	if V then
+		if B then B:SetSize( x-4 , y  ) end
+		if S then S:SetSize( x , y/15 ) end
+	else
+		if B then B:SetSize(  x , y-4 ) end
+		if S then S:SetSize( x/15 , y ) end
+	end
+end
+
+function OBJ:SetVertical( bV )
+	local B = tobool(bV)
+	self.bVert = B
+	
+	self:SetSize( self:GetSize() )
 end
 
 function OBJ:SetColor( cC )
@@ -565,11 +593,10 @@ end
 
 function OBJ:SetValue( nVal )
 	if type( nVal ) ~= "number" then return end
-
 	self.nVal = nVal
 	if self.Slider then
 		local V, d = self:GetVertical(), self:GetLength()
-		local f = math.abs( nVal / ( self:GetMax() - self:GetMin() ) )
+		local f = ( nVal - self:GetMin() ) / ( self:GetMax() - self:GetMin() )
 
 		if V then
 			self.Slider:SetPos( 0 , math.Clamp( d*(0.5 - f) , -0.5*d+1 , 0.5*d-1 )  )
@@ -662,10 +689,7 @@ function OBJ:Think()
 			
 			local X = Lerp( math.Clamp( 0.5 + x/self:GetWide() ,0,1 ) , self:GetXMin(), self:GetXMax() )
 			local Y = Lerp( math.Clamp( 0.5 + y/self:GetTall() ,0,1 ) , self:GetYMin(), self:GetYMax() )
-			print( X,Y )
 			self:SetValue( X , Y )
-			--self:SetXValue( X )
-			--self:SetYValue( Y )
 		end
 	end
 	self:SetDragging( D )
@@ -747,7 +771,8 @@ function OBJ:SetXValue( nVal )
 	
 	local Sl = self.Slider
 		if Sl then
-			Sl:SetPos( x , Sl:GetPos().y  )
+			local n, y = Sl:GetPos()
+			Sl:SetPos( x , y )
 		end
 	local YB = self.YBar
 		if YB then
@@ -766,7 +791,8 @@ function OBJ:SetYValue( nVal )
 	
 	local Sl = self.Slider
 		if Sl then
-			Sl:SetPos( Sl:GetPos().x , y  )
+			local x, n = Sl:GetPos()
+			Sl:SetPos( x , y  )
 		end
 	local XB = self.XBar
 		if XB then
