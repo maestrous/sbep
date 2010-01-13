@@ -37,6 +37,7 @@ function ENT:AddElement( heElement )
 	self.Elements = self.Elements or {}
 	
 	if heElement then
+		heElement:SetPanel( self )
 		table.insert( self.Elements, heElement )
 	end
 end
@@ -49,72 +50,70 @@ function ENT:LoadInterface()
 	self:ClearElements()
 	
 	local Base = holo.Create("HRect")
-		Base:SetPanel(self)
 		Base:SetSize((self.X * 10) - 20,(self.Y * 10) - 20)
-		Base:SetColor(Color(120,120,140,100))
+		Base:SetColor(Color(100,100,180,100))
 		Base:SetAlphaFromParent( true )
 	self:AddElement( Base )
 	
 	local Hov = holo.Create("HButton", Base)
 		Hov:SetSize(20,100)
-		Hov:SetColor(Color(180,180,200,100))
+		Hov:SetColor(Color(120,120,230,100))
 		Hov:SetPos(-65,0)
 		Hov:SetAlphaFromParent( true )
 		Hov:SetOutput( "Button1" )
 		Hov:SetToggle( false )
-	table.insert(self.Elements, Hov)
+	self:AddElement( Hov )
 
 	local Hov2 = holo.Create("HButton", Base)
 		Hov2:SetSize(20,100)
-		Hov2:SetColor(Color(180,180,200,100))
+		Hov2:SetColor(Color(120,120,230,100))
 		Hov2:SetPos(65,0)
-		Hov:SetAlphaFromParent( true )
+		Hov2:SetAlphaFromParent( true )
 		Hov2:SetOutput( "TestValue2" )
 		Hov2:SetToggle( false )
-	table.insert(self.Elements, Hov2)
+	self:AddElement( Hov2 )
 
 	local Hov3 = holo.Create("HButton", Base)
 		Hov3:SetSize(100,20)
-		Hov3:SetColor(Color(180,180,200,100))
+		Hov3:SetColor(Color(120,120,230,100))
 		Hov3:SetPos(0,65)
-		Hov:SetAlphaFromParent( true )
+		Hov3:SetAlphaFromParent( true )
 		Hov3:SetOutput( "TestValue4" )
 		Hov3:SetToggle( true )
-	table.insert(self.Elements, Hov3)
+	self:AddElement( Hov3 )
 
 	local VSB = holo.Create("HSBar", Base)
 		VSB:SetSize(10,100)
-		VSB:SetColor(Color(200,200,220,200))
+		VSB:SetColor(Color(120,120,230,200))
 		VSB:SetPos(87,0)
-		Hov:SetAlphaFromParent( true )
+		VSB:SetAlphaFromParent( true )
 		VSB:SetMin( 0 )
 		VSB:SetMax( 5000 )
 		VSB:SetVertical( true )
-		--VSB.sOutput = "TestValue2"
-	table.insert(self.Elements, VSB)
-
-	/*local VSB2 = holo.Create("HSBar", Base)
+		--VSB:SetOutput( "TestValue2")
+	self:AddElement( VSB )
+	
+	local VSB2 = holo.Create("HSBar", Base)
 		VSB2:SetSize(10,100)
-		VSB2:SetColor(Color(200,200,220,200))
-		VSB2:SetHColor(Color(220,220,240,250))
+		VSB2:SetColor(Color(120,120,230,200))
 		VSB2:SetPos(-87,0)
-		VSB2.Min = 0
-		VSB2.Max = 5000
-		VSB2.Vert = true
-		--VSB2.sOutput = "TestValue2"
-	table.insert(self.Elements, VSB2)
+		VSB2:SetAlphaFromParent( true )
+		VSB2:SetMin( 0 )
+		VSB2:SetMax( 5000 )
+		VSB2:SetVertical( true )
+		--VSB:SetOutput( "TestValue2")
+	self:AddElement( VSB2 )
 
 	local HSB = holo.Create("HDSBar", Base)
 		HSB:SetSize(100,100)
-		HSB:SetColor(Color(230,230,250,150))
-		HSB:SetHColor(Color(230,230,250,200))
+		HSB:SetColor(Color(120,120,230,150))
 		HSB:SetPos(0,0)
-		HSB.XMin = 180
-		HSB.XMax = -180
-		HSB.YMin = 20
-		HSB.YMax = -60
-		HSB.sOutput = "TestValue3"
-	table.insert(self.Elements, HSB)*/
+		HSB:SetXMin( 180 )
+		HSB:SetXMax( -180 )
+		HSB:SetYMin( 20 )
+		HSB:SetYMax( -60 )
+		HSB:SetOutput( "TestValue3" )--*/
+	self:AddElement( HSB )
 		
 	self.InTriggers = {}
 	self.InTriggers["TestValue1"] = VSB
@@ -162,7 +161,7 @@ function ENT:Draw()
 end
 
 function ENT:DrawTranslucent()
-		
+
 	if self.IncZ > 0 then
 		-------------------------------------			Square Definition					-------------------------------------
 		local incZ = self.IncZ --Z increment for transition

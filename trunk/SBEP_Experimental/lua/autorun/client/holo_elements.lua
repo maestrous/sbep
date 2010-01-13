@@ -1,17 +1,3 @@
-/*if not rawtype then 
-    rawtype = type
-    function type(obj)
-        local mt = getmetatable(obj)
-        if mt then
-            local mtype = mt.__type
-            if mtype then
-                return mtype
-            end
-        end
-        return rawtype(obj)
-    end
-end*/
-
 holo = {}
 
 holo.Register = function( sName , heObject , sParent )
@@ -81,7 +67,12 @@ local AccessorFunc = function ( tOBJ , sVar , sMethod , enFT )
 					   
 						tOBJ[ "Set"..sMethod ] = function( self, var ) self[ sVar ] = var end
 					end
-				
+
+local function ClampColor( cC )
+	local r,g,b,a = math.Clamp( cC.r,0,255 ) , math.Clamp( cC.g,0,255 ) , math.Clamp( cC.b,0,255 ) , math.Clamp( cC.a,0,255 )
+	return Color( r,g,b,a )
+end
+
 ---------------------------------------------------------------------------------------------------
 //	HRect										//
 ---------------------------------------------------------------------------------------------------
@@ -90,6 +81,8 @@ local OBJ = {}
 AccessorFunc(  OBJ,  "bHL"		,  "HL"				,  FORCE_BOOL 		)
 AccessorFunc(  OBJ,  "bCHL"		,  "CheckHL"		,  FORCE_BOOL 		)
 AccessorFunc(  OBJ,  "bAFP"		,  "AlphaFromParent",  FORCE_BOOL 		)
+AccessorFunc(  OBJ,  "bAFE"		,  "AlphaFromElement", FORCE_BOOL 		)
+AccessorFunc(  OBJ,  "bHLFC"	,  "HLFromColor"	,  FORCE_BOOL 		)
 AccessorFunc(  OBJ,  "nWide"	,  "Wide"			,  FORCE_NUMBER 	)
 AccessorFunc(  OBJ,  "nTall"	,  "Tall"			,  FORCE_NUMBER 	)
 AccessorFunc(  OBJ,  "nRad"		,  "Radius"			,  FORCE_NUMBER 	)
@@ -97,7 +90,7 @@ AccessorFunc(  OBJ,  "nVal"		,  "Value"			,  FORCE_NUMBER 	)
 AccessorFunc(  OBJ,  "sOutput"	,  "Output"			,  FORCE_STRING 	)
 AccessorFunc(  OBJ,  "tPos"		,  "Pos"	 		,  FORCE_TABLE	 	)
 AccessorFunc(  OBJ,  "cCol"		,  "Color"	 		,  FORCE_COLOR	 	)
-AccessorFunc(  OBJ,  "cHCol"	,  "HColor"			,  FORCE_COLOR	 	)
+AccessorFunc(  OBJ,  "cHLCol"	,  "HLColor"		,  FORCE_COLOR	 	)
 AccessorFunc(  OBJ,  "heParent"	,  "Parent"			,  FORCE_HELEMENT 	)
 AccessorFunc(  OBJ,  "heElement",  "Element"		,  FORCE_HELEMENT 	)
 AccessorFunc(  OBJ,  "ePanel"	,  "Panel"			,  FORCE_ENTITY 	)
@@ -109,8 +102,8 @@ function OBJ:Initialize()
 	self:SetSize( 10, 10 )
 	self:SetValue( 0 )
 	self:SetOutput( "" )
-	self:SetColor( Color(255,255,255,255) )--math.fmod( self.Col.r + 128, 255 )
-	self:SetHColor( Color(255,255,255,255) )
+	self:SetHLFromColor( true )
+	self:SetColor( Color(255,255,255,255) )
 	
 end
 
@@ -119,7 +112,12 @@ function OBJ:Draw()
 
 	local w,t = self:GetSize()
 	local P   = self:GetPos()
-	local C   = self:GetAlphaFromParent() and self:ModColorAlpha() or self:GetColor()
+	local C
+	if self:GetAlphaFromElement() or self:GetAlphaFromParent() then
+		C = self:ModColorAlpha()
+	else
+		C = self:GetHL() and self:GetHLColor() or self:GetColor()
+	end
 	
 	draw.RoundedBox( self:GetRadius() , P.x - 0.5*w , P.y - 0.5*t , w, t, C )
 end
@@ -164,11 +162,44 @@ function OBJ:GetSize()
 end
 
 function OBJ:SetColor( cC )
-	local r,g,b,a = math.Clamp( cC.r,0,255 ) , math.Clamp( cC.g,0,255 ) , math.Clamp( cC.b,0,255 ) , math.Clamp( cC.a,0,255 )
-	self.cCol = Color( r,g,b,a )
+	self.cCol = ClampColor( cC )
 
-	r,g,b = math.Clamp( r + 40,0,255 ) , math.Clamp( g + 40,0,255 ) , math.Clamp( b + 40,0,255 )
-	self:SetHColor( Color( r,g,b,a ) )
+	if self:GetHLFromColor() then
+		self:SetHLColor( cC )
+		self:SetHLColorBright( math.fmod( self:GetHLColorBright() + 0.15, 255 ) )
+	end
+end
+
+function OBJ:SetHLColor( cC )
+	self.cHLCol = ClampColor( cC )
+end
+
+function OBJ:SetColorBright( iV )
+	iV = math.Clamp( iV, 0, 1 )
+	local C = self:GetColor()
+	local h,s,v = ColorToHSV( C )
+	local C2 = HSVToColor( h,s, iV )
+	C2.a = C.a
+	self:SetColor( C2 )
+end
+
+function OBJ:GetColorBright()
+	local h,s, V = ColorToHSV( self:GetColor() )
+	return V
+end
+
+function OBJ:SetHLColorBright( iV )
+	iV = math.Clamp( iV, 0, 1 )
+	local C = self:GetHLColor()
+	local h,s,v = ColorToHSV( C )
+	local C2 = HSVToColor( h,s, iV )
+	C2.a = C.a	
+	self:SetHLColor( C2 )
+end
+
+function OBJ:GetHLColorBright()
+	local h,s, V = ColorToHSV( self:GetHLColor() )
+	return V
 end
 
 function OBJ:CheckPAlpha()
@@ -182,22 +213,25 @@ end
 function OBJ:ModColorAlpha()
 	local A, C = self:CheckPAlpha(), self:GetColor()
 		if self:GetHL() then
-			C = self:GetHColor()
+			C = self:GetHLColor()
 		end
 	return Color(C.r, C.g, C.b, C.a * A)
 end
 
 function OBJ:MouseCheck( MX, MY )
 	local w, t = self:GetSize()
-	if MX >= -0.5*w and MX <= 0.5*w and MY >= -0.5*t and MY <= 0.5*t then
-		return true
+	if w and t then
+		if MX >= -0.5*w and MX <= 0.5*w and MY >= -0.5*t and MY <= 0.5*t then
+			return true
+		end
 	end
 	return false
 end
  
 function OBJ:MPos()
-	if self:GetPanel() then
-		local mx, my = self:GetPanel():MouseInfo()
+	local panel = self:GetPanel()
+	if panel then
+		local mx, my = panel:MouseInfo()
 		local P = self:GetPos()		
 		return P.x - mx, P.y - my
 	end
@@ -241,6 +275,10 @@ function OBJ:GetPanel()
 	if P && P:IsValid() then
 		return P
 	else
+		E = self:GetElement()
+		if E then
+			return E:GetPanel()
+		end
 		P = self:GetParent()
 		if P then
 			return P:GetPanel()
@@ -340,15 +378,17 @@ function OBJ:Initialize()
 	
 	self:SetOnValue(1)
 	self:SetOffValue(0)
-		
+
 	H = holo.Create( "HRect" )
 		H:SetElement( self )
 		H:SetSize( self:GetWide() + 1 , self:GetTall() + 1 )
+		H:SetAlphaFromElement( true )
 	self.Shadow = H
 	
 	local H = holo.Create( "HRect" )
 		H:SetElement( self )
 		H:SetCheckHL( true )
+		H:SetAlphaFromElement( true )
 	self.Rect = H
 	
 	self:SetPressed( false )
@@ -380,7 +420,8 @@ function OBJ:SetColor( cC )
 	end
 	local S = self.Shadow
 	if S then
-		S:SetColor( Color( math.fmod(cC.r - 200,255) , math.fmod(cC.g - 200,255) , math.fmod(cC.b - 200,255) , cC.a ) )
+		S:SetColor( cC )
+		S:SetColorBright( math.fmod( self:GetColorBright() - 0.7 , 1 ) )
 	end
 end
 
@@ -442,25 +483,26 @@ function OBJ:Initialize()
 
 	self:SetMin( 0 )
 	self:SetMax( 1 )
-	self:SetValue( 0 )
+	self:SetCheckHL( false )
 	self:SetRadius( 2 )
-	self.BoxP = 0 --The position
-	self.BoxD = 10 -- The other demension
 	self:SetVertical( true )
 	self:SetAllowJump( false )
 	
 	local H = holo.Create( "HRect" )
 		H:SetElement( self )
 		H:SetRadius( 2 )
+		H:SetAlphaFromElement( true )
 	self.Bar = H
 	
 	H = holo.Create( "HRect" )
 		H:SetElement( self )
 		H:SetRadius( 2 )
+		H:SetAlphaFromElement( true )
 		H:SetCheckHL( true )
 	self.Slider = H
 	
 	self:SetSize( 14, 50 )
+	self:SetValue( 0.5 )
 	self:SetColor( Color(255,255,255,255) )
 end
 
@@ -472,29 +514,30 @@ function OBJ:Draw()
 end
 
 function OBJ:Think()
-	local x,y = self:MPos()
-	
-	local M = self:GetAllowJump() and self:MouseCheck( x,y ) or self.Slider:MouseCheck( x,y )
-	if (LocalPlayer():KeyDown( IN_USE ) or input.IsMouseDown(MOUSE_FIRST)) and M then
-		self:SetDragging( true )
-	end
-	
-	-- We want it to start dragging when both conditions are true, but we only want it to end when the key is up.
-	if !LocalPlayer():KeyDown( IN_USE ) and !input.IsMouseDown(MOUSE_FIRST) then
-		self:SetDragging( false )
-	end
+	local D = false
+	if LocalPlayer():KeyDown( IN_USE ) or input.IsMouseDown(MOUSE_FIRST) then
+		local M = false
+		local x, y = self:MPos()
+		if self:GetAllowJump() then
+			M = self:MouseCheck( x,y )
+		else
+			M = self.Slider:MouseCheck( self.Slider:MPos() )
+		end
 
-	if self:GetDragging() then
-		local V, d = self:GetVertical(), self:GetLength()
-		local m = V and y or x
-		
-		self:SetValue( Lerp( math.Clamp( 0.5+m/d,0,1 ) , self:GetMin(), self:GetMax() ) )
+		if M or self:GetDragging() then
+			D = true
+			
+			local V, l = self:GetVertical(), self:GetLength()
+			local m = V and y or x
+			
+			self:SetValue( Lerp( math.Clamp( 0.5 + m/l ,0,1 ) , self:GetMin(), self:GetMax() ) )
+		end
 	end
-	
+	self:SetDragging( D )
 end
 
 function OBJ:GetLength()
-	return self:GetVertical() and self:GetTall() or self:GetWide()
+	return (self:GetVertical() and self:GetTall() or self:GetWide())
 end
 
 function OBJ:SetSize( x, y )
@@ -505,32 +548,35 @@ function OBJ:SetSize( x, y )
 	
 	local B, S = self.Bar, self.Slider
 	if B then B:SetSize( V and x-4 or x    , V and y-4  or y ) end
-	if S then S:SetSize( V and x   or x/20 , V and y/20 or y ) end
+	if S then S:SetSize( V and x   or x/15 , V and y/15 or y ) end
 end
 
-function OBJ:SetColor( tCol )
+function OBJ:SetColor( cC )
 	local H = self:GetHL()
 	
-	self.Col = tCol
+	self.cCol = cC
 	local B, S = self.Bar, self.Slider
-	if B then B:SetColor( Color( math.Clamp( tCol.r - 200,0,255),math.Clamp( tCol.r - 200,0,255),math.Clamp( tCol.r - 200,0,255),math.Clamp( tCol.a - 50,50,255) ) ) end
-	if S then S:SetColor( tCol ) end
+	if B then 
+		B:SetColor( cC )
+		B:SetColorBright( math.fmod( B:GetColorBright() - 0.75 , 0 , 1 ) )
+	end
+	if S then S:SetColor( cC ) end
 end
 
 function OBJ:SetValue( nVal )
 	if type( nVal ) ~= "number" then return end
-		self.nVal = nVal
-		print( nVal )
-		if self.Slider then
-			local V, d = self:GetVertical(), self:GetLength()
-			local f = nVal / ( self:GetMax() - self:GetMin() )
 
-			if V then
-				self.Slider:SetPos( 0 , math.Clamp( d*(0.5 - f) , -0.5*d+1 , 0.5*d-1 )  )
-			else
-				self.Slider:SetPos( math.Clamp( d*(0.5 - f) , -0.5*d+1 , 0.5*d-1 ) , 0  )
-			end
+	self.nVal = nVal
+	if self.Slider then
+		local V, d = self:GetVertical(), self:GetLength()
+		local f = math.abs( nVal / ( self:GetMax() - self:GetMin() ) )
+
+		if V then
+			self.Slider:SetPos( 0 , math.Clamp( d*(0.5 - f) , -0.5*d+1 , 0.5*d-1 )  )
+		else
+			self.Slider:SetPos( math.Clamp( d*(0.5 - f) , -0.5*d+1 , 0.5*d-1 ) , 0  )
 		end
+	end
 	self:Output( nVal )
 end
 
@@ -541,105 +587,192 @@ holo.Register( "HSBar" , OBJ , "HRect" )
 ---------------------------------------------------------------------------------------------------
 local OBJ = {}
 
+AccessorFunc( OBJ, "bDrag"	, "Dragging"	, FORCE_BOOL )
+AccessorFunc( OBJ, "bJump"	, "AllowJump"	, FORCE_BOOL )
+AccessorFunc( OBJ, "nXVal"	, "XValue"		, FORCE_NUMBER )
+AccessorFunc( OBJ, "nYVal"	, "YValue"		, FORCE_NUMBER )
+AccessorFunc( OBJ, "nXMax"	, "XMax"		, FORCE_NUMBER )
+AccessorFunc( OBJ, "nXMin"	, "XMin"		, FORCE_NUMBER )
+AccessorFunc( OBJ, "nYMax"	, "YMax"		, FORCE_NUMBER )
+AccessorFunc( OBJ, "nYMin"	, "YMin"		, FORCE_NUMBER )
+
 function OBJ:Initialize()
 
-	self.sOutput = ""	
-	self.XMin  = 0
-	self.XMax  = 1
-	self.YMin  = 0
-	self.YMax  = 1
-	self.XVal = 0
-	self.YVal = 0
-	self.Rad  = 4
-	self.BoxX = 0
-	self.BoxY = 0
-	self.BoxW = 10
-	self.BoxT = 10
-	self.OrX  = 0
-	self.OrY  = 0
-	self.Wide = 50
-	self.Tall = 50
-	self.Col  = Color(255,255,255,255)
-	self.HCol = Color(255,255,255,255)
-	self.HL   = false
-	
-end
+	self.BaseClass.Initialize( self )
 
-function OBJ:Think()
-	self:MouseHoverHL()
-	local x,y = self:MPos()
+	self:SetXMin( 0 )
+	self:SetXMax( 1 )
+	self:SetYMin( 0 )
+	self:SetYMax( 1 )
+	self:SetRadius( 2 )
+	self:SetAllowJump( false )
 	
-	if self:MouseCheck( x,y ) && (LocalPlayer():KeyDown( IN_USE ) || (input.IsMouseDown(MOUSE_FIRST))) then
-		self.Dragging = true
-	end
+	local H = holo.Create( "HRect" )
+		H:SetElement( self )
+		H:SetRadius( 4 )
+		H:SetAlphaFromElement( true )
+	self.Sheet = H
 	
-	if !(LocalPlayer():KeyDown( IN_USE ) || (input.IsMouseDown(MOUSE_FIRST))) then -- We want it to start dragging when both conditions are true, but we only want it to end when the key is up.
-		self.Dragging = false
-	end
+	H = holo.Create( "HRect" )
+		H:SetElement( self )
+		H:SetRadius( 2 )
+		H:SetAlphaFromElement( true )
+	self.XBar = H
 	
-	if self.Dragging then
-		--local MAx,OAx,Scl,Mul,Add = self.Vert and y or x,self.Vert and self.OrY or self.OrX, self.Vert and self.Tall or self.Wide, self.Vert and 1 or -1, self.Vert and 0 or 1
-		local XPos = (math.Clamp((((x - self.OrX) / (self.Wide * 0.5 - 10)) * -0.5) + 0.5,0,1) - 1) * -1
-		self.XVal = self.XMin + (XPos * (self.XMax - self.XMin))
-		
-		local YPos = math.Clamp((((y - self.OrY) / (self.Tall * 0.5 - 10)) * -0.5) + 0.5,0,1)
-		self.YVal = self.YMin + (YPos * (self.YMax - self.YMin))
-		
-	end
-	local PVec = Vector(self.XVal,self.YVal,0)
-	self:Output(PVec)
+	H = holo.Create( "HRect" )
+		H:SetElement( self )
+		H:SetRadius( 2 )
+		H:SetAlphaFromElement( true )
+	self.YBar = H
+	
+	H = holo.Create( "HRect" )
+		H:SetElement( self )
+		H:SetRadius( 2 )
+		H:SetAlphaFromElement( true )
+		H:SetCheckHL( true )
+	self.Slider = H
+	
+	self:SetSize( 50 , 50 )
+	self:SetValue( 0.5, 0.5 )
+	self:SetColor( Color(255,255,255,255) )
 end
 
 function OBJ:Draw()
 	self:Think()
 	
-	local w,w2,w3,t,t2,t3,C,A = self.Wide,self.BoxW,self.BoxW + 5, self.Tall, self.BoxT,self.BoxT + 5, self.Col, self:CheckAlpha()
-	if self:GetHL() then
-		C = self.HCol
-	end
-	
-	local XVal = 0
-	if self.XMax-self.XMin != 0 then
-		XVal = math.Clamp((self.XVal-self.XMin)/(self.XMax-self.XMin),0,1) * 2 - 1
-	end
-	--local axis, scale,mul = self.Vert and self.OrY or self.OrX, self.Vert and t or w, self.Vert and 1 or -1
-	local ax = self.OrX - (XVal * (w * 0.5 - 10)) * -1
-	
-	local YVal = 0
-	if self.YMax-self.YMin != 0 then
-		YVal = math.Clamp((self.YVal-self.YMin)/(self.YMax-self.YMin),0,1) * 2 - 1
-	end
-	local ay = self.OrY - (YVal * (t * 0.5 - 10))
-		
-	local Col = Color(C.r, C.g, C.b, C.a * A)
-	local ColD = Color(math.Clamp(C.r - 200,0,255),math.Clamp(C.r - 200,0,255),math.Clamp(C.r - 200,0,255),math.Clamp((C.a * A) - 50,50,255))
-	
-	draw.RoundedBox( self.Rad , (self.OrX - 0.5*w), (self.OrY - 0.5*t), w, t, ColD )
-	draw.RoundedBox( self.Rad , (ax - 0.5*w2), (self.OrY - 0.5*t), w2, t, ColD ) -- Vertical Bar
-	draw.RoundedBox( self.Rad , (self.OrX - 0.5*w), (ay - 0.5*t2), w, t2, ColD ) -- Horizontal Bar
-	draw.RoundedBox( self.Rad , (ax - 0.5*w3), (ay - 0.5*t3) , w3, t3, Col )
+	self.Sheet:Draw()
+	self.XBar:Draw()
+	self.YBar:Draw()
+	self.Slider:Draw()
 end
 
-function OBJ:MouseCheck( MX, MY )
-	local XVal = 0
-	if self.XMax-self.XMin != 0 then
-		XVal = math.Clamp((self.XVal-self.XMin)/(self.XMax-self.XMin),0,1) * 2 - 1
+function OBJ:Think()
+	local D = false
+	if LocalPlayer():KeyDown( IN_USE ) or input.IsMouseDown(MOUSE_FIRST) then
+		local M = false
+		local x, y = self:MPos()
+		if self:GetAllowJump() then
+			M = self:MouseCheck( x,y )
+		else
+			M = self.Slider:MouseCheck( self.Slider:MPos() )
+		end
+
+		if M or self:GetDragging() then
+			D = true
+			
+			local X = Lerp( math.Clamp( 0.5 + x/self:GetWide() ,0,1 ) , self:GetXMin(), self:GetXMax() )
+			local Y = Lerp( math.Clamp( 0.5 + y/self:GetTall() ,0,1 ) , self:GetYMin(), self:GetYMax() )
+			print( X,Y )
+			self:SetValue( X , Y )
+			--self:SetXValue( X )
+			--self:SetYValue( Y )
+		end
 	end
-	--local axis, scale, mul = self.Vert and self.OrY or self.OrX, self.Vert and self.Tall or self.Wide, self.Vert and 1 or -1
-	local x = self.OrX - (XVal * (self.Wide * 0.5 - 10)) * -1
+	self:SetDragging( D )
+end
+
+function OBJ:SetSize( x, y )
+	self:SetWide( x )
+	self:SetTall( y )
 	
-	local YVal = 0
-	if self.YMax-self.YMin != 0 then
-		YVal = math.Clamp((self.YVal-self.YMin)/(self.YMax-self.YMin),0,1) * 2 - 1
-	end
-	--local axis, scale, mul = self.Vert and self.OrY or self.OrX, self.Vert and self.Tall or self.Wide, self.Vert and 1 or -1
-	local y = self.OrY - (YVal * (self.Tall * 0.5 - 10))
+	local Sh, XB, YB, Sl = self.Sheet, self.XBar, self.YBar, self.Slider
+	if Sh then Sh:SetSize( x , y ) end
+	if XB then XB:SetSize(  x , y/10 - 4 ) end
+	if YB then YB:SetSize( x/10 - 4 , y  ) end
+	if Sl then Sl:SetSize(  x/10 , y/10  ) end
+end
+
+function OBJ:SetColor( cC )
+	cC = ClampColor( cC )
 	
-	local w,t = self.BoxW, self.BoxT
-	if MX >= x - 0.5 * w && MX <= x + 0.5 * w && MY >= y - 0.5*t && MY <= y + 0.5*t then
-		return true
+	self.cCol = cC
+	local Sh, XB, YB, Sl = self.Sheet, self.XBar, self.YBar, self.Slider
+	if Sh then 
+		local C2 = cC
+		if C2.a < 255 then
+			C2.a = math.Clamp( C2.a - 40 , 100 , 255 )
+		end
+		Sh:SetColor( C2 )
+		Sh:SetColorBright( math.fmod( Sh:GetColorBright() - 0.5 , 0 , 1 ) )
 	end
-	return false
+	if XB then 
+		XB:SetColor( cC )
+		XB:SetColorBright( math.fmod( XB:GetColorBright() - 0.75 , 0 , 1 ) )
+	end
+	if YB then 
+		YB:SetColor( cC )
+		YB:SetColorBright( math.fmod( YB:GetColorBright() - 0.75 , 0 , 1 ) )
+	end
+	if Sl then Sl:SetColor( cC ) end
+end
+
+function OBJ:SetValue( nXVal , nYVal )
+	if type( nXVal ) ~= "number" or type( nYVal ) ~= "number" then return end
+
+	self.nXVal = nXVal
+	self.nYVal = nYVal
+	local fx = ( nXVal - self:GetXMin() ) / ( self:GetXMax() - self:GetXMin() )
+	local fy = ( nYVal - self:GetYMin() ) / ( self:GetYMax() - self:GetYMin() )
+	
+	local w, t = self:GetWide(), self:GetTall()
+	local x = math.Clamp( w*(0.5 - fx) , -0.5*w + 1 , 0.5*w - 1 )
+	local y = math.Clamp( t*(0.5 - fy) , -0.5*t + 1 , 0.5*t - 1 )
+	
+	local Sl = self.Slider
+		if Sl then
+			Sl:SetPos( x , y  )
+		end
+	local XB = self.XBar
+		if XB then
+			XB:SetPos( 0 , y  )
+		end
+	local YB = self.YBar
+		if YB then
+			YB:SetPos( x , 0  )
+		end
+	--self:Output( nVal )
+end
+
+function OBJ:GetValue()
+	return self:GetXValue() , self:GetYValue()
+end
+
+function OBJ:SetXValue( nVal )
+	if type( nVal ) ~= "number" then return end
+		
+	self.nXVal = nVal
+	local f = ( nVal - self:GetXMin() ) / ( self:GetXMax() - self:GetXMin() )
+	local w = self:GetWide()
+	local x = math.Clamp( w*(0.5 - f) , -0.5*w + 1 , 0.5*w - 1 )
+	
+	local Sl = self.Slider
+		if Sl then
+			Sl:SetPos( x , Sl:GetPos().y  )
+		end
+	local YB = self.YBar
+		if YB then
+			YB:SetPos( x , 0  )
+		end
+	--self:Output( nVal )
+end
+
+function OBJ:SetYValue( nVal )
+	if type( nVal ) ~= "number" then return end
+		
+	self.nYVal = nVal
+	local f = ( nVal - self:GetYMin() ) / ( self:GetYMax() - self:GetYMin() )
+	local t = self:GetTall()
+	local y = math.Clamp( t*(0.5 - f) , -0.5*t + 1 , 0.5*t - 1 )
+	
+	local Sl = self.Slider
+		if Sl then
+			Sl:SetPos( Sl:GetPos().x , y  )
+		end
+	local XB = self.XBar
+		if XB then
+			XB:SetPos( 0 , y )
+		end
+	--self:Output( nVal )
 end
 
 holo.Register( "HDSBar" , OBJ , "HRect" )
