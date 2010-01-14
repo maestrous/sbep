@@ -104,14 +104,14 @@ function ENT:LoadInterface()
 		--VSB:SetOutput( "TestValue2")
 	self:AddElement( VSB2 )
 
-	local HSB = holo.Create("HRotator", Base)
+	/*local HSB = holo.Create("HRotator", Base)
 		HSB:SetRadius( 40 )
 		HSB:SetColor(Color(120,120,230,150))
 		HSB:SetPos(0,0)
 		HSB:SetAlphaFromParent( true )
-	self:AddElement( HSB )
+	self:AddElement( HSB )*/
 
-	/*local HSB = holo.Create("HDSBar", Base)
+	local HSB = holo.Create("HDSBar", Base)
 		HSB:SetSize(100,100)
 		HSB:SetColor(Color(120,120,230,150))
 		HSB:SetPos(0,0)
@@ -121,7 +121,7 @@ function ENT:LoadInterface()
 		HSB:SetYMin( 20 )
 		HSB:SetYMax( -60 )
 		HSB:SetOutput( "TestValue3" )
-	self:AddElement( HSB )*/
+	self:AddElement( HSB )
 		
 	self.InTriggers = {}
 	self.InTriggers["TestValue1"] = VSB

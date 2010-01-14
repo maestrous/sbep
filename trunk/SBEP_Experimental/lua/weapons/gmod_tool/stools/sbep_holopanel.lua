@@ -1,11 +1,5 @@
-if WireAddon then
-	TOOL.Tab = "Wire"
-	TOOL.Category = "Wire - I/O"
-else
-	TOOL.Category		= "SBEP"
-end
-
-TOOL.Name			= "#Holo Keypad" 
+TOOL.Name			= "#HoloPanel"
+TOOL.Category		= "SBEP"
 TOOL.Command 		= nil 
 TOOL.ConfigName 	= ""
 
@@ -20,13 +14,13 @@ TOOL.ClientConVar[ "persist"	] = 0
 TOOL.ClientConVar[ "perma"		] = 0
 TOOL.ClientConVar[ "cldelay"	] = 1
 
-local TName = "sbep_holo_keypad"
+local TName = "sbep_holopanel"
 
 if CLIENT then
-	language.Add( "Tool_"..TName.."_name"		, "SBEP Holo Keypad" 									)
-	language.Add( "Tool_"..TName.."_desc"		, "Spawn Holo Keypads." 								)
-	language.Add( "Tool_"..TName.."_0"			, "Left-click to spawn a keypad."						)
-	language.Add( "undone_SBEP Holo Keypad"		, "Undone SBEP Holo Keypad"								)
+	language.Add( "Tool_"..TName.."_name"		, "SBEP HoloPanel" 									)
+	language.Add( "Tool_"..TName.."_desc"		, "Spawn HoloPanels." 								)
+	language.Add( "Tool_"..TName.."_0"			, "Left-click to spawn a holopanel."				)
+	language.Add( "undone_SBEP HoloPanel"		, "Undone SBEP HoloPanel"							)
 	
 	local function SetColors( um )
 		local HK = um:ReadEntity()
@@ -51,16 +45,16 @@ function TOOL:LeftClick( tr )
 	local model = self:GetClientInfo( "model" )
 	local pos = tr.HitPos
 
-	local HK = ents.Create( "HoloButton" )
-		HK:Spawn()
+	local HP = ents.Create( "HoloPanel" )
+		HP:Spawn()
 		
-		HK:SetModel( model )
+		HP:SetModel( model )
 		
-		HK:SetPos( pos - tr.HitNormal * HK:OBBMins().z )
-		HK:SetAngles( tr.HitNormal:Angle() )
-		HK:SetAngles( HK:LocalToWorldAngles( Angle(0,90,90) ) )
+		HP:SetPos( pos - tr.HitNormal * HP:OBBMins().z )
+		HP:SetAngles( tr.HitNormal:Angle() )
+		HP:SetAngles( HP:LocalToWorldAngles( Angle(0,90,90) ) )
 		
-		local B = self:GetClientNumber( "bright" )
+		/*local B = self:GetClientNumber( "bright" )
 		local r = self:GetClientNumber( "R" ) * B/255
 		local g = self:GetClientNumber( "G" ) * B/255
 		local b = self:GetClientNumber( "B" ) * B/255
@@ -76,10 +70,10 @@ function TOOL:LeftClick( tr )
 			umsg.Bool( self:GetClientNumber( "encrypt" ) == 1 )
 			umsg.Bool( self:GetClientNumber( "persist" ) == 1 )
 			umsg.Bool( self:GetClientNumber( "perma" ) == 1 )
-		umsg.End()
+		umsg.End()*/
 		
-	undo.Create("SBEP Holo Keypad")
-		undo.AddEntity( HK )
+	undo.Create("SBEP HoloPanel")
+		undo.AddEntity( HP )
 		undo.SetPlayer( ply )
 	undo.Finish()
 	
@@ -97,13 +91,17 @@ end
 function TOOL.BuildCPanel( panel )
 	
 	panel:SetSpacing( 10 )
-	panel:SetName( "SBEP Holo Keypad" )
+	panel:SetName( "SBEP HoloPanel" )
+	
+	local tdplc = g_SpawnMenu:GetTable().ToolMenu:GetTable().Items[1].Panel:GetTable().Content
+	local w, pd = tdplc:GetWide(), tdplc:GetPadding()
+	local W = w - 4*pd
 	
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	local DCC = vgui.Create( "DColorCircle" )
-		DCC:SetSize( 100 , 3.4*panel:GetWide() )
+	/*local DCC = vgui.Create( "DColorCircle" )
+		DCC:SetSize( W , W )
 		DCC.TranslateValues = function( self, x, y )
 									x = x - 0.5
 									y = y - 0.5
@@ -135,68 +133,20 @@ function TOOL.BuildCPanel( panel )
 		BNS:SetConVar( TName.."_bright" )
 	panel:AddItem( BNS )
 	
-	local PS = vgui.Create( "DPropertySheet" )
-		PS:SetSize( 50, 250 )
-	panel:AddItem( PS )
-	
-	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
-	local KP = vgui.Create( "DPanelList" )
-		KP:SetSpacing( 5 )
-		KP:SetPadding( 5 )
-	PS:AddSheet( "Keypad" , KP , "gui/silkicons/plugin"	, false , false , "Keypad" )
-	
-	local PassL = vgui.Create( "DLabel" )
-		PassL:SetText( "Pass Key" )
-	KP:AddItem( PassL )
-	
-	local Pass = vgui.Create( "DTextEntry" )
-		Pass.OnEnter = function(self)
-							RunConsoleCommand( TName.."_pass" , self:GetValue() )
+	local Ta = vgui.Create( "HPDTablet" )
+		Ta:SetSize( W, 200 )
+
+	local AE = vgui.Create( "DButton" )
+		AE:SetSize( 100, 25 )
+		AE:SetText( "Add Element" )
+		AE.DoClick = function( self )
+							local F = Ta:AddItem()
+								F:SetPos( 20, 50 )
 						end
-	KP:AddItem( Pass )
+	panel:AddItem( AE )
 	
-	local Cry = vgui.Create( "DCheckBoxLabel" )
-		Cry:SetText( "Encrypt Display" )
-		Cry:SetConVar( TName.."_encrypt" )
-	KP:AddItem( Cry )
-	
-	local Perma = vgui.Create( "DCheckBoxLabel" )
-		Perma:SetText( "Always open" )
-		Perma:SetConVar( TName.."_perma" )
-	KP:AddItem( Perma )
-	
-	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	local IN = vgui.Create( "DPanelList" )
-		IN:SetSpacing( 5 )
-		IN:SetPadding( 5 )
-	PS:AddSheet( "InputPad" , IN , "gui/silkicons/plugin"	, false , false , "InputPad" )
-	
-	local Cry = vgui.Create( "DCheckBoxLabel" )
-		Cry:SetText( "Encrypt Display" )
-		Cry:SetConVar( TName.."_encrypt" )
-	IN:AddItem( Cry )
-	
-	local Per = vgui.Create( "DCheckBoxLabel" )
-		Per:SetText( "Persist Value" )
-		Per:SetConVar( TName.."_persist" )
-	IN:AddItem( Per )
-	
-	local Perma = vgui.Create( "DCheckBoxLabel" )
-		Perma:SetText( "Always open" )
-		Perma:SetConVar( TName.."_perma" )
-	IN:AddItem( Perma )
-	
-	local CCD = vgui.Create( "DNumSlider" )
-		CCD:SetText( "Confirm Clear Delay (-1 to never clear)" )
-		CCD:SetMin( -1 )
-		CCD:SetMax( 10 )
-		CCD:SetValue( 1 )
-		CCD:SetDecimals( 0 )
-		CCD:SetConVar( TName.."_cldelay" )
-	IN:AddItem( CCD )
-	
+	panel:AddItem( Ta )
  end  
