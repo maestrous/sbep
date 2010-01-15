@@ -17,8 +17,8 @@ function ENT:Initialize()
 	local inTypes = {N,N,V}
 	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
 	
-	local outNames = {"Button1","TestValue2","TestValue3"}
-	local outTypes = {N,N,V}
+	local outNames = {"TestValue1","TestValue2","TestValue3","TestValue4"}
+	local outTypes = {N,N,V,N}
 	local outDescs = {}
 	self.Outputs = WireLib.CreateSpecialOutputs( self.Entity,outNames,outTypes,outDescs)
 	--PrintTable(self.Outputs)
