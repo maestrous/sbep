@@ -21,8 +21,8 @@ function ENT:Initialize()
 	
 	self.PermaA = true
 	
-	self.X = 25
-	self.Y = 18
+	self.X = 250
+	self.Y = 180
 	self.Z = 15
 	
 	self:LoadInterface()
@@ -60,7 +60,7 @@ function ENT:LoadInterface()
 		Hov:SetColor(Color(120,120,230,100))
 		Hov:SetPos(-65,0)
 		Hov:SetAlphaFromParent( true )
-		Hov:SetOutput( "Button1" )
+		Hov:SetOutput( "TestValue1" )
 		Hov:SetToggle( false )
 	self:AddElement( Hov )
 
@@ -109,23 +109,32 @@ function ENT:LoadInterface()
 		HSB:SetColor(Color(120,120,230,150))
 		HSB:SetPos(0,0)
 		HSB:SetAlphaFromParent( true )
-	self:AddElement( HSB )*/
-
+	self:AddElement( HSB )
+	*/
 	local HSB = holo.Create("HDSBar", Base)
 		HSB:SetSize(100,100)
 		HSB:SetColor(Color(120,120,230,150))
 		HSB:SetPos(0,0)
 		HSB:SetAlphaFromParent( true )
-		HSB:SetXMin( 180 )
-		HSB:SetXMax( -180 )
+		HSB:SetXMin( -30 )
+		HSB:SetXMax( 30 )
 		HSB:SetYMin( 20 )
 		HSB:SetYMax( -60 )
 		HSB:SetOutput( "TestValue3" )
 	self:AddElement( HSB )
+	
+	
+	local WSC = holo.Create("HVecView", Base)
+		WSC:SetSize(1500,1500)
+		WSC:SetColor(Color(255,0,0,255))
+		WSC:SetPos(0,0)
+		--VSB:SetOutput( "TestValue2")
+	self:AddElement( WSC )
 		
 	self.InTriggers = {}
 	self.InTriggers["TestValue1"] = VSB
 	self.InTriggers["TestValue2"] = VSB2
+	self.InTriggers["TestValue3"] = WSC
 end
 
 function ENT:TriggerInput(str,val)
@@ -166,6 +175,7 @@ end
 
 function ENT:Draw()
 	self:DrawModel()
+	
 end
 
 function ENT:DrawTranslucent()

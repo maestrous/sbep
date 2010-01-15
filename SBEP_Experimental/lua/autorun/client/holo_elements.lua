@@ -262,6 +262,8 @@ end
 function OBJ:Input( nInput )
 	if type(nInput) == "number" then
 		self:SetValue( nInput )
+	elseif type(nInput) == "Vector" then
+		self.vVect = nInput
 	end
 end
 
@@ -967,3 +969,91 @@ function OBJ:SetValue( nVal )
 end
 
 holo.Register( "HRotator" , OBJ , "HCircle" )
+
+
+---------------------------------------------------------------------------------------------------
+//	HVecView										//
+---------------------------------------------------------------------------------------------------
+local OBJ = {}
+
+AccessorFunc( OBJ, "vVect"	, "Vector"  )
+
+function OBJ:Initialize()
+
+	self.BaseClass.Initialize( self )
+		
+	self:SetSize( 50 , 50 )
+	self:SetVector( Vector(0,0,0) )
+	self:SetColor( Color(255,255,255,255) )
+	
+	self.VX = 0
+	self.VY = 0
+end
+
+function OBJ:Draw()
+	self:Think()
+	
+	local w,t = self:GetSize()
+	local x,y = self:GetWorldPos()
+	
+	local u,d,l,r = y - t * 0.5, y + t * 0.5, x - w * 0.5, x + w * 0.5
+	local XEd, YEd = 0,0
+	
+	surface.SetDrawColor(0, 0, 0, 180)
+	
+	surface.DrawLine( l, u, r, u )
+	surface.DrawLine( r, u, r, d )
+	surface.DrawLine( r, d, l, d )
+	surface.DrawLine( l, d, l, u )
+	
+	surface.SetDrawColor(255, 0, 0, 180)
+	
+	if self:MouseCheck( self.VX, self.VY ) then --Rather conveniently, the mouse-check function also works for stuff other than the mouse :)
+		--draw.RoundedBox( 1 , self.VX -5, self.VY -5 , 10, 10, self:GetColor() )
+		surface.DrawLine( self.VX - 20, self.VY, self.VX + 20, self.VY )
+		surface.DrawLine( self.VX, self.VY - 20, self.VX, self.VY + 20 )
+	else
+		if self.VY < u then
+			YEd = -1
+		elseif self.VY > d then
+			YEd = 1
+		end
+		if self.VX < l then
+			XEd = -1
+		elseif self.VX > r then
+			XEd = 1
+		end
+		
+		--print(XEd,YEd)
+		
+		local RX,RY,AX,AY = XEd != 0 && x + (w * 0.5 * XEd) || self.VX,YEd != 0 && y + (t * 0.5 * YEd) || self.VY,-math.abs(XEd) + 1,-math.abs(YEd) + 1
+		
+		surface.DrawLine( RX + (-5 * XEd), RY + (-5 * YEd), RX + (-30 * XEd), RY + (-30 * YEd) )
+		surface.DrawLine( RX + (-5 * XEd), RY + (-5 * YEd), RX + (-5 * XEd) + (-10 * AX) + (-10 * AY * XEd), RY + (-20 * YEd) + (-10 * AY) + (5 * AX * YEd) )
+		surface.DrawLine( RX + (-5 * XEd), RY + (-5 * YEd), RX + (-20 * XEd) + (10 * AX) + (5 * AY * XEd), RY + (-5 * YEd) + (10 * AY) + (-10 * AX * YEd) )
+	end
+end
+
+function OBJ:Think()
+	local P = self:GetPanel()
+	if P && P:IsValid() then
+		local up = P:GetUp()
+		local eyepos = LocalPlayer():GetShootPos()
+			
+		local W = eyepos - (P:GetPos() + up * P.Z)
+		local N = up
+		local AVec = self:GetVector() - LocalPlayer():GetShootPos()
+		local U = AVec
+		local Upper = N:DotProduct(W)
+		local Lower = N:DotProduct(U)
+		
+		local RDist = -Upper / Lower
+		
+		local RPos = eyepos + U * RDist
+		
+		local R = P:WorldToLocal( RPos )
+		self.VX, self.VY = R.x * 10, R.y * -10
+	end
+end
+
+holo.Register( "HVecView" , OBJ , "HRect" )
