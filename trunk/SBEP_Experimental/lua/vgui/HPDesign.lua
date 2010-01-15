@@ -4,7 +4,10 @@
 
 ------------------------------------------------------------------------------------------------------------------*/
 local PANEL = {}
-  
+
+AccessorFunc( PANEL, "hpdIO" , "IOForm" )
+AccessorFunc( PANEL, "hpdIC" , "ItemContextList" )
+
 /*---------------------------------------------------------
    Name: Init
 ---------------------------------------------------------*/
@@ -64,7 +67,8 @@ derma.DefineControl( "HPDTablet", "A design tablet for the HoloPanel design menu
 ------------------------------------------------------------------------------------------------------------------*/
 local PANEL = {}
 
-AccessorFunc( PANEL, "bSel" , "Selected" , FORCE_BOOL )
+AccessorFunc( PANEL, "bSel" , "Selected" 	, FORCE_BOOL )
+AccessorFunc( PANEL, "sType", "ElementType" , FORCE_STRING )
   
 /*---------------------------------------------------------
    Name: Init
@@ -75,17 +79,17 @@ function PANEL:Init()
 	self:ShowCloseButton( false )
 	self:SetTitle( "" )
 	self:SetSize( 60, 80 )
-	--self:SetBGColor( 64,64,64, 255 )
-	
-	/*local P = vgui.Create( "DPanel" , self )
-		P:SetPos(0,22)
-		/*P.Paint = function()
-						surface.SetDrawColor( 50, 50, 50, 255 )
-						surface.DrawRect( 0, 0, P:GetWide(), P:GetTall() )
-					end*
-		P:SetBGColor( 64,64,64, 255 )
-	self.P = P	*/
 
+	self.Inputs = {}
+	self.Outputs = {}
+	
+	local HC = holo.Classes
+	self.ElementTypes = {}
+	local ET = self.ElementTypes
+	for Type, HE in pairs( HC ) do
+		table.insert( ET, Type )
+	end
+	PrintTable( ET )
 end
 
 /*---------------------------------------------------------
@@ -95,6 +99,42 @@ function PANEL:PaintOver()
 	if self:GetSelected() then
 		surface.SetDrawColor( 255, 255, 255, 255 )
 		self:DrawOutlinedRect()
+	end
+end
+
+/*---------------------------------------------------------
+   Name: SetElementType
+---------------------------------------------------------*/
+function PANEL:SetElementType( sT )
+	local ET = self.ElementTypes
+	if ET then
+		if table.HasValue( ET, sT ) then
+			self.sType = sT
+			self:SetTitle( sT )
+		end
+	end
+end
+
+/*---------------------------------------------------------
+   Name: CreateTypeChoice
+---------------------------------------------------------*/
+function PANEL:CreateTypeChoice()
+	if self.TC then
+		return self.TC
+	else
+		local ET = self.ElementTypes
+		if ET then
+			local MC = vgui.Create( "DMultiChoice" )
+				for n, T in ipairs( ET ) do
+					MC:AddChoice( T )
+				end
+				MC.OnSelect = function( self, index, value, data )
+								self.Item:SetElementType( value )
+							end
+			MC.Item = self
+			self.TC = MC
+			return MC
+		end
 	end
 end
 
@@ -109,6 +149,16 @@ function PANEL:OnMouseReleased()
 	local P = self:GetParent()
 	if P then
 		P:SetSelected( self.TIndex )
+		
+		local F = P:GetIOForm()
+		if F then
+			F:SetItem( self )
+		end
+		
+		local C = P:GetItemContextList()
+		if C then
+			C:SetItem(self)
+		end
 	end
 end
 
@@ -156,3 +206,150 @@ function PANEL:Think()
 end
 
 derma.DefineControl( "HPDItem", "An item for the HoloPanel design menu.", PANEL, "DFrame" )
+
+/*------------------------------------------------------------------------------------------------------------------
+
+	Control: HPDInOut
+
+------------------------------------------------------------------------------------------------------------------*/
+local PANEL = {}
+
+AccessorFunc( PANEL, "hpdItem" , "Item" )
+AccessorFunc( PANEL, "hpdTablet" , "Tablet" )
+
+/*---------------------------------------------------------
+   Name: Init
+---------------------------------------------------------*/
+function PANEL:Init()
+
+	self:SetLabel( "Inputs and Outputs" )
+	self:SetExpanded( true )
+
+	local IOP = vgui.Create( "DPanel" )
+		IOP:SetSize( 215, 160 )
+		self.Form = IOP
+	self:SetContents( IOP )
+	
+	local DI = vgui.Create( "DPanelList" , IOP )
+		DI:SetPos( 5 , 5 )
+		DI:SetSize( 110 , 150 )
+		DI:GetCanvas():SetSize( 105 , 150 )
+		DI:SetSpacing( 5 )
+	self.In = DI
+		--DI:EnableVerticalScrollbar( true )
+
+	local AIB = vgui.Create( "DButton" )
+		AIB:SetSize( 110, 20 )
+		AIB:SetText( "Add Input Node" )
+		AIB.DoClick = function( self )
+							local I = self.Form:GetItem()
+							if I then
+								if !I.Inputs then I.Inputs = {} end
+								if #I.Inputs < 5 then
+									local In = vgui.Create( "DMultiChoice" )
+										self.List:AddItem( In )
+									table.insert( I.Inputs, In )
+								end
+							end
+						end
+	DI.Add = AIB
+	AIB.Form = self
+	AIB.List = DI
+	DI:AddItem( AIB )
+	
+	local DO = vgui.Create( "DPanelList" , IOP )
+		DO:SetPos( 115 , 5 )
+		DO:SetSize( 110 , 150 )
+		DO:GetCanvas():SetSize( 105 , 155 )
+		DO:SetSpacing( 5 )
+	self.Out = DO
+		--DO:EnableVerticalScrollbar( true )
+	
+	local AOB = vgui.Create( "DButton" )
+		AOB:SetSize( 110, 20 )
+		AOB:SetText( "Add Output Node" )
+		AOB.DoClick = function( self )
+							local I = self.Form:GetItem()
+							if I then
+								if !I.Outputs then I.Outputs = {} end
+								if #I.Outputs < 5 then
+									local Out = vgui.Create( "DMultiChoice" )
+										self.List:AddItem( Out )
+									table.insert( I.Outputs, Out )
+								end
+							end
+						end
+	DO.Add = AOB
+	AOB.Form = self
+	AOB.List = DO
+	DO:AddItem( AOB )
+	
+	/*self.Toggle = function( self )
+					self.BaseClass.Toggle( self )
+					self.In:GetCanvas():SetSize( 105 , 155 )
+					self.Out:GetCanvas():SetSize( 105 , 155 )
+				end*/
+end
+
+/*---------------------------------------------------------
+   Name: Clear
+---------------------------------------------------------*/
+function PANEL:Clear()
+	if self.In then
+		self.In:Clear()
+		self.In:AddItem( self.In.Add )
+	end
+	if self.Out then
+		self.Out:Clear()
+		self.Out:AddItem( self.Out.Add )
+	end
+end
+
+/*---------------------------------------------------------
+   Name: SetItem
+---------------------------------------------------------*/
+function PANEL:SetItem( hpdItem )
+	if hpdItem == self.hpdItem then return end
+	self.hpdItem = hpdItem
+	
+	self:Clear()
+	
+	for n,I in ipairs( hpdItem.Inputs ) do
+		self.In:AddItem( I )
+	end
+	for n,O in ipairs( hpdItem.Outputs ) do
+		self.Out:AddItem( O )
+	end
+end
+
+derma.DefineControl( "HPDInOut", "An input-output interface for the HoloPanel design menu.", PANEL, "DCollapsibleCategory" )
+
+/*------------------------------------------------------------------------------------------------------------------
+
+	Control: HPDItemContext
+
+------------------------------------------------------------------------------------------------------------------*/
+
+local PANEL = {}
+
+AccessorFunc( PANEL, "hpdI" , "Item" )
+AccessorFunc( PANEL, "hpdT" , "Tablet" )
+
+/*---------------------------------------------------------
+   Name: SetItem
+---------------------------------------------------------*/
+function PANEL:SetItem( hpdI )
+	if hpdI == self.hpdI then return end
+	self.hpdI = hpdI
+	
+	self:Clear()
+	
+	if hpdI.TC then
+		self:AddItem( hpdI.TC )
+	else
+		local TC = hpdI:CreateTypeChoice()
+		self:AddItem( TC )
+	end
+end
+
+derma.DefineControl( "HPDItemContext", "A item context list for the HoloPanel design menu.", PANEL, "DPanelList" )

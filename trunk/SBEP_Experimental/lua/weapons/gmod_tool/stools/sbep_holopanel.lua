@@ -147,6 +147,16 @@ function TOOL.BuildCPanel( panel )
 								F:SetPos( 20, 50 )
 						end
 	panel:AddItem( AE )
-	
 	panel:AddItem( Ta )
- end  
+	
+	local IO = vgui.Create( "HPDInOut" )
+		Ta:SetIOForm( IO )
+		IO:SetTablet( Ta )
+	panel:AddItem( IO )
+	
+	local ICL = vgui.Create( "HPDItemContext" )
+		ICL:SetTablet( Ta )
+		Ta:SetItemContextList( ICL )
+	panel:AddItem( ICL )
+	
+end
