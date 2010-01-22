@@ -145,7 +145,7 @@ function ENT:FFire( CCD )
 	NewShell:Spawn()
 	NewShell:Initialize()
 	NewShell:Activate()
-	local NC = constraint.NoCollide(self.Entity, NewShell, 0, 0)
+	NewShell:SetOwner(self)
 	NewShell.PhysObj:SetVelocity(self.Entity:GetUp() * -self.LForce)
 	--NewShell:Fire("kill", "", 30)
 	NewShell.ParL = self.Entity

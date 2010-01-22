@@ -138,7 +138,7 @@ function ENT:FFire( CCD )
 	NewShell:Activate()
 	NewShell:GetPhysicsObject():EnableGravity(true)
 	NewShell:GetPhysicsObject():EnableDrag(true)
-	local NC = constraint.NoCollide(self.Entity, NewShell, 0, 0)
+	NewShell:SetOwner(self)
 	NewShell.PhysObj:SetVelocity(self.Entity:GetForward() * 5000)
 	NewShell:Fire("kill", "", 30)
 	NewShell.ParL = self.Entity

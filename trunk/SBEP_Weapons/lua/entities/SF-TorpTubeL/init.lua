@@ -68,10 +68,13 @@ function ENT:Think()
 		Torp:Spawn()
 		Torp:Initialize()
 		Torp:Activate()
-		--self.BWeld = constraint.Weld(Torp, self.Entity, 0, 0, 0, true)
-		--Torp:SetParent( self.Entity )
-		--self.Torp = Torp
-		
+		self.BWeld = constraint.Weld(Torp, self.Entity, 0, 0, 0, true)
+		Torp:SetOwner(self)
+		Torp:SetParent( self )
+		Torp.Mounted = true
+		Torp:GetPhysicsObject():EnableCollisions(false)
+		self.Torp = Torp
+				
 		self.Loading = false
 	end
 	local LPercent = 0
@@ -108,7 +111,8 @@ function ENT:Touch( ent )
 		ent:SetPos( self.Entity:GetPos() + self.Entity:GetRight() * -102 + self.Entity:GetUp() * 63 + self.Entity:GetForward() * -50)
 		ent:SetAngles( self.Entity:GetAngles() )
 		constraint.RemoveConstraints( self.Torp, "Weld" )
-		self.BWeld = constraint.Weld(Torp, self.Entity, 0, 0, 0, true)
+		self.BWeld = constraint.Weld(self.Torp, self.Entity, 0, 0, 0, true)
+		ent:SetOwner(self)
 		ent:SetParent( self.Entity )
 		ent.Mounted = true
 		ent:GetPhysicsObject():EnableCollisions(false)

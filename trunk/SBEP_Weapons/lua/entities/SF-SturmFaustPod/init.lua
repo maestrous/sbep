@@ -33,7 +33,7 @@ function ENT:Initialize()
 	self.Faust:Spawn()
 	self.Faust:Initialize()
 	self.Faust:Activate()
-	local NC = constraint.NoCollide( self.Entity, self.Faust )
+	self.Faust:SetOwner(self)
 	local WD = constraint.Weld( self.Entity, self.Faust )
 	self.Faust:SetParent(self.Entity)
 	

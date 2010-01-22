@@ -14,7 +14,7 @@ function ENT:Initialize()
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 
 	if WireAddon then
-		self.Inputs = WireAddon.CreateInputs( self, { "Drop" } )
+		self.Inputs = WireLib.CreateInputs( self, { "Drop" } )
 	end
 
 	local phys = self.Entity:GetPhysicsObject()
@@ -116,10 +116,7 @@ function ENT:BombDrop()
 	NewShell:Spawn()
 	NewShell:Initialize()
 	NewShell:Activate()
-	local NC = constraint.NoCollide(self.Entity, NewShell, 0, 0)
-	if self.LBomb && self.LBomb:IsValid() then
-		NC = constraint.NoCollide(self.LBomb, NewShell, 0, 0)
-	end
+	NewShell:SetOwner(self)
 	NewShell:GetPhysicsObject():SetVelocity((self.Entity:GetPhysicsObject():GetVelocity() * 0.5) + self.Entity:GetUp() * -100)
 	NewShell:Fire("kill", "", 10)
 	NewShell.Armed = false
