@@ -3,7 +3,7 @@
 	"Information"  
 	{  
 		"version"	"2"  
-		"name"		"[SBEP][Modbridge]Plate"   
+		"name"		"[ModBr]External Decor"   
 	}   
 	"Entries"   
 	{   
