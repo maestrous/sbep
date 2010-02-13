@@ -1,13 +1,11 @@
 "VertexLitGeneric"
 {
 	"$basetexture" "CMats/glass"
-	"$alpha" 0.4
+	"$alpha" 0.7
 	"$translucent" 1
 	"$nocull" 0	
-	"$surfaceprop" "metal"
-	"$envmap" "env_cubemap"
-	"$envmaptint" "[ 1.0 1.0 1.0 ]"
-	"$selfillum" 0
+	"$surfaceprop" "glass"
+	"$selfillum" 0	
 	"$model" 1
 }
 
