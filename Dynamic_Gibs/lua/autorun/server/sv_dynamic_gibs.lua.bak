@@ -157,7 +157,7 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 								elseif ent.Owner and entity.Owner then 
 									if ent.Owner == entity.Owner then return end --fucked if I know, just another possibility
 								elseif SPropProtection then
-									if ent:CPPIGetOwner() and entity:CPPIGetOwner() and ((ent:CPPIGetOwner() == entity:CPPIGetOwner()) or table.HasValue(ent:CPPIGetOwner():CPPIGetFriends(),entity:CPPIGetOwner())) then return end --FPP and SPP
+									if ent:CPPIGetOwner() and entity:CPPIGetOwner() and ((ent:CPPIGetOwner() == entity:CPPIGetOwner()) or table.HasValue(ent:CPPIGetOwner():CPPIGetFriends(),entity:CPPIGetOwner())) then return end --FPP, SPP, and UPS
 								else	--how da fuc? lets go to default owner function then...???
 									if ent:GetOwner() == entity:GetOwner() then return end
 								end
@@ -194,7 +194,7 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 								elseif ent.Owner and entity.Owner then 
 									if ent.Owner == entity.Owner then return end --fucked if I know, just another possibility
 								elseif SPropProtection then
-									if ent:CPPIGetOwner() and entity:CPPIGetOwner() and ((ent:CPPIGetOwner() == entity:CPPIGetOwner()) or table.HasValue(ent:CPPIGetOwner():CPPIGetFriends(),entity:CPPIGetOwner())) then return end --FPP and SPP
+									if ent:CPPIGetOwner() and entity:CPPIGetOwner() and ((ent:CPPIGetOwner() == entity:CPPIGetOwner()) or table.HasValue(ent:CPPIGetOwner():CPPIGetFriends(),entity:CPPIGetOwner())) then return end --FPP, SPP, and UPS
 								else	--how da fuc? lets go to default owner function then...???
 									if ent:GetOwner() == entity:GetOwner() then return end
 								end
@@ -260,7 +260,7 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 				if (phys:IsValid()) then  		
 					phys:Wake()
 					phys:EnableGravity(false)
-					phys:ApplyForceCenter(Force+((PlaneNorm+self:GetAngles():Forward()))*20))
+					phys:ApplyForceCenter(Force+((PlaneNorm+self:GetAngles():Forward()))*20)
 				end 
 				
 				SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self:EntIndex(),PlaneNorm,false)

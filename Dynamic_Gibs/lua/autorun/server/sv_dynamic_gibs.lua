@@ -139,7 +139,7 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 			if FF then
 				if entity.Player or entity.GetPlayer or entity.Owner or CPPI then
 					local info = debug.getinfo(2,"nSu") --me -> this func -> ent who called me
-					if string.find(string.lower(info.source,"sv_combatdamage")) then info = debug.getinfo(3,"nSu") end --we were called form the explode func, really.
+					if string.find(string.lower(info.source),"sv_combatdamage") then info = debug.getinfo(3,"nSu") end --we were called form the explode func, really.
 					local class = PathIsEntity(info.source)
 					if class then
 						print(class)
@@ -176,7 +176,7 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 			if FF then
 				if entity.Player or entity.GetPlayer or entity.Owner or CPPI then
 					local info = debug.getinfo(2,"nSu") --me -> this func -> ent who called me
-					if string.find(string.lower(info.source,"sv_combatdamage")) then info = debug.getinfo(3,"nSu") end --we were called form the explode func, really.
+					if string.find(string.lower(info.source),"sv_combatdamage") then info = debug.getinfo(3,"nSu") end --we were called form the explode func, really.
 					local class = PathIsEntity(info.source)
 					if class then
 						print(class)
@@ -260,7 +260,7 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 				if (phys:IsValid()) then  		
 					phys:Wake()
 					phys:EnableGravity(false)
-					phys:ApplyForceCenter(Force+((PlaneNorm+self:GetAngles():Forward()))*20))
+					phys:ApplyForceCenter(Force+((PlaneNorm+self:GetAngles():Forward()))*20)
 				end 
 				
 				SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self:EntIndex(),PlaneNorm,false)
