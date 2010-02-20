@@ -436,6 +436,7 @@ if CLIENT then
 					
 					view.origin = CL.LiftDes.StartPos + CL.LiftDes.MVOffset + Vector(0,0,1)*CL.LiftDes.CHOffset
 					view.angles = (-1 * CL.LiftDes.MVOffset):Angle()
+					
 				return view
 			end
 		end
