@@ -23,17 +23,19 @@ hook.Add("EntityTakeDamage","Dynamic_Gib_System_Data_Hook",GibEntityData)
 
 
 function DynamicGibEnt(ent,ply)
-	umsg.Start("gib_message", ply)
-		umsg.Angle( ent:GetAngles() )
-		umsg.Vector( ent:GetPos() )
-		if ent.environment and ent.environment.IsSpace and ent.environment:IsSpace() then
-			umsg.Bool(ent.environment:IsSpace())
-		else
-			umsg.Bool(false)
-		end
-		umsg.String(ent:GetModel())
-		umsg.Short(ent:GetSkin())
-	umsg.End() 
+	if ent and ent:IsValid() and ply and ply:IsValid() then
+		umsg.Start("gib_message", ply)
+			umsg.Angle( ent:GetAngles() )
+			umsg.Vector( ent:GetPos() )
+			if ent.environment and ent.environment.IsSpace and ent.environment:IsSpace() then
+				umsg.Bool(ent.environment:IsSpace())
+			else
+				umsg.Bool(false)
+			end
+			umsg.String(ent:GetModel() or "")
+			umsg.Short(ent:GetSkin())
+		umsg.End() 
+	end
 end 
 
 function IsPartiallyInTable(tbl,str)
