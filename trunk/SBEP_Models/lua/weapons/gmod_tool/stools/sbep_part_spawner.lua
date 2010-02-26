@@ -30,7 +30,7 @@ function TOOL:LeftClick( trace )
 	local SMBProp = nil
 	
 	if hab == 1 then
-		SMBProp = ents.Create( "sbep_hab_mod" )
+		SMBProp = ents.Create( "base_livable_module" )
 	else
 		SMBProp = ents.Create( "prop_physics" )
 	end
@@ -60,7 +60,7 @@ function TOOL:LeftClick( trace )
 end
 
 function TOOL:RightClick( trace )
-
+	CC_GMOD_Tool(self:GetOwner(),"",{"sbep_part_assembler"})
 end
 
 function TOOL:Reload( trace )
