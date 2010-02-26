@@ -142,6 +142,8 @@ function TOOL:RightClick( trace )
 		self.E1:SetAngles( self.E1:GetAngles() + Angle(0,0,90) )
 		self.E1.SEO:SetAngles( self.E1:LocalToWorldAngles( -1 * self.E1.Dir ) )
 		return true
+	elseif self:GetStage() == 0 then
+		CC_GMOD_Tool(self:GetOwner(),"",{"sbep_part_spawner"})
 	end
 end
 
