@@ -227,6 +227,7 @@ function ENT:Think()
 			if !(self.Sire && self.Sire:IsValid()) && self:CCount() >= 10 && self.dt.Energy >= self.MaxEnergy * .7 then
 				--self.dt.Energy = 0
 				self.dt.Mutation = 3
+				self:
 			end
 			
 			--self:NextThink(CurTime() + math.Rand(0.1,0.5))
@@ -243,6 +244,7 @@ function ENT:Think()
 			if !(self.Sire && self.Sire:IsValid()) && self:CCount() >= 25 && self.dt.Energy >= self.MaxEnergy * .8 then
 				--self.dt.Energy = 0
 				self.dt.Mutation = 4
+				self:AddEn(-100)
 			end
 			
 			NThink = math.Rand(4,8)
@@ -254,18 +256,18 @@ function ENT:Think()
 			end
 			
 			if self.dt.Energy >= 10 && self:SCount() <= 3 then
-				self:FreeSpawn(10)
+				--self:FreeSpawn(10)
 				self:AddEn(-10)
 			end
 						
 			if self.dt.Energy >= 250 then
-				print("Lets make something nasty...")
+				--print("Lets make something nasty...")
 				local ent = table.Random( self.Children )
-				print(ent)
+				--print(ent)
 				if ent && ent:IsValid() && ent != self then
-					print("Looks good...")
+					--print("Looks good...")
 					if ent.dt.Mutation == 1 then
-						print("It's a spreader")
+						--print("It's a spreader")
 						ent.dt.Mutation = 20
 						self:AddEn(-50)
 					end
