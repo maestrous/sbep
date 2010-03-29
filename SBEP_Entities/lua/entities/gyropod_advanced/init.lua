@@ -809,6 +809,10 @@ function ENT:PreEntityCopy()
 		DI.Pod = self.Pod:EntIndex()
 	end
 	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+	
 	duplicator.StoreEntityModifier(self, "SBEPGyroAdv", DI)
 end
 duplicator.RegisterEntityModifier( "SBEPGyroAdv" , function() end)
