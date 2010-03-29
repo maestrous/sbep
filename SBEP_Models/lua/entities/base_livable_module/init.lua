@@ -15,15 +15,16 @@ function ENT:Initialize()
 	self:CreateEnvironment(1, 1, 1, 0, 0, 0, 0, 0)
 	self.maxsize = self.Entity:BoundingRadius()
 	self.maxO2Level = 100
+	self.disuse = false
 	if not (WireAddon == nil) then
 		self.WireDebugName = self.PrintName
-		self.Inputs = Wire_CreateInputs(self.Entity, { "On", "Gravity", "Max O2 level" })
+		self.Inputs = Wire_CreateInputs(self.Entity, { "On", "Gravity", "Max O2 level", "Disable Use"})
 		self.Outputs = Wire_CreateOutputs(self.Entity, { "On", "Oxygen-Level", "Temperature", "Gravity" })
 	end
 end
 
 function ENT:TurnOn()
-	if (self.Active == 0) then
+	if (self.Active == 0 and !self.disuse) then
 		self.Entity:EmitSound( "apc_engine_start" )
 		self.Active = 1
 		self:UpdateSize(self.Entity.sbenvironment.size, self.maxsize) //We turn the forcefield that contains the environment on
@@ -36,7 +37,7 @@ function ENT:TurnOn()
 end
 
 function ENT:TurnOff()
-	if (self.Active == 1) then
+	if (self.Active == 1 and !self.disuse) then
 		self.Entity:StopSound( "apc_engine_start" )
 		self.Entity:EmitSound( "apc_engine_stop" )
 		self.Active = 0
@@ -82,6 +83,12 @@ function ENT:TriggerInput(iname, value)
 		local level = 100
 		level = math.Clamp(math.Round(value), 0, 100)
 		self.maxO2Level = level
+	elseif (iname == "Disable Use") then
+		if (value >= 1) then
+			self.disuse = true
+		else
+			self.disuse = false
+		end
 	end
 end
 
@@ -519,3 +526,13 @@ function ENT:OnEnvironment(ent)
 	end			
 end
 
+--[[
+function ENT:PreEntityCopy()
+	local DI = {}
+
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+
+	duplicator.StoreEntityModifier(self, "SBEPHabModule", DI)
+end]]
