@@ -178,3 +178,32 @@ end
 function ENT:Use( activator, caller )
 
 end
+
+function ENT:PreEntityCopy()
+	local DI = {}
+
+	local ent = self.HP[1]["Ent"]
+	if ent && ent:IsValid() then
+		DI.gun = ent:EntIndex()
+	end
+	
+	if WireAddon then
+		DI.WireData = WireLib.BuildDupeInfo( self.Entity )
+	end
+
+	duplicator.StoreEntityModifier(self, "SPTurret", DI)
+end
+duplicator.RegisterEntityModifier( "SPTurret" , function() end)
+
+function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
+	local DI = Ent.EntityMods.SPTurret
+
+	if (DI.gun) then
+		self.HP[1]["Ent"] = CreatedEntities[ DI.gun ]
+	end
+	
+	if(Ent.EntityMods and Ent.EntityMods.SPTurret.WireData) then
+		WireLib.ApplyDupeInfo( pl, Ent, Ent.EntityMods.SPTurret.WireData, function(id) return CreatedEntities[id] end)
+	end
+
+end
