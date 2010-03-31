@@ -23,8 +23,9 @@ function ENT:Initialize()
 	end
 end
 
-function ENT:TurnOn()
-	if (self.Active == 0 and !self.disuse) then
+function ENT:TurnOn(value, caller)
+	if (self.disuse and caller) then return end
+	if (self.Active == 0) then
 		self.Entity:EmitSound( "apc_engine_start" )
 		self.Active = 1
 		self:UpdateSize(self.Entity.sbenvironment.size, self.maxsize) //We turn the forcefield that contains the environment on
@@ -36,8 +37,10 @@ function ENT:TurnOn()
 	end
 end
 
-function ENT:TurnOff()
-	if (self.Active == 1 and !self.disuse) then
+function ENT:TurnOff(value, caller)
+	if (self.disuse and caller) then return end
+	if (self.Active == 1) then
+
 		self.Entity:StopSound( "apc_engine_start" )
 		self.Entity:EmitSound( "apc_engine_stop" )
 		self.Active = 0
