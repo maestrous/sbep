@@ -96,7 +96,7 @@ end
 function ENT:GoBang()
 	self.Exploded = true
 	util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 200, 75)
-	gcombat.hcgexplode( self.Entity:GetPos(), 200, math.Rand(50, 100), 7)
+	--gcombat.hcgexplode( self.Entity:GetPos(), 200, math.Rand(50, 100), 7)
 
 	self.Entity:EmitSound("explode_4")
 	

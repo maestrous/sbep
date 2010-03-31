@@ -13,8 +13,6 @@ function ENT:Initialize()
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
-	--self.Entity:SetMaterial("models/props_combine/combinethumper002")
-	--self.Inputs = Wire_CreateInputs( self.Entity, { "Arm" } )
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -32,6 +30,9 @@ function ENT:Initialize()
 	self.PhysObj = self.Entity:GetPhysicsObject()
 	self.CAng = self.Entity:GetAngles()
 	
+	self.STime = CurTime()
+	self.LTime = self.LTime or 0
+	
 	self.XCo = 0
 	self.YCo = 0
 	self.ZCo = 0
@@ -40,6 +41,17 @@ function ENT:Initialize()
 	
 	self.Yaw = 0
 	self.Pitch = 0
+	self.Roll = 0
+	
+	self.NTT = 0
+	
+	local SpreadSize = 200
+	
+	self.RSpreadX = math.Rand(-SpreadSize,SpreadSize)
+	self.RSpreadY = math.Rand(-SpreadSize,SpreadSize)
+	
+	self.LeaderLastPos = Vector(0,0,0)
+	self.LeaderLastAng = Angle(0,0,0)
 	
 	self.hasdamagecase = true
 	
@@ -47,119 +59,116 @@ function ENT:Initialize()
 	
 end
 
-function ENT:TriggerInput(iname, value)		
-	
-	if (iname == "Arm") then
-		if (value > 0) then
-			self.Entity:Arm()
-		end
-		
-	elseif (iname == "Detonate") then	
-		if (value > 0) then
-			self.Entity:Splode()
-		end
-	end
-	
-end
-
-function ENT:SpawnFunction( ply, tr )
-
-	if ( !tr.Hit ) then return end
-	
-	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
-	
-	local ent = ents.Create( "SF-HomingMissile" )
-	ent:SetPos( SpawnPos )
-	ent:Spawn()
-	ent:Initialize()
-	ent:Activate()
-	ent.SPL = ply
-	
-	return ent
-	
-end
-
 function ENT:Think()
-	local TVec = nil
-	if self.GType == 1 then
-		TVec = Vector(self.XCo, self.YCo, self.ZCo)
+	if CurTime() > self.STime + self.LTime then
+		local TVec = nil
+		if self.GType == 1 then
+			TVec = Vector(self.XCo, self.YCo, self.ZCo)
+			
+		elseif self.GType == 2 then
+			if self.ParL && self.ParL:IsValid() then
+				self.XCo = self.ParL.XCo
+				self.YCo = self.ParL.YCo
+				self.ZCo = self.ParL.ZCo
+			end
+			TVec = Vector(self.XCo, self.YCo, self.ZCo)
+			
+		elseif self.GType == 4 then
+			if type(self.TEnt) == "Entity" && self.TEnt && self.TEnt:IsValid() then
+				TVec = self.TEnt:GetPos()
+			end
+			
+		elseif self.GType == 3 then
+			if self.Target && self.Target:IsValid() then
+				TVec = self.Target:GetPos()
+			else
+				local targets = ents.FindInCone( self.Entity:GetPos(), self.Entity:GetForward(), 5000, 65)
 		
-	elseif self.GType == 2 then
-		if self.ParL && self.ParL:IsValid() then
-			self.XCo = self.ParL.XCo
-			self.YCo = self.ParL.YCo
-			self.ZCo = self.ParL.ZCo
-		end
-		TVec = Vector(self.XCo, self.YCo, self.ZCo)
-		
-	elseif self.GType == 4 then
-		if self.TEnt && self.TEnt:IsValid() then
-			TVec = self.TEnt:GetPos()
-		end
-		
-	elseif self.GType == 3 then
-		if self.Target && self.Target:IsValid() then
-			TVec = self.Target:GetPos()
-		else
-			local targets = ents.FindInCone( self.Entity:GetPos(), self.Entity:GetForward(), 5000, 65)
-	
-			local CMass = 0
-			local CT = nil
-						
-			for _,i in pairs(targets) do
-				if i:GetPhysicsObject() && i:GetPhysicsObject():IsValid() && !i.Autospawned then
-					local IMass = i:GetPhysicsObject():GetMass()
-					local IDist = (self.Entity:GetPos() - i:GetPos()):Length()
-					if i.IsFlare == true then IMass = 5000 end
-					local TVal = (IMass * 3) - IDist
-					if TVal > CMass then
-						CT = i
+				local CMass = 0
+				local CT = nil
+							
+				for _,i in pairs(targets) do
+					if i:GetPhysicsObject() && i:GetPhysicsObject():IsValid() && !i.Autospawned then
+						local IMass = i:GetPhysicsObject():GetMass()
+						local IDist = (self.Entity:GetPos() - i:GetPos()):Length()
+						if i.IsFlare == true then IMass = 5000 end
+						local TVal = (IMass * 3) - IDist
+						if TVal > CMass then
+							CT = i
+						end
 					end
 				end
+				self.Target = CT
 			end
-			self.Target = CT
-		end
-	elseif self.GType == 5 then --This will not work.
-		if self.Pod and self.Pod:IsValid() && self.Pod:IsVehicle() then
-			self.CPL = self.Pod:GetPassenger()
-			if self.CPL && self.CPL:IsValid() then
-				self.Yaw = math.Clamp(self.CPL.SBEPYaw * -0.1, -self.TSClamp, self.TSClamp)
-				self.Pitch = math.Clamp(self.CPL.SBEPPitch * 0.1, -self.TSClamp, self.TSClamp)
+			
+		elseif self.GType == 5 || self.GType == 6 then
+			if self.ParL && self.ParL:IsValid() then
+				if self.ParL.Primary && self.ParL.Primary:IsValid() then
+					if self.ParL.Primary == self then
+						local Ang = self.ParL.MAngle or Angle(0,0,0)
+						self.Pitch = Ang.p
+						self.Yaw = Ang.y
+						self.Roll = Ang.r
+					else
+						self.Tertiary = true
+						self.LeaderLastPos = self.ParL.Primary:GetPos()
+						self.LeaderLastAng = self.ParL.Primary:GetAngles()
+						
+						TVec = self.LeaderLastPos + (self.LeaderLastAng:Right() * self.RSpreadX ) + (self.LeaderLastAng:Up() * self.RSpreadY)
+					end
+				else
+					self.Tertiary = true
+					TVec = self.LeaderLastPos + (self.LeaderLastAng:Right() * self.RSpreadX ) + (self.LeaderLastAng:Up() * self.RSpreadY)
+				end
 			end
 		end
-	end
-	
-	if self.GType > 0 && self.GType < 5 then
-		if TVec then
-			local FDist = TVec:Distance( self.Entity:GetPos() + self.Entity:GetUp() * 100 )
-			local BDist = TVec:Distance( self.Entity:GetPos() + self.Entity:GetUp() * -100 )
-			self.Pitch = math.Clamp((FDist - BDist) * 0.75, -self.TSClamp, self.TSClamp)
-			FDist = TVec:Distance( self.Entity:GetPos() + self.Entity:GetRight() * 100 )
-			BDist = TVec:Distance( self.Entity:GetPos() + self.Entity:GetRight() * -100 )
-			self.Yaw = math.Clamp((BDist - FDist) * -0.75, -self.TSClamp, self.TSClamp)
-			--print(self.Pitch .. ", " .. self.Yaw)
-		else
-			self.Pitch = 0
-			self.Yaw = 0
+		
+		if (self.GType > 0 && self.GType < 5) || (self.GType == 5 && self.Tertiary) then
+			if TVec then
+				local Pos = self:GetPos()
+				self.Pitch = math.Clamp(self:GetUp():DotProduct( TVec - Pos ) * -0.1,-self.TSClamp,self.TSClamp)
+				self.Yaw = math.Clamp(self:GetRight():DotProduct( TVec - Pos ) * -0.1,-self.TSClamp,self.TSClamp)
+			else
+				self.Pitch = 0
+				self.Yaw = 0
+			end
+			
+			local physi = self.Entity:GetPhysicsObject()
+			physi:AddAngleVelocity((physi:GetAngleVelocity() * -1) + Angle(0,self.Pitch,self.Yaw))
+			physi:SetVelocity( self.Entity:GetForward() * 1000 )
+		elseif self.GType == 5 then
+			local physi = self.Entity:GetPhysicsObject()
+			physi:AddAngleVelocity((physi:GetAngleVelocity() * -1) + Angle(-self.Roll * 5,-self.Pitch * 5,-self.Yaw * 5))
+			physi:SetVelocity( self.Entity:GetForward() * 1000 )
+		elseif self.GType == 6 then
+			local SAng = self:GetAngles()
+			local TAng = Angle(self.Roll,self.Pitch,self.Yaw)
+			local AAng = TAng - SAng
+			local physi = self.Entity:GetPhysicsObject()
+			physi:AddAngleVelocity((physi:GetAngleVelocity() * -1) + AAng)
+			physi:SetVelocity( self.Entity:GetForward() * 1000 )
+		end
+		
+		if self.ParL && self.ParL then
+			if self.ParL.Detonating then
+				self:Splode()
+			end
+		end
+		
+		if CurTime() > self.NTT then
+			local trace = {}
+			trace.start = self.Entity:GetPos()
+			trace.endpos = self.Entity:GetPos() + (self.Entity:GetVelocity())
+			trace.filter = self.Entity
+			local tr = util.TraceLine( trace )
+			if tr.Hit and tr.HitSky then
+				self.Entity:Remove()
+			end
+			self.NTT = CurTime() + 1
 		end
 	end
 	
-	if self.GType > 0 then
-		local physi = self.Entity:GetPhysicsObject()
-		physi:AddAngleVelocity((physi:GetAngleVelocity() * -1) + Angle(0,self.Pitch,self.Yaw))
-		physi:SetVelocity( self.Entity:GetForward() * 1000 )
-	end
-	
-	local trace = {}
-	trace.start = self.Entity:GetPos()
-	trace.endpos = self.Entity:GetPos() + (self.Entity:GetVelocity())
-	trace.filter = self.Entity
-	local tr = util.TraceLine( trace )
-	if tr.Hit and tr.HitSky then
-		self.Entity:Remove()
-	end
-	
-	self.Entity:NextThink( CurTime() + 0.1 )
+	self.Entity:NextThink( CurTime() + 0.01 )
 	return true
 end
 
