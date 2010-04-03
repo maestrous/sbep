@@ -113,7 +113,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	local DI = Ent.EntityMods.SBEPEPoint
 
 	if DI.Vec then
-		self.Vec = CreatedEntities[ info.Vec ]
+		self.Vec = CreatedEntities[ DI.Vec ]
 		self.Vec.ExitPoint = self.Entity
 	end
 	
