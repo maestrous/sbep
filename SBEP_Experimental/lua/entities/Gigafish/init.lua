@@ -6,7 +6,7 @@ include( 'shared.lua' )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Slyfo/warhead.mdl" )
-	self.Entity:SetName("Microfish")
+	self.Entity:SetName("Gigafish")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
@@ -56,7 +56,7 @@ function ENT:SpawnFunction( ply, tr )
 	
 	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
 	
-	local ent = ents.Create( "Microfish" )
+	local ent = ents.Create( "Gigafish" )
 	ent:SetPos( SpawnPos )
 	ent:Spawn()
 	ent:Initialize()
