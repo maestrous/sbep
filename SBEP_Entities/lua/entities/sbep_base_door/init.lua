@@ -284,8 +284,10 @@ function ENT:Think()
 				self.ATWeld = C.Constraint
 			end
 		end
-		if !self.ATWeld || !self.ATWeld:IsValid() then
-			self:Attach( self.ATEnt , self.VecOff , self.AngOff )
+		if !self.Duped && (!self.ATWeld || !self.ATWeld:IsValid()) then
+ 			self:Attach( self.ATEnt , self.VecOff , self.AngOff )
+		else
+			if self.ATWeld then self.Duped=nil end
 		end
 	end
 	if self.Cont then
@@ -347,6 +349,7 @@ function ENT:PostEntityPaste(pl, Ent, CreatedEntities)
 	self.ATEnt	= CreatedEntities[ DI.ATEnt ]
 	self.VecOff	= DI.VecOff
 	self.AngOff	= DI.AngOff
+	self.Duped	= true
 	if Ent.EntityMods.SBEPD.Cont then
 		self.Entity:SetController( CreatedEntities[ DI.Cont ] )
 	end
