@@ -1,15 +1,12 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
-ENT.PrintName		= "Microfish"
+ENT.PrintName		= "Gigasplosion"
 ENT.Author			= "Paradukes + SlyFo"
 ENT.Category		= "SBEP-Arcanery"
 
-ENT.Spawnable		= true
-ENT.AdminSpawnable	= true
+ENT.Spawnable		= false
+ENT.AdminSpawnable	= false
 ENT.TogC			= 0
-
-ENT.HPType			= "Small"
-ENT.APPos			= Vector(10,0,0)
 
 
 function ENT:SetActive( val )
