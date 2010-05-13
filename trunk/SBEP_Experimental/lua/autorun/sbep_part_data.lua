@@ -39,6 +39,10 @@ are all one-orientation-only.
 
 Then open cl_init.lua and make a new entry in the MatTab table at the top, for your new type. The Material() function gets your sprite, so put the right
 filename in there, and then in the second entry, put the dimensions you want your sprite to be rendered with.
+
+Lastly, go to SBEP_Experimental/lua/weapons/gmod_tool/stools/sbep_part_assembler.lua and add the type to the table.
+
+I really need to redo huge chunks of this system.
 ----------------------------------------------------------------------------------------------------------------------------------------
 	
 */
