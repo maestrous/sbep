@@ -862,6 +862,137 @@ local SBEP_SWeps = {
 					end
 				end
 				},
+	[ "Sudnik Flamer" ] = {
+				Model = "models/Dts Stuff/BF2142 weapons/as_aa_3.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(10,20,-20), 
+				IVec = Vector(20,10,10),
+				MuzzlePos = Vector(0,20,17),
+				RAng = Angle(0,0,0), 
+				LAng = Angle(0,0,0), 
+				Recoil = 0.1,
+				RecoilVulnerability = 0.1,
+				Refire = .1, 
+				Auto = true,
+				Bullets = 0,
+				Damage = 0,
+				Sound = "",
+				Cone = 0.5,
+				AkimboPenalty = 2,
+				ClipSize = 150,
+				ReloadLength = 3,
+				AmmoType = "AR2",
+				Description = "Unlike its siblings, the Mitchell AV-18 and Sudnik VP, the Pilum H-AVR (Heavy Anti Vehicle Rifle) lacks any guidance package, instead relying on the high speed of its projectile to eliminate targets. With an embedded, microprocessor-driven, anti-recoil system and steel alloy-composite structure, the Pilum H-AVR launches armor-piercing fin stabilized projectiles that have proven far more effective armored targets than traditional warheads, capable of punching clean through armor and detonating inside, causing massive damage to sensitive instruments and crew-members.",
+				CustomPrimary = function(Wep,Ply,Prime,Data)
+					if Wep:FireCheck(Prime) then
+						local Side = 1
+						if !Prime then
+							Side = -1
+						end
+							
+						local CrouchMod = 1
+						if Ply:Crouching() then
+							CrouchMod = 0.5
+						end
+						local AkimboPenalty = 1
+						if Ply.Slots.Secondary[Ply.CSlot] > 0 then
+							AkimboPenalty = Data.AkimboPenalty
+						end
+						local Acc = math.Clamp((Data.Cone * CrouchMod * AkimboPenalty) * ((Wep.CRecoil * Data.RecoilVulnerability) + 1) * 20, 0, 20)
+						local AAng = (Ply:EyeAngles() + Angle(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+						--local AVec = (Ply:GetAimVector() * 1000) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc))
+						local Shell = ents.Create( "FlameGout" )
+						Shell:SetAngles( AAng )
+						Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 18) + (Ply:EyeAngles():Right() * 4 * Side) + (Ply:EyeAngles():Up() * -5.5) )
+						Shell:SetOwner( Ply )
+						Shell:Spawn()
+						Shell:Activate()
+						local physi = Shell:GetPhysicsObject()
+						--print(physi)
+						physi:SetVelocity(Ply:GetAimVector()*100)
+							
+						--Wep:StandardMuzzleFlash(Prime)
+			
+						--Wep:Recoil(Data.Recoil * .5 * CrouchMod * AkimboPenalty)
+							
+						Wep:ConsumeAmmo(Prime, 1)
+						
+						Wep:SetNextPrimaryFire( CurTime() + Data.Refire )
+					else
+						Wep:ReloadCheck(Prime)
+					end
+				end,
+				CustomThink = function(Wep,Ply,Prime)
+					if SERVER then
+						Wep.PlasmaPower = Wep.PlasmaPower or 0
+						if ((Prime && Ply:KeyDown(IN_ATTACK)) || (!Prime && Ply:KeyDown(IN_ATTACK2))) && Wep.PlasmaPower < 251 then
+							if Wep.PoweringUp then
+								Wep.PlasmaPower = math.Clamp(Wep.PlasmaPower + 1,0,255)
+							else
+								if !((Wep.PReloading || Wep:Clip1() == 0) && Prime) && !((Wep.SReloading || Wep:Clip2() == 0) && !Prime) then
+									Wep.PoweringUp = true
+									Wep.PlasmaPower = 0
+								end
+							end
+						else
+							if Wep.PoweringUp then
+								if Wep.PlasmaPower >= 250 then
+									local Shell = ents.Create( "SF-PlasmaBlast" )
+									Shell:SetAngles( Ply:EyeAngles() )
+									Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * -11) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
+									Shell:SetOwner( Ply )
+									Shell:Spawn()
+									Shell:Initialize()
+									Shell.Power = Wep.PlasmaPower
+									Shell:Activate()
+									Shell:GoBang()
+									Wep.PoweringUp = false
+								else
+									local Side = 1
+									if !Prime then
+										Side = -1
+									end
+									local Shell = ents.Create( "SF-PlasmaBlast" )
+									Shell:SetAngles( Ply:EyeAngles() )
+									Shell:SetPos( Ply:EyePos() + (Ply:GetAimVector() * 1) + (Ply:EyeAngles():Right() * 15 * Side) + (Ply:EyeAngles():Up() * -5.5) )
+									Shell:SetOwner( Ply )
+									Shell:Spawn()
+									Shell:Initialize()
+									Shell.Power = Wep.PlasmaPower
+									Shell:Activate()
+									local physi = Shell:GetPhysicsObject()
+									local Acc = 50
+									physi:SetVelocity((Ply:GetAimVector() * 600) + Vector(math.Rand(-Acc,Acc),math.Rand(-Acc,Acc),math.Rand(-Acc,Acc)))
+									Wep.PoweringUp = false
+								end
+							end
+							Wep.PlasmaPower = 0
+						end
+					end
+					if CLIENT then
+						--print("CLIENT IS THINKING!")
+						if LocalPlayer() == Ply then
+							if input.IsMouseDown(MOUSE_LEFT) then
+								--print("Clicking")
+								if !Wep.Anim then
+									local sequence = Wep.PModel:LookupSequence("Charge")
+									Wep.PModel:ResetSequence(sequence)
+									Wep.PModel:SetCycle(0)
+									Wep.Anim = true
+								end
+							else
+								Wep.PModel.AutomaticFrameAdvance = true
+								local sequence = Wep.PModel:LookupSequence("Idle")
+								Wep.PModel:SetSequence(sequence)
+								Wep.PModel:FrameAdvance()
+								Wep.PModel:SetCycle(0)
+								Wep.Anim = false
+							end
+							Wep.PModel:FrameAdvance()
+						end
+					end
+				end
+				},
 	[ "SI-HTR Assault"	] = {
 				Model = "models/Slyfo_2/swep_assault_rifle1base.mdl", 
 				LVec = Vector(0,0,0), 
