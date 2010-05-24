@@ -59,7 +59,7 @@ function SBEP.Item(Item)
 	local NWeap = ents.Create( "SBEPInventoryItem" )
 	if ( !NWeap:IsValid() ) then return end
 	NWeap.ItemType = Item
-	NWeap:SetPos( ply:GetEyeTrace().HitPos + Vector(0,0,math.random(0,60)) )
+	NWeap:SetPos( ply:GetEyeTrace().HitPos + Vector(0,0,math.random(0,560)) )
 	NWeap:SetAngles( Angle(0,0,0) )
 	NWeap:Spawn()
 	NWeap:Activate()
@@ -76,7 +76,7 @@ function SBEP.Item(Item)
 	undo.Finish()
 end
 
-function SBEP.ItemSpread()
+function SBEP.BFItemSpread()
 	SBEP.Item("P33 Pereira")
 	SBEP.Item("Turcotte SMG")
 	SBEP.Item("P33 Pereira")
@@ -90,6 +90,16 @@ function SBEP.ItemSpread()
 	SBEP.Item("Bianchi FA-6")
 	SBEP.Item("Shuko K-80")
 	SBEP.Item("Ganz HMG")
+end
+
+function SBEP.ItemSpread()
 	SBEP.Item("TB-15 Plasma Accelerator")
 	SBEP.Item("Blast Rifle")
+	SBEP.Item("SI-HTR Assault")
+	SBEP.Item("SI-HTR Carbine")
+	SBEP.Item("SI-HTR Carbine Drum-Mag")
+	SBEP.Item("SI-HTR MP1")
+	SBEP.Item("SI-HTR MP2")
+	SBEP.Item("SI-HTR SMG1")
+	SBEP.Item("SI-HTR SMG2")
 end
