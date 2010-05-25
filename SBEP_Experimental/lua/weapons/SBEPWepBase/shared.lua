@@ -67,7 +67,9 @@ local SWEPData = list.Get( "SBEP_SWeaponry" )
 							Reload
 ---------------------------------------------------------*/
 function SWEP:Reload()
+	print("Reloading")
 	if !self.PReloading && !self.SReloading && (self:Ammo1() > 0 || self:Ammo2() > 0) && (self:Clip1() < self.Primary.ClipSize || self:Clip2() < self.Secondary.ClipSize) then
+		print("Can Reload")
 		if self.Primary.ClipSize > 0 then
 			if self.Secondary.ClipSize > 0 then
 				local CPA = self:Clip1() / self.Primary.ClipSize
@@ -367,7 +369,7 @@ end
 	PrimaryAttack
 ---------------------------------------------------------*/
 function SWEP:PrimaryAttack()
-	if CLIENT || self.Bursting then return end
+	if CLIENT then return end
 	local ply = self.Owner
 	--print(self.Owner.CSlot)
 	if self.Owner.CSlot > 0 then
@@ -435,7 +437,7 @@ end
 	SecondaryAttack
 ---------------------------------------------------------*/
 function SWEP:SecondaryAttack()
-	if CLIENT || self.Bursting then return end
+	if CLIENT then return end
 	local ply = self.Owner
 	
 	if self.Owner.CSlot > 0 then
@@ -673,6 +675,10 @@ function SWEP:GetViewModelPosition( pos, ang )
 	PlAng:RotateAroundAxis( ang:Up(), PrimaryAngle.Yaw )
 	PlAng:RotateAroundAxis( ang:Forward(), PrimaryAngle.Roll )
 	self.PModel:SetAngles( PlAng )
+	
+	if self.PData.ModelScale then
+		self.PModel:SetModelScale(self.PData.ModelScale)
+	end
 	
 	
 	if !self.SModel then
@@ -966,6 +972,7 @@ if SERVER then
 end
 
 
+
 /*
 if self.Owner:KeyDown( IN_WALK ) then
 	if self.Owner:KeyDown( IN_RELOAD ) then
@@ -1009,6 +1016,8 @@ if self.Owner:KeyDown( IN_WALK ) then
 end
 */
 
+
+
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 ---																		Derma Inventory																   ---
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1038,7 +1047,7 @@ if CLIENT then
 		InfoPanel:SetSize( 350, 500 )
 		InfoPanel:SetTitle( "Info" )
 		InfoPanel:SetVisible( true )
-		InfoPanel:SetDraggable( false )
+		InfoPanel:SetDraggable( true )
 		InfoPanel:SetMouseInputEnabled( true )
 		InfoPanel:ShowCloseButton( true )
 		InfoPanel:SetDeleteOnClose( true )
@@ -1190,11 +1199,12 @@ if CLIENT then
 		
 		
 		local WSlot = vgui.Create( "DFrame" )
-		WSlot:SetPos( 30,780 )
+		local RWSH = ScrH() - 260
+		WSlot:SetPos( 30,RWSH )
 		WSlot:SetSize( 1220, 236 )
-		WSlot:SetTitle( "Inventory" )
+		WSlot:SetTitle( "Weapon Slots" )
 		WSlot:SetVisible( true )
-		WSlot:SetDraggable( false )
+		WSlot:SetDraggable( true )
 		WSlot:SetMouseInputEnabled( true )
 		WSlot:ShowCloseButton( true )
 		WSlot:SetDeleteOnClose( true )
@@ -1315,7 +1325,7 @@ if CLIENT then
 		Frame:SetSize( 530, 500 )
 		Frame:SetTitle( "Inventory" )
 		Frame:SetVisible( true )
-		Frame:SetDraggable( false )
+		Frame:SetDraggable( true )
 		Frame:SetMouseInputEnabled( true )
 		Frame:ShowCloseButton( true )
 		Frame:SetDeleteOnClose( true )
@@ -1775,12 +1785,20 @@ if CLIENT then
 	
 	
 	function SWEP:HUDShouldDraw( element )
-		if (element == "CHudWeaponSelection") || (element == "CHudCrosshair")  then
-		--if (element == "CHudWeaponSelection") then
+		if (element == "CHudCrosshair") then
+			if self.PData && self.SData then
+				if self.PData.Crosshair || self.SData.Crosshair then
+					return true
+				end
+			end
 			return false
-		else
-			return true
 		end
+		
+		if (element == "CHudWeaponSelection") then
+			return false
+		end
+		
+		return true
 	end
 end
 
