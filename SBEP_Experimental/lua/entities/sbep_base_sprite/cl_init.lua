@@ -15,6 +15,8 @@ local MatTab = {
 	LRC4 = { Material( "sprites/LRC3"			) , { 42 , 30 } } ,
 	LRC5 = { Material( "sprites/LRC5"			) , { 21 , 30 } } ,
 	LRC6 = { Material( "sprites/LRC5"			) , { 21 , 30 } } ,
+	
+	MBSH = { Material( "sprites/MBSH"			) , { 35 , 35 } } ,
 			}
 
 ENT.Mat = MatTab.SWSH[1]

@@ -23,7 +23,9 @@ local SPD = {
 	LRC3 = "LRC4" ,
 	LRC4 = "LRC3" ,
 	LRC5 = "LRC6" ,
-	LRC6 = "LRC5"
+	LRC6 = "LRC5" ,
+	
+	MBSH = "MBSH"
 			}
 
 if CLIENT then

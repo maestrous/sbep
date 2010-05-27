@@ -16,7 +16,9 @@ local SRT = {
 	LRC3 = false ,
 	LRC4 = false ,
 	LRC5 = false ,
-	LRC6 = false
+	LRC6 = false ,
+	
+	MBSH = false
 			}
 
 function ENT:Initialize()
