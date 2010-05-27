@@ -1,17 +1,9 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "base_wire_entity"
-ENT.PrintName		= "Hover Jet L"
+ENT.PrintName		= "Microship"
 ENT.Author			= "Paradukes"
-ENT.Category		= "SBEP-Rover Gear"
+ENT.Category		= "SBEP - Other"
 
-ENT.Spawnable		= true
+ENT.Spawnable		= false
 ENT.AdminSpawnable	= true
 ENT.Owner			= nil
-
-function ENT:SetActive( val )
-	self.Entity:SetNetworkedBool("ClTracking",val,true)
-end
-
-function ENT:GetActive()
-	return self.Entity:GetNetworkedBool("ClTracking")
-end
