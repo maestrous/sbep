@@ -67,7 +67,7 @@ function ENT:Think()
 		if CPL && CPL:IsValid() then
 			if !CPL.CamCon then
 				CPL.CamCon = true
-				CPL:SetViewEntity( self.TCam )
+				CPL:SetViewEntity( self )
 			end
 			
 			self.W = CPL:KeyDown( IN_FORWARD ) and 500 or 0
