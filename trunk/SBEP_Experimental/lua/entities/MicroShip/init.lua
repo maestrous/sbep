@@ -162,7 +162,10 @@ function ENT:BuildClientModel(Scale)
 		local CEnts = constraint.GetAllConstrainedEntities( self.Entity )
 		for k,e in pairs(CEnts) do
 			if e && e:IsValid() && e != self then
-				local V,A = WorldToLocal( e:GetPos(), e:GetAngles(), self:GetPos(), self:GetAngles() )
+				--local V,A = WorldToLocal( e:GetPos(), e:GetAngles(), self:GetPos(), self:GetAngles() ) --Why doesn't this work anymore?
+				local V2 = e:GetPos() - self:GetPos() --This really, really shouldn't fix the entity. And yet it does. 
+														--To err is human. To really foul things up, try a crappy implementation of Lua...
+				--print(V, V2)
 				
 				local RP = RecipientFilter()
 				RP:AddAllPlayers()
@@ -170,7 +173,7 @@ function ENT:BuildClientModel(Scale)
 				umsg.Start("MicroShipBuildSegment", RP )
 				umsg.Entity( self )
 				umsg.String( e:GetModel() )
-				umsg.Vector( V )
+				umsg.Vector( V2 )
 				umsg.Angle( e:GetAngles() )
 				umsg.Float( Scale )
 				umsg.End()
