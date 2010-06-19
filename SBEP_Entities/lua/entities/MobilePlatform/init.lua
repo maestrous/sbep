@@ -108,6 +108,7 @@ function ENT:Think()
 end
 
 function ENT:Use( activator, caller )
+	self.PasteDelay = false
 	/*
 	if !self.Socked then
 		--Vector( self.Controller.FulX , self.Controller.FulY , self.Controller.FulZ )
