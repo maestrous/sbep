@@ -10,8 +10,8 @@ function ENT:Initialize()
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	local N = "NORMAL"
-	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Disable", "FulcrumX", "FulcrumY", "FulcrumZ", "FulcrumVec" }
-	local inTypes = {N,N,N,"VECTOR",N,N,N,"ANGLE",N,N,N,N,N,N,N,N,N,"VECTOR"}
+	local inNames = {"X", "Y", "Z", "Vector", "Pitch", "Yaw", "Roll", "Angle","Reciprocate", "Duration", "Speed", "Teleport", "AbsVec", "AbsAng", "Disable", "FulcrumX", "FulcrumY", "FulcrumZ", "FulcrumVec" }
+	local inTypes = {N,N,N,"VECTOR",N,N,N,"ANGLE",N,N,N,N,N,N,N,N,N,N,"VECTOR"}
 	self.Inputs = WireLib.CreateSpecialInputs( self.Entity,inNames,inTypes)
 	self.Entity:SetUseType( 3 )
 
@@ -298,9 +298,9 @@ function ENT:Think()
 	local phys = self.Entity:GetPhysicsObject()
 	
 	if self.Recip then
-		local RPos = self.Plat:GetPos() + (self.Entity:GetUp() * self.ZCo * -1) + (self.Entity:GetForward() * self.YCo * -1) + (self.Entity:GetRight() * self.XCo * -1)
-		
-		local NVel = ((RPos - self.Entity:GetPos()) * self.Vel)
+		local NVel = self:GetPhysicsObject():GetVelocity()
+		local RPos = self.Plat:GetPos() + (self:GetUp() * -self.ZCo) + (self:GetForward() * -self.YCo) + (self:GetRight() * -self.XCo) --+ (self.Controller:GetPhysicsObject():GetVelocity() * self.Controller.Vel ) --(phys:GetVelocity() * 0.8)
+		self:SetPos(RPos)
 		phys:SetVelocity(NVel)
 	end
 		
@@ -317,6 +317,7 @@ function ENT:Touch( ent )
 end
 
 function ENT:Use( activator, caller )
+	self.PasteDelay = false
 	if activator:KeyDown( IN_SPEED ) && activator:KeyDown( IN_WALK ) then
 		local RPos = Vector( self.XCo , self.YCo , self.ZCo )
 		
