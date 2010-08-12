@@ -8,22 +8,14 @@ ENT.Spawnable		= false
 ENT.AdminSpawnable	= true
 ENT.TogC			= 0
 
-ENT.HPType			= "Small"
+ENT.HPType			= "Heavy"
 ENT.APPos			= Vector(10,0,0)
+ENT.APAng			= Angle(0,0,90)
 
-
-function ENT:SetActive( val )
-	self.Entity:SetNetworkedBool("ClActive",val,true)
+function ENT:SetArmed( val )
+	self.Entity:SetNetworkedBool("ClArmed",val,true)
 end
 
-function ENT:GetActive()
-	return self.Entity:GetNetworkedBool("ClActive")
-end
-
-function ENT:SetController( val )
-	self.Entity:SetNetworkedEntity("ClPilot",val,true)
-end
-
-function ENT:GetController()
-	return self.Entity:GetNetworkedEntity("ClPilot")
+function ENT:GetArmed()
+	return self.Entity:GetNetworkedBool("ClArmed")
 end
