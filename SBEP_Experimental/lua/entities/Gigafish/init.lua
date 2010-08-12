@@ -5,7 +5,7 @@ include( 'shared.lua' )
 
 function ENT:Initialize()
 
-	self.Entity:SetModel( "models/Slyfo/warhead.mdl" )
+	self.Entity:SetModel( "models/Slyfo_2/weap_gigafish.mdl" )
 	self.Entity:SetName("Gigafish")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
@@ -95,7 +95,7 @@ end
 
 function ENT:Arm()
 	self.Armed = true
-	--self.Entity:SetArmed( true )
+	self.Entity:SetArmed( true )
 end
 
 function ENT:PhysicsCollide( data, physobj )
