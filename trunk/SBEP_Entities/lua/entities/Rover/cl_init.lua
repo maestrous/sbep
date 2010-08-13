@@ -6,6 +6,6 @@ end
 
 function ENT:Draw()
 	
-	self.Entity:DrawModel()
+	--self.Entity:DrawModel()
 
 end
