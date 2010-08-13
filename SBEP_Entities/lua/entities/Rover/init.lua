@@ -8,9 +8,9 @@ function ENT:Initialize()
 	
 	self.Entity:SetModel( "models/Spacebuild/medbridge2_doublehull_elevatorclamp.mdl" ) 
 	self.Entity:SetName("Rover")
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
+	self.Entity:PhysicsInit( 0 )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self.Entity:SetSolid( 0 )
 	--self.Entity:SetMaterial("models/props_wasteland/tugboat02")
 	--self.Inputs = Wire_CreateInputs( self.Entity, { "Activate" } )
 
@@ -23,6 +23,8 @@ function ENT:Initialize()
 	end
 	self.Entity:StartMotionController()
 	self.PhysObj = self.Entity:GetPhysicsObject()
+	
+	self:SetColor(0,0,0,0)
 
 
 	self.Speed = 0
@@ -70,15 +72,14 @@ function ENT:SpawnFunction( ply, tr )
 
 	if ( !tr.Hit ) then return end
 	
-	
+
+	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
+		
 	local ent = ents.Create( "Rover" )
-	ent:SetPos( Vector( 100000,100000,100000 ) )
+	ent:SetPos( SpawnPos )
 	ent:Spawn()
-	ent:Initialize()
 	ent:Activate()
 	ent.SPL = ply
-	
-	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
 	
 	local ent2 = ents.Create( "prop_vehicle_prisoner_pod" )
 	ent2:SetModel( "models/Slyfo/rover1_chassis.mdl" ) 
@@ -104,6 +105,8 @@ function ENT:SpawnFunction( ply, tr )
 	ent2.Cont = ent
 	--constraint so controller is duped
 	constraint.NoCollide( ent, ent2, 0, 0 )
+	
+	ent:SetParent(ent2)
 	
 	return ent
 	

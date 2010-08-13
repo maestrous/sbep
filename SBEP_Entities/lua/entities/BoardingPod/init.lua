@@ -46,16 +46,15 @@ function ENT:SpawnFunction( ply, tr )
 
 	if ( !tr.Hit ) then return end
 	
+	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
 	
 	local ent = ents.Create( "BoardingPod" )
-	ent:SetPos( Vector( 100000,100000,100000 ) )
+	ent:SetPos( SpawnPos )
 	ent:Spawn()
 	ent:Initialize()
 	ent:Activate()
 	ent.SPL = ply
-	
-	local SpawnPos = tr.HitPos + tr.HitNormal * 16 + Vector(0,0,50)
-	
+		
 	local ent2 = ents.Create( "prop_vehicle_prisoner_pod" )
 	ent2:SetModel( "models/Slyfo/assault_pod.mdl" ) 
 	ent2:SetPos( SpawnPos )
@@ -78,6 +77,7 @@ function ENT:SpawnFunction( ply, tr )
 	ent.Pod = ent2
 	ent2.Cont = ent
 	ent2.Pod = ent2
+	ent:SetParent(ent2)
 	--Constrain so they get duped together
 	constraint.NoCollide( ent, ent2, 0, 0 )
 	
