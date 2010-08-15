@@ -9,8 +9,8 @@ function ENT:Initialize()
 	self.Entity:SetModel( "models/Spacebuild/medbridge2_doublehull_elevatorclamp.mdl" ) 
 	self.Entity:SetName( "AssaultPodC" )-- .. self.Entity:EntIndex() )
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
-	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self.Entity:SetMoveType( 0 )
+	self.Entity:SetSolid( 0 )
 	--self.Entity:SetMaterial("models/props_wasteland/tugboat02")
 	--self.Inputs = Wire_CreateInputs( self.Entity, { "Activate" } )
 
@@ -39,7 +39,7 @@ function ENT:Initialize()
 	self.HP[1]["Type"]	= "Small"
 	self.HP[1]["Pos"]	= Vector(-40,0,110)
 	
-	
+	self:SetColor(0,0,0,0)
 end
 
 function ENT:SpawnFunction( ply, tr )
