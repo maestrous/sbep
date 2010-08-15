@@ -41,7 +41,7 @@ end
 function ENT:Think()
 	if (self.NPod1 == nil || !self.NPod1:IsValid() || self.NPod1.Active) then
 		local ent = ents.Create( "BoardingPod" )
-		ent:SetPos( Vector( 100000,100000,100000 ) )
+		ent:SetPos( Vector( self.Entity:GetPos() + self.Entity:GetRight() * 350 + self.Entity:GetUp() * -50 )
 		ent:Spawn()
 		ent:Initialize()
 		ent:Activate()
@@ -70,7 +70,7 @@ function ENT:Think()
 	
 	if (self.NPod2 == nil || !self.NPod2:IsValid() || self.NPod2.Active) then
 		local ent = ents.Create( "BoardingPod" )
-		ent:SetPos( Vector( 100000,100000,100000 ) )
+		ent:SetPos( Vector( self.Entity:GetPos() + self.Entity:GetRight() * -350 + self.Entity:GetUp() * -50 ) )
 		ent:Spawn()
 		ent:Initialize()
 		ent:Activate()
