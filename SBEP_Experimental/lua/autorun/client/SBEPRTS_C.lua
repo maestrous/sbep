@@ -387,9 +387,9 @@ function SBEPBMView( ply, origin, angles, fov )
 		 	origin = origin + ply.BComp.CVVec
 			angles = Angle(90,0,0) 
 		end
+		
+		return GAMEMODE:CalcView(ply,origin,angles,fov)
 	end
-	
-	return GAMEMODE:CalcView(ply,origin,angles,fov)
 end 
 hook.Add("CalcView", "SBEPBMView", SBEPBMView)  
 --[[
