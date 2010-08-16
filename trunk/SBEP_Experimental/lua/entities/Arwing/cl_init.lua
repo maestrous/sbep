@@ -5,7 +5,17 @@ ENT.RenderGroup = RENDERGROUP_OPAQUE
 
 
 function ENT:Initialize()
+	
+	
+end
 
+function ENT:Think()
+	local Pod = self:GetNetworkedEntity("Pod")
+	if Pod && Pod:IsValid() then
+		Pod.CalcView = {OffsetUp = 100, OffsetOut = 500}
+		--Pod.CalcView.OffsetUp = 5000
+		--print(Pod.CalcView)
+	end
 end
 
 function ENT:Draw()
