@@ -9,7 +9,7 @@ function ENT:Initialize()
 	self.Entity:SetName("Arwing")
 	self.Entity:PhysicsInit( SOLID_VPHYSICS )
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-	self.Entity:SetSolid( SOLID_VPHYSICS )
+	self.Entity:SetSolid( 0 )
 	
 	if WireAddon then
 		local V,N,A,E = "VECTOR","NORMAL","ANGLE","ENTITY"
@@ -89,6 +89,10 @@ function ENT:Initialize()
 	end
 	gcombat.registerent( Body, 300, 40 )
 	
+	--self.Body:SetNetworkedEntity("ViewEnt",self.Body,true)
+	self:SetNetworkedEntity("Pod",self.Body,true)
+	--self.Body:SetNetworkedInt("OffsetOut",500,true)
+	
 	
 	
 	LWing = ents.Create( "prop_physics" )
@@ -99,6 +103,7 @@ function ENT:Initialize()
 	LWing:SetParent(Body)
 	LWing:SetLocalPos(Vector(-100,50,27))
 	LWing:SetLocalAngles(Angle(0,0,0))
+	LWing:SetSolid( 0 )
 	self.LWing = LWing
 	--local Weld = constraint.Weld(ent,Tail)
 	
@@ -121,6 +126,7 @@ function ENT:Initialize()
 	RWing:SetParent(Body)
 	RWing:SetLocalPos(Vector(-100,-50,27))
 	RWing:SetLocalAngles(Angle(0,0,0))
+	RWing:SetSolid( 0 )
 	self.RWing = RWing
 	--local Weld = constraint.Weld(ent,Tail)
 	
@@ -145,6 +151,7 @@ function ENT:Initialize()
 	LWingE:SetParent(LWing)
 	LWingE:SetLocalPos(Vector(-1,60,-75))
 	LWingE:SetLocalAngles(Angle(0,0,0))
+	LWingE:SetSolid( 0 )
 	self.LWingE = LWingE
 	--local Weld = constraint.Weld(ent,Tail)
 	
@@ -167,6 +174,7 @@ function ENT:Initialize()
 	RWingE:SetParent(RWing)
 	RWingE:SetLocalPos(Vector(-1,-60,-75))
 	RWingE:SetLocalAngles(Angle(0,0,0))
+	RWingE:SetSolid( 0 )
 	self.RWingE = RWingE
 	--local Weld = constraint.Weld(ent,Tail)
 	
