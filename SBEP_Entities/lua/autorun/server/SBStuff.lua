@@ -22,12 +22,6 @@ end
 hook.Add("PlayerLeaveVehicle", "PlayerRepositioning", SetExPoint)
 SBEP.SetExPoint = SetExPoint
 
-function SBEP_PlayerInitialSpawn(ply)
-	ply.SBEPWeaponColor = Color(ply:GetPData("SBEP_Weapon_Color_Red"),ply:GetPData("SBEP_Weapon_Color_Green"),ply:GetPData("SBEP_Weapon_Color_Blue"),255)
-end
-hook.Add("PlayerInitialSpawn", "SBEP_PlayerInitialSpawn_Hookz", SBEP_PlayerInitialSpawn)
-SBEP.SPlayerInitialSpawn = SBEP_PlayerInitialSpawn
-
 function SBEP.ExitFighter(player,vehicle)
 	if not vehicle.Cont then return end
 	if vehicle.Cont.ExitFighter then
