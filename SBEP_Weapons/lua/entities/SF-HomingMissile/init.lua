@@ -57,9 +57,12 @@ function ENT:Initialize()
 	
 	util.SpriteTrail( self.Entity, 0,  Color(200,100,100,200), false, 10, 0, 1, 1, "trails/smoke.vmt" )
 	
+	self.InitSuccessful = true
+	
 end
 
 function ENT:Think()
+	print(self.InitSuccessful, self.SpawnTime)
 	if CurTime() > self.SpawnTime + self.LTime then
 		local TVec = nil
 		if self.GType == 1 then
