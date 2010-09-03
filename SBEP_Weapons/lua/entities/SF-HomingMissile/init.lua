@@ -30,7 +30,7 @@ function ENT:Initialize()
 	self.PhysObj = self.Entity:GetPhysicsObject()
 	self.CAng = self.Entity:GetAngles()
 	
-	self.STime = CurTime()
+	self.SpawnTime = CurTime()
 	self.LTime = self.LTime or 0
 	
 	self.XCo = 0
@@ -60,7 +60,7 @@ function ENT:Initialize()
 end
 
 function ENT:Think()
-	if CurTime() > self.STime + self.LTime then
+	if CurTime() > self.SpawnTime + self.LTime then
 		local TVec = nil
 		if self.GType == 1 then
 			TVec = Vector(self.XCo, self.YCo, self.ZCo)
