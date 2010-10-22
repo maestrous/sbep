@@ -17,7 +17,14 @@ local MatTab = {
 	LRC6 = { Material( "sprites/LRC5"			) , { 21 , 30 } } ,
 	
 	MBSH = { Material( "sprites/MBSH"			) , { 35 , 35 } } ,
-			}
+		
+	MOD1x1 = { Material( "sprites/mod1x1"		) , { 35 , 35 } } ,
+	MOD2x1 = { Material( "sprites/mod2x1"		) , { 35 , 35 } } ,
+	MOD3x1 = { Material( "sprites/mod3x1"		) , { 35 , 35 } } ,
+	MOD3x2 = { Material( "sprites/mod3x2"		) , { 35 , 35 } } ,
+	MOD1x1e = { Material( "sprites/ESML"		) , { 35 , 35 } } ,
+	MOD3x2e = { Material( "sprites/ELRG"		) , { 35 , 35 } } ,
+				}
 
 ENT.Mat = MatTab.SWSH[1]
 

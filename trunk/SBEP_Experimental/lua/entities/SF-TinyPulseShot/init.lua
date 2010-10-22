@@ -5,11 +5,14 @@ include( 'shared.lua' )
 function ENT:Initialize()
 
 	self.Entity:SetModel( "models/Items/combine_rifle_ammo01.mdl" )
-	self.Entity:SetName("Artillery Shell")
-	self.Entity:PhysicsInit( SOLID_VPHYSICS )
+	self.Entity:SetName("PulseShot")
+	local r = 30
+	self.Entity:PhysicsInitSphere(r)
+    self.Entity:SetCollisionBounds(Vector(-r,-r,-r),Vector(r,r,r))
 	self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 	self.Entity:SetCollisionGroup(3)
+	
 	
 	local phys = self.Entity:GetPhysicsObject()
 	if (phys:IsValid()) then
@@ -102,7 +105,7 @@ end
 
 function ENT:GoBang()
 	self.Exploded = true
-	util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 40, 40)
+	util.BlastDamage(self.Entity, self.Entity, self.Entity:GetPos(), 300, 100)
 	--gcombat.nrgexplode( self.Entity:GetPos(), 100, math.Rand(100, 200), 7)
 
 	self.Entity:EmitSound("WeaponDissolve.Dissolve")

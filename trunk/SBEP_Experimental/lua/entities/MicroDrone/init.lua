@@ -54,7 +54,7 @@ function ENT:Initialize()
 	
 	self.PArc = 10
 	self.YArc = 10
-	self.Range = 1100
+	self.Range = 5100
 	
 	self.IsShipController = true
 	self.IsDrone = true
@@ -544,6 +544,12 @@ end
 
 function ENT:TargetCriteria(ent)
 	if ent:IsNPC() then 
+		return true
+	end
+	if ent:GetClass() == "infestor" then
+		return true
+	end
+	if ent:GetClass() == "sf-spacemine" then
 		return true
 	end
 	--if ent:GetClass() == "microdrone" then

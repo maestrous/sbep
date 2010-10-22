@@ -57,7 +57,7 @@ function ENT:Think()
 		
 		for _,e in pairs(Targets) do
 			if e && e:IsValid() && e:GetClass() != "wreckedstuff" then
-				print(e:GetClass())
+				--print(e:GetClass())
 				local ZD = math.abs(e:GetPos().z - self:GetPos().z)
 				local Dmg = (1500 - ZD) * 3
 				if Dmg > 0 then

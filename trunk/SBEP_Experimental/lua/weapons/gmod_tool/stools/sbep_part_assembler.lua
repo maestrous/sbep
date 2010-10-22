@@ -25,7 +25,14 @@ local SPD = {
 	LRC5 = "LRC6" ,
 	LRC6 = "LRC5" ,
 	
-	MBSH = "MBSH"
+	MBSH = "MBSH" ,
+		
+	MOD1x1 = "MOD1x1" ,
+	MOD2x1 = "MOD2x1" ,
+	MOD3x1 = "MOD3x1" ,
+	MOD3x2 = "MOD3x2" ,
+	MOD1x1e = "MOD1x1e" ,
+	MOD3x2e = "MOD3x2e" ,
 			}
 
 if CLIENT then

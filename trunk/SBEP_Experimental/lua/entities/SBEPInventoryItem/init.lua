@@ -55,6 +55,7 @@ end
 function ENT:Think()
 	Data = SWEPData[ self.ItemType ]
 	if !Data then
+		print("No data. Removing.")
 		self:Remove()
 	end
 	--self.Entity:NextThink( CurTime() + 0.01 ) 

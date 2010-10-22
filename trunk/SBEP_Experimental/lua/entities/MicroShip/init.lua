@@ -78,7 +78,7 @@ function ENT:Think()
 			self.X = CPL.SBEPYaw
 			self.Y = -CPL.SBEPPitch
 			
-			self.AThrust = math.Clamp(self.AThrust + (tonumber(CPL:GetInfo( "SBMWheel" )) * -0.001 ) ,0.01,3)
+			self.AThrust = math.Clamp(self.AThrust + (tonumber(CPL:GetInfo( "SBMWheel" )) * -0.1 ) ,0.01,3)
 			
 			self.Active = true
 		else

@@ -61,6 +61,9 @@ function ENT:Initialize()
 	self.CurrentTarget = nil
 	self.NFTime = 0
 	self.DeployTime = 0
+	self.IsInfestor = true
+	
+	self.hasdamagecase = true
 end
 
 function ENT:SpawnFunction( ply, tr )
@@ -608,4 +611,11 @@ function ENT:OnRemove()
 	local effectdata = EffectData()
 	effectdata:SetOrigin( self:GetPos() + self:GetForward() * 20 ) 
 	util.Effect( "AntlionGib", effectdata )
+end
+
+function ENT:gcbt_breakactions(Dmg, Prc)
+	self.dt.Energy = self.dt.Energy - Dmg
+	if self.dt.Energy < 0 then
+		self:Remove()
+	end
 end
