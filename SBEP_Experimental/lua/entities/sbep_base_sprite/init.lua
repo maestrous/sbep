@@ -18,7 +18,14 @@ local SRT = {
 	LRC5 = false ,
 	LRC6 = false ,
 	
-	MBSH = false
+	MBSH = false ,
+	
+	MOD1x1 = false ,
+	MOD2x1 = false ,
+	MOD3x1 = false ,
+	MOD3x2 = false ,
+	MOD1x1e = false ,
+	MOD3x2e = false
 			}
 
 function ENT:Initialize()

@@ -98,12 +98,12 @@ function ENT:Initialize()
 	self.HP[7]["Ent"]	= nil
 	self.HP[7]["Type"]	= { "Tiny", "Small","Medium" }
 	self.HP[7]["Pos"]	= Vector(-75,100,-20)
-	self.HP[7]["Angle"] = Angle(0,0,0)
+	self.HP[7]["Angle"] = Angle(0,0,180)
 	self.HP[8]			= {}
 	self.HP[8]["Ent"]	= nil
 	self.HP[8]["Type"]	= { "Tiny", "Small","Medium" }
 	self.HP[8]["Pos"]	= Vector(-75,-100,-20)
-	self.HP[8]["Angle"] = Angle(0,0,0)
+	self.HP[8]["Angle"] = Angle(0,0,180)
 	
 	local SpawnPos = self:GetPos()
 	

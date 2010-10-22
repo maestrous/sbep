@@ -1350,6 +1350,42 @@ local SBEP_SWeps = {
 						--print("Drawing")
 					end
 				end
+				},
+	[ "HoloAxe" ] = {
+				Model = "models/Slyfo_2/holo_axe1.mdl", 
+				LVec = Vector(0,0,0), 
+				RVec = Vector(17,25,-11.5),
+				IVec = Vector(0,7,0),
+				MuzzlePos = Vector(0,5,2.1),
+				--OBBMaxs = Vector(7.4234, 1.3236, 7.3366),
+				Crosshair = true,
+				RAng = Angle(0,180,0), 
+				LAng = Angle(0,180,0), 
+				Recoil = 0,
+				RecoilVulnerability = .3,
+				Refire = 0.3, 
+				Auto = false,
+				Bullets = 0,
+				Damage = 20,
+				--Sound = "Weapon_Glock.Single",
+				Cone = 0.015,
+				AkimboPenalty = 1,
+				ClipSize = -1,
+				ReloadLength = 0.8,
+				AmmoType = "SMG1",
+				RecPos = Vector(0,20,-10),
+				RecAng = Vector(0,0,0),
+				Description = "Caution: DO NOT DROP ON FEET! Trust me, it hurts.",
+				CustomPrimary = function(Wep,Ply,Prime,Data)
+					if Wep:FireCheck(Prime) then
+						if Prime then
+							Wep:SetNetworkedFloat( "PFTime", CurTime(), true )
+						else
+							Wep:SetNetworkedFloat( "SFTime", CurTime(), true )
+						end
+					end
+					Wep:SetNextPrimaryFire( CurTime() + Data.Refire )
+				end
 				}
 	}
 	

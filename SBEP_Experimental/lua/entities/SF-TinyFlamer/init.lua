@@ -82,7 +82,7 @@ function ENT:Think()
 				local Dist = i * math.Rand(65,85)
 				util.BlastDamage(self.SPL, self.SPL, self:GetPos() + (self:GetForward() * Dist), (Dist * 0.3) + 40, math.Clamp((320 - Dist) * 0.1,1,100))
 				--print((320 - Dist) * 0.1)
-				print((Dist * 0.3) + 40)
+				--print((Dist * 0.3) + 40)
 			end
 			self.NFTime = CurTime() + 0.1
 		end

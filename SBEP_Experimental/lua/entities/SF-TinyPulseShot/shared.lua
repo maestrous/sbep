@@ -1,6 +1,6 @@
 ENT.Type 			= "anim"
 ENT.Base 			= "base_gmodentity"
-ENT.PrintName		= "Flak Shell"
+ENT.PrintName		= "Pulse Shot"
 ENT.Author			= "Paradukes"
 
 ENT.Spawnable		= false

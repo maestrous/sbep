@@ -71,13 +71,13 @@ function ENT:Think()
 	
 		local NewShell = ents.Create( "SF-TinyPulseShot" )
 		if ( !NewShell:IsValid() ) then return end
-		NewShell:SetPos( self.Entity:GetPos() + (self.Entity:GetForward() * 20 ) + self:GetVelocity() )
+		NewShell:SetPos( self.Entity:GetPos() + (self.Entity:GetForward() * 60 ) )
 		NewShell:SetAngles( self.Entity:GetForward():Angle() )
 		NewShell.SPL = self.SPL
 		NewShell:Spawn()
 		NewShell:Initialize()
 		NewShell:Activate()
-		NewShell.PhysObj:SetVelocity(self.Entity:GetForward() * 5000)
+		NewShell.PhysObj:SetVelocity(self.Entity:GetForward() * 7000)
 		NewShell:Fire("kill", "", 1)
 		NewShell.ParL = self.Entity
 				

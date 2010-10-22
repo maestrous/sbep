@@ -16,7 +16,7 @@ function ENT:Initialize()
 	self.Entity:SetSolid( SOLID_VPHYSICS )
 
 	if WireAddon then
-		self.Inputs = WireLib.CreateInputs( self, { "Arm", "Detonate" } )
+		self.Inputs = WireLib.CreateInputs( self, { "Launch", "Arm", "Detonate" } )
 	end
 
 	local phys = self.Entity:GetPhysicsObject()
@@ -54,6 +54,11 @@ function ENT:TriggerInput(iname, value)
 	if (iname == "Arm") then
 		if (value > 0) then
 			self.Entity:Arm()
+		end
+		
+	elseif (iname == "Launch") then	
+		if (value > 0) then
+			self.Entity:HPFire()
 		end
 		
 	elseif (iname == "Detonate") then	
@@ -223,7 +228,7 @@ function ENT:HPFire()
 	 
 	 if CurTime() >= self.CCd then
 		local NTorp = ents.Create( "PS-LightMissile" )
-		NTorp:SetPos( self:GetPos() + self:GetVelocity() * 1.5)
+		NTorp:SetPos( self:GetPos() + self:GetVelocity() * 0.1)
 		NTorp:SetAngles( self:GetAngles() )
 		NTorp:Spawn()
 		NTorp:Activate()
