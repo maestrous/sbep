@@ -223,63 +223,64 @@ hook.Add("InitPostEntity","Dynamic_Gibs_LoadConfig",function()
 		require("scripted_ents")
 		
 		local ENT = scripted_ents.Get("wreckedstuff") --override the model's init
-		
-		ENT.GCOldInit = ENT.Initialize
-		
-		function ENT:Initialize()
-			if not self.copy then --we are the original, make the second half now.
+		if ENT then 
+			ENT.GCOldInit = ENT.Initialize
 			
-				local PlaneNorm = Vector(math.Rand(0,1000),math.Rand(0,1000),math.Rand(0,1000)):Normalize()
+			function ENT:Initialize()
+				if not self.copy then --we are the original, make the second half now.
 				
-				local pos = self.Entity:GetPos()
-				local Force = Vector((pos.x + math.random(-400,400)),(pos.y + math.random(-400,400)),(pos.z + math.random(-400,400))):GetNormalized() * 300
-			
-				math.randomseed(CurTime())
-				self.exploded = false
-				self.fuseleft = CurTime() + 2
-				self.deathtype = 0	
-				self.Entity:PhysicsInit( SOLID_VPHYSICS )
-				self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-				self.Entity:SetSolid( SOLID_VPHYSICS ) 
-				self.Entity:SetColor(20,20,20,255)
-				self.Entity:SetCollisionGroup( 0 )
-				local phys = self.Entity:GetPhysicsObject()  	
-				if (phys:IsValid()) then  		
-					phys:Wake()
-					phys:EnableGravity(false)
-					phys:ApplyForceCenter(Force)
-				end 
+					local PlaneNorm = Vector(math.Rand(0,1000),math.Rand(0,1000),math.Rand(0,1000)):Normalize()
+					
+					local pos = self.Entity:GetPos()
+					local Force = Vector((pos.x + math.random(-400,400)),(pos.y + math.random(-400,400)),(pos.z + math.random(-400,400))):GetNormalized() * 300
 				
-				self.brother = ents.Create("wreckedstuff")
-				self.brother:SetModel( self:GetModel() )
-				self.brother:SetAngles( self:GetAngles() )
-				self.brother:SetPos( self:GetPos() )
-				self.brother:SetSkin(self:GetSkin())
-				self.brother.copy = true
-				self.brother:Spawn()
-				self.brother:Activate()
-				local phys = self.brother:GetPhysicsObject()  	
-				if (phys:IsValid()) then  		
-					phys:Wake()
-					phys:EnableGravity(false)
-					phys:ApplyForceCenter(Force+((PlaneNorm+self:GetAngles():Forward()))*20)
-				end 
-				
-				SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self:EntIndex(),PlaneNorm,false)
-				SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self.brother:EntIndex(),PlaneNorm,true)
-			else
-				math.randomseed(CurTime())
-				self.exploded = false
-				self.fuseleft = CurTime() + 2
-				self.deathtype = 0	
-				self.Entity:PhysicsInit( SOLID_VPHYSICS )
-				self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
-				self.Entity:SetSolid( SOLID_VPHYSICS ) 
-				self.Entity:SetColor(20,20,20,255)
-				self.Entity:SetCollisionGroup( 0 )
+					math.randomseed(CurTime())
+					self.exploded = false
+					self.fuseleft = CurTime() + 2
+					self.deathtype = 0	
+					self.Entity:PhysicsInit( SOLID_VPHYSICS )
+					self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
+					self.Entity:SetSolid( SOLID_VPHYSICS ) 
+					self.Entity:SetColor(20,20,20,255)
+					self.Entity:SetCollisionGroup( 0 )
+					local phys = self.Entity:GetPhysicsObject()  	
+					if (phys:IsValid()) then  		
+						phys:Wake()
+						phys:EnableGravity(false)
+						phys:ApplyForceCenter(Force)
+					end 
+					
+					self.brother = ents.Create("wreckedstuff")
+					self.brother:SetModel( self:GetModel() )
+					self.brother:SetAngles( self:GetAngles() )
+					self.brother:SetPos( self:GetPos() )
+					self.brother:SetSkin(self:GetSkin())
+					self.brother.copy = true
+					self.brother:Spawn()
+					self.brother:Activate()
+					local phys = self.brother:GetPhysicsObject()  	
+					if (phys:IsValid()) then  		
+						phys:Wake()
+						phys:EnableGravity(false)
+						phys:ApplyForceCenter(Force+((PlaneNorm+self:GetAngles():Forward()))*20)
+					end 
+					
+					SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self:EntIndex(),PlaneNorm,false)
+					SendUserMessage("ApplyClippingPlaneToGCObject",player.GetAll(),self.brother:EntIndex(),PlaneNorm,true)
+				else
+					math.randomseed(CurTime())
+					self.exploded = false
+					self.fuseleft = CurTime() + 2
+					self.deathtype = 0	
+					self.Entity:PhysicsInit( SOLID_VPHYSICS )
+					self.Entity:SetMoveType( MOVETYPE_VPHYSICS )
+					self.Entity:SetSolid( SOLID_VPHYSICS ) 
+					self.Entity:SetColor(20,20,20,255)
+					self.Entity:SetCollisionGroup( 0 )
+				end
 			end
+			
+			scripted_ents.Register(ENT,"wreckedstuff",true) --let's override it... hehehehe
 		end
-		
-		scripted_ents.Register(ENT,"wreckedstuff",true) --let's override it... hehehehe
 	end
 end)
