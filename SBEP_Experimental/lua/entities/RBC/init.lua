@@ -56,7 +56,7 @@ function ENT:Initialize()
 	self.Strafe = 0
 	self.DStrafe = 0
 	
-	gcombat.registerent( self.Entity, 500, 6 )
+	--gcombat.registerent( self.Entity, 500, 6 )
 		
 	self.EMount = true
 	self.HasHardpoints = true
@@ -119,7 +119,7 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 		phys:SetMass( 1000 )
 	end
-	gcombat.registerent( Body, 150, 800 )
+	--gcombat.registerent( Body, 150, 800 )
 	
 	
 	
@@ -148,7 +148,7 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 		phys:SetMass( 1 )
 	end
-	gcombat.registerent( Rear, 100, 7000 )
+	--gcombat.registerent( Rear, 100, 7000 )
 	
 	self:SetNetworkedEntity("Pod",Body,true)
 	self:SetNetworkedEntity("Rear",Rear,true)
@@ -172,7 +172,7 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 		phys:SetMass( 1 )
 	end
-	gcombat.registerent( Rotor, 10, 4000 )
+	--gcombat.registerent( Rotor, 10, 4000 )
 	
 	
 	
@@ -197,7 +197,7 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 		phys:SetMass( 1 )
 	end
-	gcombat.registerent( LBlade, 10, 1000 )
+	--gcombat.registerent( LBlade, 10, 1000 )
 	
 	
 	local RBlade = ents.Create( "prop_physics" )
@@ -219,7 +219,7 @@ function ENT:Initialize()
 		phys:EnableCollisions(true)
 		phys:SetMass( 1 )
 	end
-	gcombat.registerent( RBlade, 10, 1000 )
+	--gcombat.registerent( RBlade, 10, 1000 )
 	
 	self.RotorSpeed = 0
 	self.RotorAng = 0
